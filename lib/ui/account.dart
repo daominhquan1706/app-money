@@ -10,14 +10,14 @@ class _AccountPageState extends State<AccountPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Account"),
+        title: const Text("Account"),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             DrawerHeader(
               child: Column(
-                children: [
+                children: const [
                   CircleAvatar(
                     child: FlutterLogo(),
                   ),
@@ -43,9 +43,7 @@ class _AccountPageState extends State<AccountPage> {
   Widget _buildSettingItem(IconData icon, String title) {
     return Column(
       children: [
-        Divider(
-          indent: 70,
-        ),
+        const Divider(indent: 70),
         ListTile(
           leading: Icon(
             icon,

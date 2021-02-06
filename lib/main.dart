@@ -16,14 +16,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyStatefulWidget(),
+      home: const MyStatefulWidget(),
     );
   }
 }
 
 /// This is the stateful widget that the main application instantiates.
 class MyStatefulWidget extends StatefulWidget {
-  MyStatefulWidget({Key key}) : super(key: key);
+  const MyStatefulWidget({Key key}) : super(key: key);
 
   @override
   _MyStatefulWidgetState createState() => _MyStatefulWidgetState();
@@ -48,9 +48,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget>
       child: Scaffold(
         body: TabBarView(
           controller: _tabController,
-          physics: new NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           children: [
-            MyHomePage(),
+            const MyHomePage(),
             ReportPage(),
             AccountPage(),
           ],
@@ -72,7 +72,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget>
           ],
           currentIndex: _selectedIndex,
           unselectedItemColor: Colors.grey,
-          unselectedLabelStyle: TextStyle(color: Colors.grey),
+          unselectedLabelStyle: const TextStyle(color: Colors.grey),
           showUnselectedLabels: true,
           onTap: (index) {
             setState(() {

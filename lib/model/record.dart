@@ -17,23 +17,23 @@ class Record {
       this.isAdd});
 
   Record.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['id'] as int;
     //"10/03/2019",
-    createDate = new DateFormat("M/d/yyyy").parse(json['createDate']);
-    title = json['title'];
-    note = json['note'];
-    amount = json['amount'].toDouble();
-    isAdd = json['isAdd'];
+    createDate = DateFormat("M/d/yyyy").parse(json['createDate'] as String);
+    title = json['title'] as String;
+    note = json['note'] as String;
+    amount = double.parse(json['amount'].toString());
+    isAdd = json['isAdd'] as bool;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['createDate'] = this.createDate;
-    data['title'] = this.title;
-    data['note'] = this.note;
-    data['amount'] = this.amount;
-    data['isAdd'] = this.isAdd;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['createDate'] = createDate;
+    data['title'] = title;
+    data['note'] = note;
+    data['amount'] = amount;
+    data['isAdd'] = isAdd;
     return data;
   }
 }

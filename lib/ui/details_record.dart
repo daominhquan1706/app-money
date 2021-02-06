@@ -19,9 +19,9 @@ class _DetailsRecordState extends State<DetailsRecord> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(icon: Icon(Icons.share), onPressed: () {}),
-          IconButton(icon: Icon(Icons.edit), onPressed: () {}),
-          IconButton(icon: Icon(Icons.delete), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.share), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.edit), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.delete), onPressed: () {}),
         ],
       ),
       body: Card(
@@ -30,24 +30,24 @@ class _DetailsRecordState extends State<DetailsRecord> {
           children: [
             ListTile(
               title: Text(record.title),
-              leading: CircleAvatar(),
+              leading: const CircleAvatar(),
             ),
             ListTile(
               title: Text(
-                "${StringHelper.getMoneyText(record.amount)} đ",
+                "${StringHelper.instance.getMoneyText(record.amount)} đ",
                 style:
                     TextStyle(color: record.isAdd ? Colors.blue : Colors.red),
               ),
-              leading: SizedBox.shrink(),
+              leading: const SizedBox.shrink(),
             ),
             ListTile(
               title: Text(record.note),
-              leading: Icon(Icons.note),
+              leading: const Icon(Icons.note),
             ),
             ListTile(
-              title: Text(
-                  "${DateFormat('EEEE, d/M/yyyy').format(record.createDate)}"),
-              leading: Icon(Icons.calendar_today_outlined),
+              title:
+                  Text(DateFormat('EEEE, d/M/yyyy').format(record.createDate)),
+              leading: const Icon(Icons.calendar_today_outlined),
             ),
           ],
         ),

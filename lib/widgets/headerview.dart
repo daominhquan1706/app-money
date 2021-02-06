@@ -12,7 +12,7 @@ class HeaderView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      margin: EdgeInsets.only(top: 30),
+      margin: const EdgeInsets.only(top: 30),
       child: Column(
         children: [
           ListTile(
@@ -20,22 +20,18 @@ class HeaderView extends StatelessWidget {
               backgroundColor: Colors.transparent,
               child: Text(
                 "${date.day}",
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
               ),
             ),
-            title: Text(
-              "${DateFormat('EEEE').format(date)}",
-            ),
-            subtitle: Text(
-              "${DateFormat('MMMM yyyy').format(date)}",
-            ),
-            trailing: Text("${StringHelper.getMoneyText(amount)}"),
+            title: Text(DateFormat('EEEE').format(date)),
+            subtitle: Text(DateFormat('MMMM yyyy').format(date)),
+            trailing: Text(StringHelper.instance.getMoneyText(amount)),
           ),
-          Divider(
+          const Divider(
             color: Colors.black12,
             height: 0,
             thickness: 2,

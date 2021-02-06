@@ -1,4 +1,4 @@
-final String data = """
+const String data = """
 [{
   "id": 1,
   "createDate": "1/30/2021",

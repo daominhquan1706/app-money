@@ -6,7 +6,7 @@ import 'package:money_app/repository/record_repository.dart';
 import 'package:money_app/widgets/list.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
+  const MyHomePage({Key key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -16,7 +16,7 @@ class _MyHomePageState extends State<MyHomePage>
     with AutomaticKeepAliveClientMixin<MyHomePage>, TickerProviderStateMixin {
   List<Record> listRecord;
   double amount = 0;
-  var listMonth = new List<DateTime>.generate(100, (i) {
+  List<DateTime> listMonth = List<DateTime>.generate(100, (i) {
     final now = DateTime.now();
     final newNow = DateTime(now.year, now.month + 1);
     final newDate = DateTime(newNow.year, newNow.month - (i + 1));
@@ -46,28 +46,31 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   @override
+  // ignore: must_call_super
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: listMonth.length,
       child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          child: const Icon(Icons.add),
+        ),
         appBar: AppBar(
           bottom: TabBar(
             controller: _tabController,
             isScrollable: true,
             tabs: listMonth
-                .map((e) => Tab(
-                      text: "${DateFormat('MMMM yyyy').format(e)}",
-                    ))
+                .map((e) => Tab(text: DateFormat('MMMM yyyy').format(e)))
                 .toList(),
           ),
           title: ListTile(
-            title: Text(
+            title: const Text(
               "Total",
               style: TextStyle(color: Colors.white54),
             ),
             subtitle: Text(
-              "${StringHelper.getMoneyText(amount)} đ",
-              style: TextStyle(color: Colors.white, fontSize: 23),
+              "${StringHelper.instance.getMoneyText(amount)} đ",
+              style: const TextStyle(color: Colors.white, fontSize: 23),
             ),
           ),
           actions: [
@@ -109,7 +112,7 @@ class EmptyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.grey.shade200,
-      child: Center(
+      child: const Center(
         child: Icon(
           Icons.note,
           size: 200,

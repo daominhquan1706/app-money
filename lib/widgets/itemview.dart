@@ -13,11 +13,11 @@ class ItemView extends StatelessWidget {
     return Container(
       color: Colors.white,
       child: ListTile(
-        leading: CircleAvatar(),
+        leading: const CircleAvatar(),
         title: Text(record.title),
         subtitle: Text(record.note),
         trailing: Text(
-          "${StringHelper.getMoneyText(record.amount)}",
+          StringHelper.instance.getMoneyText(record.amount),
           style: TextStyle(color: record.isAdd ? Colors.blue : Colors.red),
         ),
         onTap: () {

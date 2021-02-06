@@ -12,12 +12,12 @@ class MyList extends StatelessWidget {
   MyList({Key key, @required this.listRecord}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    var listDate = listRecord
+    final listDate = listRecord
         .map((e) =>
             DateTime(e.createDate.year, e.createDate.month, e.createDate.day))
         .toSet()
         .toList();
-    var sections = listDate
+    final sections = listDate
         .map((date) => RecordSection(
             date: date,
             list: listRecord
@@ -60,28 +60,28 @@ class MyList extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(children: [
-                Text("Money input"),
-                Spacer(),
+                const Text("Money input"),
+                const Spacer(),
                 Text(
-                  StringHelper.getMoneyText(inputAmount),
-                  style: TextStyle(color: Colors.blue),
+                  StringHelper.instance.getMoneyText(inputAmount),
+                  style: const TextStyle(color: Colors.blue),
                 )
               ]),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(children: [
-                Text("Money output"),
-                Spacer(),
+                const Text("Money output"),
+                const Spacer(),
                 Text(
-                  StringHelper.getMoneyText(outputAmount),
-                  style: TextStyle(color: Colors.red),
+                  StringHelper.instance.getMoneyText(outputAmount),
+                  style: const TextStyle(color: Colors.red),
                 )
               ]),
             ),
             Row(
               children: [
-                Spacer(),
+                const Spacer(),
                 Container(
                   width: 100,
                   height: 1,
@@ -92,9 +92,10 @@ class MyList extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(children: [
-                Text(""),
-                Spacer(),
-                Text(StringHelper.getMoneyText(inputAmount - outputAmount))
+                const Text(""),
+                const Spacer(),
+                Text(StringHelper.instance
+                    .getMoneyText(inputAmount - outputAmount))
               ]),
             ),
           ],
@@ -111,20 +112,18 @@ class RecordView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          HeaderView(
-            date: section.date,
-            amount: section.sumAmount(),
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: section.list.map((e) => ItemView(record: e)).toList(),
-          ),
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        HeaderView(
+          date: section.date,
+          amount: section.sumAmount(),
+        ),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: section.list.map((e) => ItemView(record: e)).toList(),
+        ),
+      ],
     );
   }
 }

@@ -10,9 +10,9 @@ class _ReportPageState extends State<ReportPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Report Page"),
+        title: const Text("Report Page"),
       ),
-      body: Center(
+      body: const Center(
         child: Text("Report Page"),
       ),
     );
