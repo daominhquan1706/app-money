@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_app/helper/string_helper.dart';
-import 'package:money_app/model/record.dart';
+import 'package:money_app/model/record_model.dart';
 
 class DetailsRecord extends StatefulWidget {
   final Record record;
@@ -19,7 +19,7 @@ class _DetailsRecordState extends State<DetailsRecord> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(icon: const Icon(Icons.share), onPressed: () {}),
+          //IconButton(icon: const Icon(Icons.share), onPressed: () {}),
           IconButton(icon: const Icon(Icons.edit), onPressed: () {}),
           IconButton(icon: const Icon(Icons.delete), onPressed: () {}),
         ],

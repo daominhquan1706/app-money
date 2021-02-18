@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:money_app/model/record_model.dart';
 import 'package:money_app/ui/account.dart';
 import 'package:money_app/ui/home.dart';
 import 'package:money_app/ui/report.dart';
+import 'package:money_app/ui/splash_screen.dart';
+import 'package:money_app/view_models/home_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,22 +20,24 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const MyStatefulWidget(),
+      home: ChangeNotifierProvider<HomeViewModel>(
+        create: (context) => HomeViewModel.instance,
+        child: const MainPage(),
+      ),
     );
   }
 }
 
 /// This is the stateful widget that the main application instantiates.
-class MyStatefulWidget extends StatefulWidget {
-  const MyStatefulWidget({Key key}) : super(key: key);
+class MainPage extends StatefulWidget {
+  const MainPage({Key key}) : super(key: key);
 
   @override
-  _MyStatefulWidgetState createState() => _MyStatefulWidgetState();
+  _MainPageState createState() => _MainPageState();
 }
 
 /// This is the private State class that goes with MyStatefulWidget.
-class _MyStatefulWidgetState extends State<MyStatefulWidget>
-    with TickerProviderStateMixin {
+class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   int _selectedIndex = 0;
   TabController _tabController;
 
@@ -43,6 +49,20 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget>
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<HomeViewModel>(
+      builder: (context, value, child) {
+        if (value.listRecord == null) {
+          return SplashScreen();
+        }
+        return _buildMainLayout(listRecord: value.listRecord);
+      },
+    );
+  }
+
+  Widget _buildMainLayout({@required List<Record> listRecord}) {
+    final amount = listRecord
+        .map((e) => e.isAdd ? e.amount : 0 - e.amount)
+        .reduce((a, b) => a + b);
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -50,7 +70,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget>
           controller: _tabController,
           physics: const NeverScrollableScrollPhysics(),
           children: [
-            const MyHomePage(),
+            MyHomePage(
+              listRecord: listRecord,
+              amount: amount,
+            ),
             ReportPage(),
             AccountPage(),
           ],

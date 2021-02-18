@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_app/helper/string_helper.dart';
-import 'package:money_app/model/record.dart';
-import 'package:money_app/model/record_section.dart';
+import 'package:money_app/model/record_model.dart';
+import 'package:money_app/model/record_section_model.dart';
 import 'package:money_app/widgets/headerview.dart';
 import 'package:money_app/widgets/itemview.dart';
 
@@ -42,14 +42,17 @@ class MyList extends StatelessWidget {
   }
 
   Widget _buildReportView() {
-    final inputAmount = listRecord
-        .where((element) => element.isAdd)
-        .map((e) => e.amount)
-        .reduce((a, b) => a + b);
-    final outputAmount = listRecord
-        .where((element) => !element.isAdd)
-        .map((e) => e.amount)
-        .reduce((a, b) => a + b);
+    if (listRecord.length == 0) {
+      return Container();
+    }
+    final inputAmount = [
+      ...listRecord.where((element) => element.isAdd).map((e) => e.amount),
+      0.0
+    ].reduce((a, b) => a + b);
+    final outputAmount = [
+      ...listRecord.where((element) => !element.isAdd).map((e) => e.amount),
+      0.0
+    ].reduce((a, b) => a + b);
 
     return Container(
       color: Colors.white,

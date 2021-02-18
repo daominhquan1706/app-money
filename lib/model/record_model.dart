@@ -7,14 +7,19 @@ class Record {
   String note;
   double amount;
   bool isAdd;
+  DateTime createdDate;
+  DateTime modifiedDate;
+  int walletId;
 
-  Record(
-      {this.id,
-      this.createDate,
-      this.title,
-      this.note,
-      this.amount,
-      this.isAdd});
+  Record({
+    this.id,
+    this.createDate,
+    this.title,
+    this.note,
+    this.amount,
+    this.isAdd,
+    this.walletId,
+  });
 
   Record.fromJson(Map<String, dynamic> json) {
     id = json['id'] as int;
@@ -23,7 +28,8 @@ class Record {
     title = json['title'] as String;
     note = json['note'] as String;
     amount = double.parse(json['amount'].toString());
-    isAdd = json['isAdd'] as bool;
+    isAdd = amount >= 0;
+    walletId = json['wallet_id'] as int;
   }
 
   Map<String, dynamic> toJson() {

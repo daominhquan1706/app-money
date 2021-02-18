@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_app/helper/string_helper.dart';
-import 'package:money_app/model/record.dart';
+import 'package:money_app/model/record_model.dart';
 import 'package:money_app/ui/details_record.dart';
 
 class ItemView extends StatelessWidget {

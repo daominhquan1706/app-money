@@ -1,4 +1,4 @@
-import 'package:money_app/model/record.dart';
+import 'package:money_app/model/record_model.dart';
 
 class RecordSection {
   DateTime date;

@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:money_app/constants/constant.dart';
 import 'package:money_app/helper/string_helper.dart';
-import 'package:money_app/model/record.dart';
-import 'package:money_app/repository/record_repository.dart';
+import 'package:money_app/model/record_model.dart';
+import 'package:money_app/model/wallet_model.dart';
+import 'package:money_app/ui/add_record.dart';
+import 'package:money_app/ui/wallet_list.dart';
+import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:money_app/widgets/list.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key key}) : super(key: key);
-
+  const MyHomePage({Key key, @required this.listRecord, this.amount})
+      : super(key: key);
+  final List<Record> listRecord;
+  final double amount;
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage>
     with AutomaticKeepAliveClientMixin<MyHomePage>, TickerProviderStateMixin {
-  List<Record> listRecord;
-  double amount = 0;
   List<DateTime> listMonth = List<DateTime>.generate(100, (i) {
     final now = DateTime.now();
     final newNow = DateTime(now.year, now.month + 1);
@@ -23,6 +27,8 @@ class _MyHomePageState extends State<MyHomePage>
     return newDate;
   });
   TabController _tabController;
+
+  _MyHomePageState();
   @override
   void initState() {
     listMonth.sort((a, b) => a.compareTo(b));
@@ -31,16 +37,6 @@ class _MyHomePageState extends State<MyHomePage>
         .indexWhere((date) => date.year == now.year && date.month == now.month);
     _tabController = TabController(
         initialIndex: initialPage, vsync: this, length: listMonth.length);
-
-    RecordRepository().getRecords().then((list) => {
-          setState(() {
-            list.sort((a, b) => b.createDate.compareTo(a.createDate));
-            listRecord = list;
-            amount = listRecord
-                .map((e) => e.isAdd ? e.amount : 0 - e.amount)
-                .reduce((a, b) => a + b);
-          })
-        });
 
     super.initState();
   }
@@ -52,10 +48,22 @@ class _MyHomePageState extends State<MyHomePage>
       length: listMonth.length,
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () async {
+            await Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => AddRecord()));
+          },
           child: const Icon(Icons.add),
         ),
         appBar: AppBar(
+          titleSpacing: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.account_balance_wallet),
+            onPressed: () async {
+              final Wallet wallet = await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const WalletList()));
+              HomeViewModel.instance.onPickWallet(wallet);
+            },
+          ),
           bottom: TabBar(
             controller: _tabController,
             isScrollable: true,
@@ -69,22 +77,28 @@ class _MyHomePageState extends State<MyHomePage>
               style: TextStyle(color: Colors.white54),
             ),
             subtitle: Text(
-              "${StringHelper.instance.getMoneyText(amount)} đ",
+              "${StringHelper.instance.getMoneyText(widget.amount)} đ",
               style: const TextStyle(color: Colors.white, fontSize: 23),
             ),
           ),
           actions: [
-            IconButton(
-              icon: const Icon(Icons.add_alert),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.access_alarms_rounded),
-              onPressed: () {},
-            ),
+            PopupMenuButton<String>(
+              itemBuilder: (context) {
+                return listHomeMenu
+                    .map(
+                      (e) => PopupMenuItem<String>(
+                        child: Text(e.name),
+                      ),
+                    )
+                    .toList();
+              },
+              onSelected: (text) {
+                print(text);
+              },
+            )
           ],
         ),
-        body: listRecord == null
+        body: widget.listRecord == null
             ? EmptyPage()
             : TabBarView(
                 controller: _tabController,
@@ -95,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   Widget getPage(DateTime date) {
-    final list = listRecord
+    final list = widget.listRecord
         .where((r) =>
             DateTime(r.createDate.year, r.createDate.month) ==
             DateTime(date.year, date.month))
