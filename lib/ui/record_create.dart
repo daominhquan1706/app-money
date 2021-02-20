@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:money_app/model/record_model.dart';
+import 'package:money_app/model/wallet_model.dart';
+import 'package:money_app/view_models/home_viewmodel.dart';
 
 class AddRecord extends StatefulWidget {
   @override
@@ -12,10 +15,12 @@ class _AddRecordState extends State<AddRecord> {
   DateTime _date;
   String _title;
   String _note;
+  Wallet _wallet = HomeViewModel.instance.currentWallet;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   FormState get _formState => _formKey.currentState;
+  HomeViewModel _homeViewModel = HomeViewModel.instance;
 
   @override
   void initState() {
@@ -29,15 +34,22 @@ class _AddRecordState extends State<AddRecord> {
       appBar: AppBar(
         centerTitle: false,
         title: const Text(
-          "Add Record",
+          "Create Record",
         ),
         actions: [
           FlatButton(
             onPressed: () {
               if (_formState.validate()) {
                 _formState.save();
-              } else {
-                Navigator.of(context).pop();
+                final Record record = Record(
+                  createDate: DateTime.now(),
+                  amount: _amount,
+                  title: _title,
+                  isAdd: _amount >= 0,
+                  walletId: _wallet.id,
+                  note: _note,
+                );
+                Navigator.of(context).pop<Record>(record);
               }
             },
             child: const Text(
@@ -57,6 +69,7 @@ class _AddRecordState extends State<AddRecord> {
               _buildTitle(),
               _buildNote(),
               _buildDate(),
+              _buildWallet(),
             ],
           ),
         ),
@@ -74,7 +87,7 @@ class _AddRecordState extends State<AddRecord> {
       keyboardType: TextInputType.number,
       validator: (String value) {
         if (value.isEmpty) {
-          return 'Name isRequired';
+          return 'Amount isRequired';
         }
         try {
           double.parse(value);
@@ -96,6 +109,9 @@ class _AddRecordState extends State<AddRecord> {
         FilteringTextInputFormatter.singleLineFormatter
       ],
       validator: (String value) {
+        if (value.isEmpty) {
+          return 'Title isRequired';
+        }
         return null;
       },
       onSaved: (String value) {
@@ -122,19 +138,44 @@ class _AddRecordState extends State<AddRecord> {
   Widget _buildDate() {
     return Row(
       children: [
-        const Text("Date :"),
-        const Spacer(),
-        RaisedButton(
-          onPressed: () {
-            _selectDate(context);
-          },
-          child: Text("${DateFormat('dd-MM-yyyy').format(_date)}"),
+        Expanded(
+          flex: 1,
+          child: const Text("Date :   "),
+        ),
+        Expanded(
+          flex: 3,
+          child: RaisedButton(
+            onPressed: () {
+              _selectDate(context);
+            },
+            child: Text(DateFormat('dd-MM-yyyy').format(_date)),
+          ),
         )
       ],
     );
   }
 
-  _selectDate(BuildContext context) async {
+  Widget _buildWallet() {
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: const Text("Wallet :   "),
+        ),
+        Expanded(
+          flex: 3,
+          child: RaisedButton(
+            onPressed: () {
+              _selectWallet(context);
+            },
+            child: Text(_wallet != null ? _wallet.name : "Please Pick Wallet"),
+          ),
+        )
+      ],
+    );
+  }
+
+  Future _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: _date,
@@ -146,5 +187,38 @@ class _AddRecordState extends State<AddRecord> {
         _date = picked;
       });
     }
+  }
+
+  Future _selectWallet(BuildContext context) async {
+    final Wallet wallet = await showDialog(
+        context: context,
+        child: SimpleDialog(
+          title: const Text("Pick Wallet"),
+          children: _homeViewModel.listWallet.isNotEmpty
+              ? _homeViewModel.listWallet.map((e) {
+                  return Card(
+                    child: ListTile(
+                      title: Text(e.name),
+                      leading: const Icon(Icons.account_balance_wallet),
+                      onTap: () {
+                        Navigator.of(context).pop<Wallet>(e);
+                      },
+                      trailing: _wallet?.id == e.id
+                          ? const Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  );
+                }).toList()
+              : [const Text("Dont you dont have wallet")],
+        ));
+    if (wallet == null) {
+      return;
+    }
+    setState(() {
+      _wallet = wallet;
+    });
   }
 }

@@ -60,9 +60,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   Widget _buildMainLayout({@required List<Record> listRecord}) {
-    final amount = listRecord
-        .map((e) => e.isAdd ? e.amount : 0 - e.amount)
-        .reduce((a, b) => a + b);
+    final amount = [
+      ...listRecord.map((e) => e.isAdd ? e.amount : 0 - e.amount),
+      0.0,
+    ].reduce((a, b) => a + b);
     return DefaultTabController(
       length: 3,
       child: Scaffold(

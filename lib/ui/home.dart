@@ -4,7 +4,7 @@ import 'package:money_app/constants/constant.dart';
 import 'package:money_app/helper/string_helper.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
-import 'package:money_app/ui/add_record.dart';
+import 'package:money_app/ui/record_create.dart';
 import 'package:money_app/ui/wallet_list.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:money_app/widgets/list.dart';
@@ -18,15 +18,15 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage>
-    with AutomaticKeepAliveClientMixin<MyHomePage>, TickerProviderStateMixin {
-  List<DateTime> listMonth = List<DateTime>.generate(100, (i) {
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+  List<DateTime> listMonth = List<DateTime>.generate(12, (i) {
     final now = DateTime.now();
     final newNow = DateTime(now.year, now.month + 1);
     final newDate = DateTime(newNow.year, newNow.month - (i + 1));
     return newDate;
   });
   TabController _tabController;
+  final HomeViewModel _homeViewModel = HomeViewModel.instance;
 
   _MyHomePageState();
   @override
@@ -49,8 +49,11 @@ class _MyHomePageState extends State<MyHomePage>
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            await Navigator.of(context)
+            Record record = await Navigator.of(context)
                 .push(MaterialPageRoute(builder: (context) => AddRecord()));
+            setState(() {
+              _homeViewModel.onCreateRecord(record);
+            });
           },
           child: const Icon(Icons.add),
         ),
@@ -116,9 +119,6 @@ class _MyHomePageState extends State<MyHomePage>
         .toList();
     return list.isEmpty ? EmptyPage() : MyList(listRecord: list);
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }
 
 class EmptyPage extends StatelessWidget {

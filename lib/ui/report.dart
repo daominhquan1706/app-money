@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_app/widgets/pie_chart.dart';
 
 class ReportPage extends StatefulWidget {
   @override
@@ -12,8 +13,8 @@ class _ReportPageState extends State<ReportPage> {
       appBar: AppBar(
         title: const Text("Report Page"),
       ),
-      body: const Center(
-        child: Text("Report Page"),
+      body: Center(
+        child: PieChartSample3(),
       ),
     );
   }
