@@ -5,39 +5,46 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 /// Icons by svgrepo.com (https://www.svgrepo.com/collection/job-and-professions-3/)
 class PieChartSample3 extends StatefulWidget {
+  final double inputAmount;
+  final double outputAmount;
+  const PieChartSample3(
+      {Key key, @required this.inputAmount, @required this.outputAmount})
+      : super(key: key);
   @override
   State<StatefulWidget> createState() => PieChartSample3State();
 }
 
-class PieChartSample3State extends State {
+class PieChartSample3State extends State<PieChartSample3> {
   int touchedIndex;
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1.3,
-      child: Card(
-        color: Colors.white,
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: PieChart(
-            PieChartData(
-                pieTouchData: PieTouchData(touchCallback: (pieTouchResponse) {
-                  setState(() {
-                    if (pieTouchResponse.touchInput is FlLongPressEnd ||
-                        pieTouchResponse.touchInput is FlPanEnd) {
-                      touchedIndex = -1;
-                    } else {
-                      touchedIndex = pieTouchResponse.touchedSectionIndex;
-                    }
-                  });
-                }),
-                borderData: FlBorderData(
-                  show: false,
-                ),
-                sectionsSpace: 1,
-                centerSpaceRadius: 0,
-                sections: showingSections()),
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: PieChart(
+          PieChartData(
+            pieTouchData: PieTouchData(touchCallback: (pieTouchResponse) {
+              setState(() {
+                if (pieTouchResponse.touchInput is FlLongPressEnd ||
+                    pieTouchResponse.touchInput is FlPanEnd) {
+                  touchedIndex = -1;
+                } else {
+                  touchedIndex = pieTouchResponse.touchedSectionIndex;
+                }
+              });
+            }),
+            borderData: FlBorderData(
+              show: false,
+            ),
+            sectionsSpace: 1,
+            centerSpaceRadius: 0,
+            sections: showingSections(),
           ),
         ),
       ),
@@ -45,78 +52,46 @@ class PieChartSample3State extends State {
   }
 
   List<PieChartSectionData> showingSections() {
-    return List.generate(4, (i) {
+    return List.generate(2, (i) {
       final isTouched = i == touchedIndex;
       final double fontSize = isTouched ? 20 : 16;
       final double radius = isTouched ? 110 : 100;
       final double widgetSize = isTouched ? 55 : 40;
-
+      final Color inputColor = Colors.green;
+      final Color outputColor = Colors.redAccent;
       switch (i) {
         case 0:
           return PieChartSectionData(
-            color: const Color(0xff0293ee),
-            value: 40,
-            title: '40%',
+            color: inputColor,
+            value: widget.inputAmount,
+            title: '${widget.inputAmount.round()}%',
             radius: radius,
             titleStyle: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xffffffff)),
+              fontSize: fontSize,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xffffffff),
+            ),
             badgeWidget: _Badge(
-              'https://www.svgrepo.com/show/242923/soldier.svg',
+              'https://www.svgrepo.com/show/255984/input.svg',
               size: widgetSize,
-              borderColor: const Color(0xff0293ee),
+              borderColor: inputColor,
             ),
             badgePositionPercentageOffset: .98,
           );
         case 1:
           return PieChartSectionData(
-            color: const Color(0xfff8b250),
-            value: 30,
-            title: '30%',
+            color: outputColor,
+            value: widget.outputAmount,
+            title: '${widget.outputAmount.round()}%',
             radius: radius,
             titleStyle: TextStyle(
                 fontSize: fontSize,
                 fontWeight: FontWeight.bold,
                 color: const Color(0xffffffff)),
             badgeWidget: _Badge(
-              'https://www.svgrepo.com/show/242924/director.svg',
+              'https://www.svgrepo.com/show/255981/output.svg',
               size: widgetSize,
-              borderColor: const Color(0xfff8b250),
-            ),
-            badgePositionPercentageOffset: .98,
-          );
-        case 2:
-          return PieChartSectionData(
-            color: const Color(0xff845bef),
-            value: 16,
-            title: '16%',
-            radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xffffffff)),
-            badgeWidget: _Badge(
-              'https://www.svgrepo.com/show/242932/policeman.svg',
-              size: widgetSize,
-              borderColor: const Color(0xff845bef),
-            ),
-            badgePositionPercentageOffset: .98,
-          );
-        case 3:
-          return PieChartSectionData(
-            color: const Color(0xff13d38e),
-            value: 15,
-            title: '15%',
-            radius: radius,
-            titleStyle: TextStyle(
-                fontSize: fontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xffffffff)),
-            badgeWidget: _Badge(
-              'https://www.svgrepo.com/show/242941/football-player.svg',
-              size: widgetSize,
-              borderColor: const Color(0xff13d38e),
+              borderColor: outputColor,
             ),
             badgePositionPercentageOffset: .98,
           );
@@ -162,7 +137,7 @@ class _Badge extends StatelessWidget {
       ),
       padding: EdgeInsets.all(size * .15),
       child: Center(
-        child: SvgPicture.network(svgAsset, fit: BoxFit.contain),
+        child: SvgPicture.network(svgAsset),
       ),
     );
   }

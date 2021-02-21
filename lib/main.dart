@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:money_app/model/record_model.dart';
 import 'package:money_app/ui/account.dart';
 import 'package:money_app/ui/home.dart';
 import 'package:money_app/ui/report.dart';
@@ -54,16 +53,12 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         if (value.listRecord == null) {
           return SplashScreen();
         }
-        return _buildMainLayout(listRecord: value.listRecord);
+        return _buildMainLayout();
       },
     );
   }
 
-  Widget _buildMainLayout({@required List<Record> listRecord}) {
-    final amount = [
-      ...listRecord.map((e) => e.isAdd ? e.amount : 0 - e.amount),
-      0.0,
-    ].reduce((a, b) => a + b);
+  Widget _buildMainLayout() {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -71,11 +66,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           controller: _tabController,
           physics: const NeverScrollableScrollPhysics(),
           children: [
-            MyHomePage(
-              listRecord: listRecord,
-              amount: amount,
-            ),
-            ReportPage(),
+            const MyHomePage(),
+            const ReportPage(),
             AccountPage(),
           ],
         ),

@@ -28,7 +28,14 @@ class HomeViewModel with ChangeNotifier {
 
   Future getRecord() async {
     listRecordFull = await recordRepository.getRecords();
-    listRecord = listRecordFull;
+    final currentWalletId = await prefsService.getCurrentWalletId();
+    if (currentWalletId == null) {
+      listRecord = listRecordFull;
+    } else {
+      listRecord = listRecordFull
+          .where((element) => element.walletId == currentWalletId)
+          .toList();
+    }
     notifyListeners();
   }
 
@@ -43,16 +50,17 @@ class HomeViewModel with ChangeNotifier {
   }
 
   void onPickWallet(Wallet wallet) {
-    if (wallet == null) {
+    if (wallet.id == -1) {
+      prefsService.changeWallet(null);
       listRecord = listRecordFull;
-      notifyListeners();
     } else {
+      prefsService.changeWallet(wallet.id);
       currentWallet = wallet;
       listRecord = listRecordFull
           .where((element) => element.walletId == currentWallet.id)
           .toList();
-      notifyListeners();
     }
+    notifyListeners();
   }
 
   void onCreateWallet(Wallet wallet) {
@@ -83,4 +91,9 @@ class HomeViewModel with ChangeNotifier {
     onPickWallet(currentWallet);
     notifyListeners();
   }
+
+  double get amountListRecord => [
+        ...listRecord.map((e) => e.isAdd ? e.amount : 0 - e.amount),
+        0.0,
+      ].reduce((a, b) => a + b);
 }

@@ -29,7 +29,7 @@ class _WalletListState extends State<WalletList> {
             child: Card(
               child: ListTile(
                 onTap: () {
-                  Navigator.of(context).pop(null);
+                  Navigator.of(context).pop(Wallet(id: -1));
                 },
                 leading: const CircleAvatar(
                   backgroundColor: Colors.black12,

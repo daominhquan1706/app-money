@@ -98,7 +98,7 @@ class MyList extends StatelessWidget {
                 const Text(""),
                 const Spacer(),
                 Text(StringHelper.instance
-                    .getMoneyText(inputAmount - outputAmount))
+                    .getMoneyText(inputAmount + outputAmount))
               ]),
             ),
           ],

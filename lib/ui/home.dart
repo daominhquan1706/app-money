@@ -7,13 +7,12 @@ import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/ui/record_create.dart';
 import 'package:money_app/ui/wallet_list.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
+import 'package:money_app/widgets/empty_page.dart';
 import 'package:money_app/widgets/list.dart';
+import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key key, @required this.listRecord, this.amount})
-      : super(key: key);
-  final List<Record> listRecord;
-  final double amount;
+  const MyHomePage({Key key}) : super(key: key);
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -49,8 +48,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            Record record = await Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => AddRecord()));
+            final Record record = await Navigator.of(context).push<Record>(
+                MaterialPageRoute(builder: (context) => AddRecord()));
             setState(() {
               _homeViewModel.onCreateRecord(record);
             });
@@ -64,7 +63,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             onPressed: () async {
               final Wallet wallet = await Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const WalletList()));
-              HomeViewModel.instance.onPickWallet(wallet);
+              if (wallet != null) {
+                setState(() {
+                  _homeViewModel.onPickWallet(wallet);
+                });
+              }
             },
           ),
           bottom: TabBar(
@@ -79,10 +82,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               "Total",
               style: TextStyle(color: Colors.white54),
             ),
-            subtitle: Text(
-              "${StringHelper.instance.getMoneyText(widget.amount)} đ",
-              style: const TextStyle(color: Colors.white, fontSize: 23),
-            ),
+            subtitle: Consumer<HomeViewModel>(builder: (context, value, child) {
+              return Text(
+                "${StringHelper.instance.getMoneyText(value.amountListRecord)} đ",
+                style: const TextStyle(color: Colors.white, fontSize: 23),
+              );
+            }),
           ),
           actions: [
             PopupMenuButton<String>(
@@ -101,38 +106,26 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             )
           ],
         ),
-        body: widget.listRecord == null
-            ? EmptyPage()
-            : TabBarView(
-                controller: _tabController,
-                children: listMonth.map((e) => getPage(e)).toList(),
-              ),
+        body: Consumer<HomeViewModel>(builder: (context, value, child) {
+          return value.listRecord == null
+              ? EmptyPage()
+              : TabBarView(
+                  controller: _tabController,
+                  children: listMonth
+                      .map((e) => getPage(e, value.listRecord))
+                      .toList(),
+                );
+        }),
       ),
     );
   }
 
-  Widget getPage(DateTime date) {
-    final list = widget.listRecord
+  Widget getPage(DateTime date, List<Record> listRecord) {
+    final list = listRecord
         .where((r) =>
             DateTime(r.createDate.year, r.createDate.month) ==
             DateTime(date.year, date.month))
         .toList();
     return list.isEmpty ? EmptyPage() : MyList(listRecord: list);
-  }
-}
-
-class EmptyPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey.shade200,
-      child: const Center(
-        child: Icon(
-          Icons.note,
-          size: 200,
-          color: Colors.black26,
-        ),
-      ),
-    );
   }
 }

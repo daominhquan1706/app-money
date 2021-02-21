@@ -1,4 +1,3 @@
-import 'package:money_app/model/wallet_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferenceService {
@@ -10,5 +9,9 @@ class SharedPreferenceService {
 
   Future changeWallet(int walletId) async {
     await prefs.setInt('current_walletId', walletId);
+  }
+
+  Future<int> getCurrentWalletId() async {
+    return prefs.getInt("current_walletId");
   }
 }
