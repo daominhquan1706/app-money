@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:money_app/ui/account.dart';
-import 'package:money_app/ui/home.dart';
-import 'package:money_app/ui/report.dart';
-import 'package:money_app/ui/splash_screen.dart';
-import 'package:money_app/view_models/home_viewmodel.dart';
+import 'package:money_app/ui/login_page.dart';
+import 'package:money_app/ui/main_page.dart';
+import 'package:money_app/view_models/login_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -19,84 +17,36 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: ChangeNotifierProvider<HomeViewModel>(
-        create: (context) => HomeViewModel.instance,
-        child: const MainPage(),
+      home: navigateTo(),
+    );
+  }
+
+  Widget navigateTo() {
+    return ChangeNotifierProvider<LoginViewModel>(
+      create: (context) => LoginViewModel.instance,
+      child: Consumer<LoginViewModel>(
+        builder: (context, value, child) {
+          if (value.isLoggedIn == null) {
+            return LoadingPage();
+          } else {
+            if (value.isLoggedIn) {
+              return const MainPage();
+            } else {
+              return LoginPage();
+            }
+          }
+        },
       ),
     );
   }
 }
 
-/// This is the stateful widget that the main application instantiates.
-class MainPage extends StatefulWidget {
-  const MainPage({Key key}) : super(key: key);
-
-  @override
-  _MainPageState createState() => _MainPageState();
-}
-
-/// This is the private State class that goes with MyStatefulWidget.
-class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
-  int _selectedIndex = 0;
-  TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-  }
-
+class LoadingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeViewModel>(
-      builder: (context, value, child) {
-        if (value.listRecord == null) {
-          return SplashScreen();
-        }
-        return _buildMainLayout();
-      },
-    );
-  }
-
-  Widget _buildMainLayout() {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        body: TabBarView(
-          controller: _tabController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            const MyHomePage(),
-            const ReportPage(),
-            AccountPage(),
-          ],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Transaction',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.business),
-              label: 'Report',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle_sharp),
-              label: 'Account',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          unselectedItemColor: Colors.grey,
-          unselectedLabelStyle: const TextStyle(color: Colors.grey),
-          showUnselectedLabels: true,
-          onTap: (index) {
-            setState(() {
-              _selectedIndex = index;
-              _tabController.index = index;
-            });
-          },
-        ),
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }

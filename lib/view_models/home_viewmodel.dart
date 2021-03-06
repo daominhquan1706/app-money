@@ -4,7 +4,6 @@ import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/repository/record_repository.dart';
 import 'package:money_app/repository/wallet_repository.dart';
 import 'package:money_app/services/shared_preference_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeViewModel with ChangeNotifier {
   HomeViewModel() {
@@ -23,7 +22,6 @@ class HomeViewModel with ChangeNotifier {
   void fetchData() {
     getRecord();
     getWallet();
-    setUpSharedPreference();
   }
 
   Future getRecord() async {
@@ -41,11 +39,6 @@ class HomeViewModel with ChangeNotifier {
 
   Future getWallet() async {
     listWallet = await walletRepository.getWallets();
-    notifyListeners();
-  }
-
-  Future setUpSharedPreference() async {
-    prefsService.prefs ??= await SharedPreferences.getInstance();
     notifyListeners();
   }
 
