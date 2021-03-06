@@ -96,4 +96,10 @@ class HomeViewModel with ChangeNotifier {
         ...listRecord.map((e) => e.isAdd ? e.amount : 0 - e.amount),
         0.0,
       ].reduce((a, b) => a + b);
+
+  void deleteRecord(Record record) {
+    listRecord.removeWhere((element) => element.id == record.id);
+    listRecordFull.removeWhere((element) => element.id == record.id);
+    notifyListeners();
+  }
 }

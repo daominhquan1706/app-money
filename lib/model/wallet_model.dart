@@ -8,13 +8,14 @@ class Wallet {
 
   Wallet({this.id, this.name, this.createdDate, this.modifiedDate});
 
-  Wallet.fromJson(Map<String, dynamic> json) {
-    id = json['id'] as int;
-    name = json['name'] as String;
-    createdDate =
-        DateTimeHelper.instance.stringToDate(json['created_date'] as String);
-    modifiedDate =
-        DateTimeHelper.instance.stringToDate(json['modified_date'] as String);
+  factory Wallet.fromJson(Map<String, dynamic> json) {
+    return Wallet(
+        id: json['id'] as int,
+        name: json['name'] as String,
+        createdDate: DateTimeHelper.instance
+            .stringToDate(json['created_date'] as String),
+        modifiedDate: DateTimeHelper.instance
+            .stringToDate(json['modified_date'] as String));
   }
 
   Map<String, dynamic> toJson() {

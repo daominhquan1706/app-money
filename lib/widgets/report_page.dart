@@ -3,33 +3,9 @@ import 'package:money_app/helper/string_helper.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/widgets/pie_chart.dart';
 
-// class ReportBody extends StatefulWidget {
-//   final List<Record> listRecord;
-//
-//   const ReportBody({Key key, @required this.listRecord}) : super(key: key);
-//
-//   @override
-//   _ReportBodyState createState() => _ReportBodyState();
-// }
-//
-// class _ReportBodyState extends State<ReportBody> {
-//   double inputAmount;
-//   double outputAmount;
-//
-//   @override
-//   void initState() {
-//
-//
-//     super.initState();
-//   }
-//
-//
-// }
 class ReportBody extends StatelessWidget {
-  final List<Record> listRecord;
-
   ReportBody({Key key, @required this.listRecord}) : super(key: key);
-
+  final List<Record> listRecord;
   double inputAmount;
   double outputAmount;
   @override
@@ -130,14 +106,9 @@ class ReportBody extends StatelessWidget {
         ((inputAmount / sumAmount) * 100).round().toDouble();
     final double outputPercent = 100 - inputPercent;
     return Card(
-      color: Colors.white,
-      child: Column(
-        children: [
-          PieChartSample3(
-            inputAmount: inputPercent,
-            outputAmount: outputPercent,
-          ),
-        ],
+      child: PieChartSample3(
+        inputAmount: inputPercent,
+        outputAmount: outputPercent,
       ),
     );
   }

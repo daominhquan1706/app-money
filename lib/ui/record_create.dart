@@ -191,29 +191,34 @@ class _AddRecordState extends State<AddRecord> {
 
   Future _selectWallet(BuildContext context) async {
     final Wallet wallet = await showDialog(
-        context: context,
-        child: SimpleDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
           title: const Text("Pick Wallet"),
           children: _homeViewModel.listWallet.isNotEmpty
-              ? _homeViewModel.listWallet.map((e) {
-                  return Card(
-                    child: ListTile(
-                      title: Text(e.name),
-                      leading: const Icon(Icons.account_balance_wallet),
-                      onTap: () {
-                        Navigator.of(context).pop<Wallet>(e);
-                      },
-                      trailing: _wallet?.id == e.id
-                          ? const Icon(
-                              Icons.check_circle,
-                              color: Colors.green,
-                            )
-                          : const SizedBox.shrink(),
-                    ),
-                  );
-                }).toList()
+              ? _homeViewModel.listWallet.map(
+                  (e) {
+                    return Card(
+                      child: ListTile(
+                        title: Text(e.name),
+                        leading: const Icon(Icons.account_balance_wallet),
+                        onTap: () {
+                          Navigator.of(context).pop<Wallet>(e);
+                        },
+                        trailing: _wallet?.id == e.id
+                            ? const Icon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    );
+                  },
+                ).toList()
               : [const Text("Dont you dont have wallet")],
-        ));
+        );
+      },
+    );
     if (wallet == null) {
       return;
     }

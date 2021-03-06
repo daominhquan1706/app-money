@@ -19,3 +19,9 @@ extension HomeMenuExtension on HomeMenu {
 List<HomeMenu> get listHomeMenu {
   return [HomeMenu.search, HomeMenu.signOut];
 }
+
+// ignore: avoid_classes_with_only_static_members
+class ApiURL {
+  static String listWallets = "wallets";
+  static String listRecord = "records";
+}

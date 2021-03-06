@@ -1,7 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 /// Icons by svgrepo.com (https://www.svgrepo.com/collection/job-and-professions-3/)
 class PieChartSample3 extends StatefulWidget {
@@ -23,8 +22,8 @@ class PieChartSample3State extends State<PieChartSample3> {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1.3,
+    return SizedBox(
+      height: 300,
       child: AspectRatio(
         aspectRatio: 1,
         child: PieChart(
@@ -136,8 +135,8 @@ class _Badge extends StatelessWidget {
         ],
       ),
       padding: EdgeInsets.all(size * .15),
-      child: Center(
-        child: SvgPicture.network(svgAsset),
+      child: const Center(
+        child: FlutterLogo(),
       ),
     );
   }

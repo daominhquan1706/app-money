@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_app/helper/string_helper.dart';
 import 'package:money_app/model/record_model.dart';
+import 'package:money_app/view_models/home_viewmodel.dart';
 
 class DetailsRecord extends StatefulWidget {
   final Record record;
@@ -13,15 +14,52 @@ class DetailsRecord extends StatefulWidget {
 }
 
 class _DetailsRecordState extends State<DetailsRecord> {
+  final HomeViewModel _homeViewModel = HomeViewModel.instance;
+
   @override
   Widget build(BuildContext context) {
     final record = widget.record;
     return Scaffold(
       appBar: AppBar(
+        title: const Text("Detail of Record"),
         actions: [
           //IconButton(icon: const Icon(Icons.share), onPressed: () {}),
           IconButton(icon: const Icon(Icons.edit), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.delete), onPressed: () {}),
+          IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () async {
+                final dynamic isAccept = await showDialog(
+                  context: context, builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("Do you want to Delete this Record"),
+                      actions: [
+                        RaisedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(false);
+                          },
+                          color: Colors.grey,
+                          child: const Text(
+                            "Cancel",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(true);
+                          },
+                          //color: Colors.redAccent,
+                          child: const Text("Delete"),
+                        ),
+                      ],
+                    );
+                },
+                );
+
+                if (isAccept is bool && isAccept) {
+                  _homeViewModel.deleteRecord(widget.record);
+                  Navigator.pop(context);
+                }
+              }),
         ],
       ),
       body: Card(
