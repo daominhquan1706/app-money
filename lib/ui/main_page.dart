@@ -27,10 +27,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<HomeViewModel>(
-      create: (context) => HomeViewModel.instance,
-      child: _buildHomePage(),
-    );
+    return _buildHomePage();
   }
 
   Widget _buildHomePage() {

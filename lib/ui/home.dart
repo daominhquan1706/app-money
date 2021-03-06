@@ -7,6 +7,7 @@ import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/ui/record_create.dart';
 import 'package:money_app/ui/wallet_list.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
+import 'package:money_app/view_models/login_viewmodel.dart';
 import 'package:money_app/widgets/empty_page.dart';
 import 'package:money_app/widgets/list.dart';
 import 'package:provider/provider.dart';
@@ -96,12 +97,19 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                     .map(
                       (e) => PopupMenuItem<String>(
                         child: Text(e.name),
+                        value: e.name,
                       ),
                     )
                     .toList();
               },
               onSelected: (text) {
-                print(text);
+                switch (text) {
+                  case "Sign Out":
+                    LoginViewModel.instance.logout();
+                    break;
+                  default:
+                    break;
+                }
               },
             )
           ],

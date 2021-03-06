@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_app/ui/login_page.dart';
 import 'package:money_app/ui/main_page.dart';
+import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:money_app/view_models/login_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -17,26 +18,31 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: navigateTo(),
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider<LoginViewModel>(
+              create: (_) => LoginViewModel.instance),
+          ChangeNotifierProvider<HomeViewModel>(
+              create: (_) => HomeViewModel.instance),
+        ],
+        child: navigateTo(),
+      ),
     );
   }
 
   Widget navigateTo() {
-    return ChangeNotifierProvider<LoginViewModel>(
-      create: (context) => LoginViewModel.instance,
-      child: Consumer<LoginViewModel>(
-        builder: (context, value, child) {
-          if (value.isLoggedIn == null) {
-            return LoadingPage();
+    return Consumer<LoginViewModel>(
+      builder: (context, value, child) {
+        if (value.isLoggedIn == null) {
+          return LoadingPage();
+        } else {
+          if (value.isLoggedIn) {
+            return const MainPage();
           } else {
-            if (value.isLoggedIn) {
-              return const MainPage();
-            } else {
-              return LoginPage();
-            }
+            return LoginPage();
           }
-        },
-      ),
+        }
+      },
     );
   }
 }
