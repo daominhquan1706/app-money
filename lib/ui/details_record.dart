@@ -29,15 +29,26 @@ class _DetailsRecordState extends State<DetailsRecord> {
               icon: const Icon(Icons.delete),
               onPressed: () async {
                 final dynamic isAccept = await showDialog(
-                  context: context, builder: (BuildContext context) {
+                  context: context,
+                  builder: (BuildContext context) {
                     return AlertDialog(
                       title: Text("Do you want to Delete this Record"),
                       actions: [
-                        RaisedButton(
+                        ElevatedButton(
                           onPressed: () {
                             Navigator.of(context).pop(false);
                           },
-                          color: Colors.grey,
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.pressed)) {
+                                  return Colors.green;
+                                }
+                                return null; // Use the component's default.
+                              },
+                            ),
+                          ),
                           child: const Text(
                             "Cancel",
                             style: TextStyle(color: Colors.white),
@@ -52,7 +63,7 @@ class _DetailsRecordState extends State<DetailsRecord> {
                         ),
                       ],
                     );
-                },
+                  },
                 );
 
                 if (isAccept is bool && isAccept) {

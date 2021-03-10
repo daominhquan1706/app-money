@@ -25,11 +25,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     _tabController = TabController(length: 3, vsync: this);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return _buildHomePage();
-  }
-
   Widget _buildHomePage() {
     return Consumer<HomeViewModel>(
       builder: (context, value, child) {
@@ -72,7 +67,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           currentIndex: _selectedIndex,
           unselectedItemColor: Colors.grey,
           unselectedLabelStyle: const TextStyle(color: Colors.grey),
-          showUnselectedLabels: true,
+          //showUnselectedLabels: true,
           onTap: (index) {
             setState(() {
               _selectedIndex = index;
@@ -82,5 +77,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildHomePage();
   }
 }

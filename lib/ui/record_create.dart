@@ -13,14 +13,11 @@ class AddRecord extends StatefulWidget {
 class _AddRecordState extends State<AddRecord> {
   double _amount;
   DateTime _date;
-  String _title;
-  String _note;
-  Wallet _wallet = HomeViewModel.instance.currentWallet;
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  FormState get _formState => _formKey.currentState;
   HomeViewModel _homeViewModel = HomeViewModel.instance;
+  String _note;
+  String _title;
+  Wallet _wallet = HomeViewModel.instance.currentWallet;
 
   @override
   void initState() {
@@ -28,55 +25,7 @@ class _AddRecordState extends State<AddRecord> {
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final scaffold = Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: const Text(
-          "Create Record",
-        ),
-        actions: [
-          FlatButton(
-            onPressed: () {
-              if (_formState.validate()) {
-                _formState.save();
-                final Record record = Record(
-                  createDate: DateTime.now(),
-                  amount: _amount,
-                  title: _title,
-                  isAdd: _amount >= 0,
-                  walletId: _wallet.id,
-                  note: _note,
-                );
-                Navigator.of(context).pop<Record>(record);
-              }
-            },
-            child: const Text(
-              "Add",
-              style: TextStyle(color: Colors.white),
-            ),
-          )
-        ],
-      ),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              _buildAmount(),
-              _buildTitle(),
-              _buildNote(),
-              _buildDate(),
-              _buildWallet(),
-            ],
-          ),
-        ),
-      ),
-    );
-    return scaffold;
-  }
+  FormState get _formState => _formKey.currentState;
 
   Widget _buildAmount() {
     return TextFormField(
@@ -144,7 +93,7 @@ class _AddRecordState extends State<AddRecord> {
         ),
         Expanded(
           flex: 3,
-          child: RaisedButton(
+          child: ElevatedButton(
             onPressed: () {
               _selectDate(context);
             },
@@ -164,7 +113,7 @@ class _AddRecordState extends State<AddRecord> {
         ),
         Expanded(
           flex: 3,
-          child: RaisedButton(
+          child: ElevatedButton(
             onPressed: () {
               _selectWallet(context);
             },
@@ -225,5 +174,55 @@ class _AddRecordState extends State<AddRecord> {
     setState(() {
       _wallet = wallet;
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scaffold = Scaffold(
+      appBar: AppBar(
+        centerTitle: false,
+        title: const Text(
+          "Create Record",
+        ),
+        actions: [
+          FlatButton(
+            onPressed: () {
+              if (_formState.validate()) {
+                _formState.save();
+                final Record record = Record(
+                  createDate: DateTime.now(),
+                  amount: _amount,
+                  title: _title,
+                  isAdd: _amount >= 0,
+                  walletId: _wallet.id,
+                  note: _note,
+                );
+                Navigator.of(context).pop<Record>(record);
+              }
+            },
+            child: const Text(
+              "Add",
+              style: TextStyle(color: Colors.white),
+            ),
+          )
+        ],
+      ),
+      body: Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              _buildAmount(),
+              _buildTitle(),
+              _buildNote(),
+              _buildDate(),
+              _buildWallet(),
+            ],
+          ),
+        ),
+      ),
+    );
+    return scaffold;
   }
 }

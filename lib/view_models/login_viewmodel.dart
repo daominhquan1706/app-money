@@ -32,11 +32,16 @@ class LoginViewModel with ChangeNotifier {
     });
   }
 
-  void login() {
-    print("Login");
-    isLoggedIn = true;
-    user = User(id: 1, name: "aasdfaf");
-    notifyListeners();
+  Future<String> login(
+      {@required String userName, @required String password}) async {
+    await Future.delayed(const Duration(microseconds: 1));
+    if (userName == "123" && password == "123") {
+      isLoggedIn = true;
+      user = User(id: 1, name: "aasdfaf");
+      notifyListeners();
+    } else {
+      return "Login fail";
+    }
   }
 
   void logout() {
