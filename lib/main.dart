@@ -33,15 +33,10 @@ class MyApp extends StatelessWidget {
   Widget navigateTo() {
     return Consumer<LoginViewModel>(
       builder: (context, value, child) {
-        if (value.isLoggedIn == null) {
-          return LoadingPage();
-        } else {
-          if (value.isLoggedIn) {
-            return const MainPage();
-          } else {
-            return LoginPage();
-          }
+        if (value.isLoggedIn != null && value.isLoggedIn) {
+          return const MainPage();
         }
+        return LoginPage();
       },
     );
   }

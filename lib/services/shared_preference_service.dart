@@ -10,6 +10,27 @@ class SharedPreferenceService {
 
   SharedPreferences prefs;
 
+  Future saveUser(User user) async {
+    if (user == null) {
+      await prefs.setString('user', null);
+      return;
+    }
+    prefs ??= await SharedPreferences.getInstance();
+    final strUser = jsonEncode(user.toJson());
+    await prefs.setString('user', strUser);
+  }
+
+  Future<User> getUser() async {
+    prefs ??= await SharedPreferences.getInstance();
+    var strUser = prefs.getString('user');
+    print(strUser);
+    if (strUser != null) {
+      final json = jsonDecode(strUser) as Map<String, dynamic>;
+      return User.fromJson(json);
+    }
+    return null;
+  }
+
   Future changeWallet(int walletId) async {
     prefs ??= await SharedPreferences.getInstance();
     await prefs.setInt('current_walletId', walletId);
@@ -18,14 +39,5 @@ class SharedPreferenceService {
   Future<int> getCurrentWalletId() async {
     prefs ??= await SharedPreferences.getInstance();
     return prefs.getInt("current_walletId");
-  }
-
-  Future<User> getCurrentUser() async {
-    prefs ??= await SharedPreferences.getInstance();
-    final user = prefs.getString("user");
-    if (user == null) {
-      return null;
-    }
-    return User.fromJson(jsonDecode(user) as Map<String, dynamic>);
   }
 }

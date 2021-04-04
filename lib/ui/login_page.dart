@@ -7,8 +7,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController _userNameTEC = TextEditingController();
-  TextEditingController _passwordTEC = TextEditingController();
+  final TextEditingController _passwordTEC = TextEditingController();
+  final TextEditingController _userNameTEC = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +17,13 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Login Page"),
+            const Text("Login Page"),
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
               child: TextFormField(
                 controller: _userNameTEC,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: "Username",
                 ),
@@ -35,33 +35,33 @@ class _LoginPageState extends State<LoginPage> {
               child: TextFormField(
                 controller: _passwordTEC,
                 obscureText: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: "Password",
                 ),
               ),
             ),
-            ElevatedButton(
+            expandButton(
+              text: "Login",
               onPressed: () {
                 LoginViewModel.instance
                     .login(
-                  userName: _userNameTEC.text,
-                  password: _passwordTEC.text,
-                )
+                        username: _userNameTEC.text,
+                        password: _passwordTEC.text)
                     .then((String value) {
                   if (value != null) {
                     showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: Text("fail"),
+                          title: const Text("fail"),
                           content: Text(value),
                           actions: [
                             ElevatedButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: Text("OK"))
+                                child: const Text("OK"))
                           ],
                         );
                       },
@@ -69,10 +69,49 @@ class _LoginPageState extends State<LoginPage> {
                   }
                 });
               },
-              child: Text("Login"),
+            ),
+            expandButton(
+              text: "Register",
+              onPressed: () {
+                LoginViewModel.instance
+                    .register(
+                        username: _userNameTEC.text,
+                        password: _passwordTEC.text)
+                    .then((String value) {
+                  if (value != null) {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text("fail"),
+                          content: Text(value),
+                          actions: [
+                            ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text("OK"))
+                          ],
+                        );
+                      },
+                    );
+                  }
+                });
+              },
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget expandButton({String text, VoidCallback onPressed}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        child: Text(text ?? ""),
       ),
     );
   }
