@@ -25,6 +25,8 @@ class ApiURL {
   //wallet
   static String listWallets = "wallet/list";
   static String createWallet = "wallet/create";
+  static String listTypeRecordOfWallet = "wallet/listTypeRecordOfWallet";
+
   //record
   static String listRecord = "records/list";
   static String listRecordByUserId = "record/listByUserId";

@@ -79,7 +79,6 @@ class HomeViewModel with ChangeNotifier {
     if (result != null) {
       record.id = result["record_id"] as int;
       listRecordFull.add(record);
-      onPickWallet(currentWallet);
       notifyListeners();
       return "SUCCESS";
     } else {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:money_app/ui/login_page.dart';
 import 'package:money_app/ui/main_page.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
@@ -7,6 +8,13 @@ import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
+  configLoading();
+}
+
+void configLoading() {
+  EasyLoading.instance
+    ..userInteractions = true
+    ..dismissOnTap = false;
 }
 
 class MyApp extends StatelessWidget {
@@ -27,6 +35,7 @@ class MyApp extends StatelessWidget {
         ],
         child: navigateTo(),
       ),
+      builder: EasyLoading.init(),
     );
   }
 

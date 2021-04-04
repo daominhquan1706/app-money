@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:money_app/model/record_model.dart';
+import 'package:money_app/model/type_record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
+import 'package:money_app/view_models/record_create_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class AddRecord extends StatefulWidget {
   @override
@@ -11,21 +14,81 @@ class AddRecord extends StatefulWidget {
 }
 
 class _AddRecordState extends State<AddRecord> {
-  double _amount;
-  DateTime _date;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final RecordCreateViewModel _viewModel = RecordCreateViewModel();
   final HomeViewModel _homeViewModel = HomeViewModel.instance;
-  String _note;
-  String _title;
-  Wallet _wallet = HomeViewModel.instance.currentWallet;
 
   @override
   void initState() {
-    _date = DateTime.now();
     super.initState();
   }
 
   FormState get _formState => _formKey.currentState;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: false,
+        title: const Text(
+          "Create Record",
+        ),
+        actions: [
+          FlatButton(
+            onPressed: () async {
+              if (_formState.validate()) {
+                _formState.save();
+                final Record record = Record(
+                  createDate: DateTime.now(),
+                  amount: _viewModel.amount,
+                  title: _viewModel.title,
+                  isAdd: _viewModel.amount >= 0,
+                  walletId: _viewModel.wallet.id,
+                  typeRecordId: _viewModel.typeRecord.id,
+                  note: _viewModel.note,
+                  date: _viewModel.date,
+                );
+                final success = await _homeViewModel.onCreateRecord(record);
+                if (success == "SUCCESS") {
+                  Navigator.of(context).pop();
+                } else {
+                  final snackBar = SnackBar(content: Text(success ?? "FAIL"));
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
+              }
+            },
+            child: const Text(
+              "Add",
+              style: TextStyle(color: Colors.white),
+            ),
+          )
+        ],
+      ),
+      body: Form(
+        key: _formKey,
+        child: ChangeNotifierProvider<RecordCreateViewModel>(
+          create: (_) => _viewModel,
+          child: Consumer<RecordCreateViewModel>(
+            builder: (context, viewModel, child) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    _buildAmount(),
+                    _buildTitle(),
+                    _buildNote(),
+                    _buildDate(),
+                    _buildWallet(),
+                    _buildTypeRecord(),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _buildAmount() {
     return TextFormField(
@@ -46,7 +109,7 @@ class _AddRecordState extends State<AddRecord> {
         return null;
       },
       onSaved: (String value) {
-        _amount = double.parse(value);
+        _viewModel.amount = double.parse(value);
       },
     );
   }
@@ -64,7 +127,7 @@ class _AddRecordState extends State<AddRecord> {
         return null;
       },
       onSaved: (String value) {
-        _title = value;
+        _viewModel.title = value;
       },
     );
   }
@@ -79,7 +142,7 @@ class _AddRecordState extends State<AddRecord> {
         return null;
       },
       onSaved: (String value) {
-        _note = value;
+        _viewModel.note = value;
       },
     );
   }
@@ -94,10 +157,20 @@ class _AddRecordState extends State<AddRecord> {
         Expanded(
           flex: 3,
           child: ElevatedButton(
-            onPressed: () {
-              _selectDate(context);
+            onPressed: () async {
+              final DateTime picked = await showDatePicker(
+                context: context,
+                initialDate: _viewModel.date,
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2025),
+              );
+              if (picked != null && picked != _viewModel.date) {
+                setState(() {
+                  _viewModel.date = picked;
+                });
+              }
             },
-            child: Text(DateFormat('dd-MM-yyyy').format(_date)),
+            child: Text(DateFormat('dd-MM-yyyy').format(_viewModel.date)),
           ),
         )
       ],
@@ -117,25 +190,35 @@ class _AddRecordState extends State<AddRecord> {
             onPressed: () {
               _selectWallet(context);
             },
-            child: Text(_wallet != null ? _wallet.name : "Please Pick Wallet"),
+            child: Text(_viewModel.wallet != null
+                ? _viewModel.wallet.name
+                : "Please Pick Wallet"),
           ),
         )
       ],
     );
   }
 
-  Future _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-      context: context,
-      initialDate: _date,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
+  Widget _buildTypeRecord() {
+    return Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: const Text("Type Record :   "),
+        ),
+        Expanded(
+          flex: 3,
+          child: ElevatedButton(
+            onPressed: () {
+              _selectTypeRecord(context);
+            },
+            child: Text(_viewModel.typeRecord != null
+                ? _viewModel.typeRecord.name
+                : "Type Record"),
+          ),
+        )
+      ],
     );
-    if (picked != null && picked != _date) {
-      setState(() {
-        _date = picked;
-      });
-    }
   }
 
   Future _selectWallet(BuildContext context) async {
@@ -144,17 +227,17 @@ class _AddRecordState extends State<AddRecord> {
       builder: (BuildContext context) {
         return SimpleDialog(
           title: const Text("Pick Wallet"),
-          children: _homeViewModel.listWallet.isNotEmpty
-              ? _homeViewModel.listWallet.map(
-                  (e) {
+          children: _viewModel.listWallet.isNotEmpty
+              ? _viewModel.listWallet.map(
+                  (wallet) {
                     return Card(
                       child: ListTile(
-                        title: Text(e.name),
+                        title: Text(wallet.name),
                         leading: const Icon(Icons.account_balance_wallet),
                         onTap: () {
-                          Navigator.of(context).pop<Wallet>(e);
+                          Navigator.of(context).pop<Wallet>(wallet);
                         },
-                        trailing: _wallet?.id == e.id
+                        trailing: _viewModel.wallet?.id == wallet.id
                             ? const Icon(
                                 Icons.check_circle,
                                 color: Colors.green,
@@ -171,64 +254,42 @@ class _AddRecordState extends State<AddRecord> {
     if (wallet == null) {
       return;
     }
-    setState(() {
-      _wallet = wallet;
-    });
+    _viewModel.onPickWallet(wallet);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final scaffold = Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: const Text(
-          "Create Record",
-        ),
-        actions: [
-          FlatButton(
-            onPressed: () async {
-              if (_formState.validate()) {
-                _formState.save();
-                final Record record = Record(
-                  createDate: DateTime.now(),
-                  amount: _amount,
-                  title: _title,
-                  isAdd: _amount >= 0,
-                  walletId: _wallet.id,
-                  note: _note,
-                );
-                final success = await _homeViewModel.onCreateRecord(record);
-                if (success == "SUCCESS") {
-                  Navigator.of(context).pop();
-                } else {
-                  final snackBar = SnackBar(content: Text(success ?? "FAIL"));
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                }
-              }
-            },
-            child: const Text(
-              "Add",
-              style: TextStyle(color: Colors.white),
-            ),
-          )
-        ],
-      ),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              _buildAmount(),
-              _buildTitle(),
-              _buildNote(),
-              _buildDate(),
-              _buildWallet(),
-            ],
-          ),
-        ),
-      ),
+  Future _selectTypeRecord(BuildContext context) async {
+    final TypeRecord typeRecord = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text("Pick Type Record"),
+          children: _viewModel.listTypeRecord.isNotEmpty
+              ? _viewModel.listTypeRecord.map(
+                  (typeRecord) {
+                    return Card(
+                      child: ListTile(
+                        title: Text(typeRecord.name),
+                        leading: const Icon(Icons.account_balance_wallet),
+                        onTap: () {
+                          Navigator.of(context).pop<TypeRecord>(typeRecord);
+                        },
+                        trailing: _viewModel.typeRecord?.id == typeRecord.id
+                            ? const Icon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    );
+                  },
+                ).toList()
+              : [const Text("Dont you dont have wallet")],
+        );
+      },
     );
-    return scaffold;
+    if (typeRecord == null) {
+      return;
+    }
+    _viewModel.onPickTypeRecord(typeRecord);
   }
 }

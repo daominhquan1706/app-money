@@ -58,7 +58,7 @@ class Record {
     // "amount": 100000,
     // "wallet_id": 10,
     // "typeRecord_id": 1
-    data["date"] = date;
+    data["date"] = DateTimeHelper.instance.dateToString(date);
     data["title"] = title;
     data["note"] = note;
     data["amount"] = amount;
