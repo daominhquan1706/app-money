@@ -1,4 +1,4 @@
-import 'package:intl/intl.dart';
+import 'package:money_app/helper/datetime_helper.dart';
 
 class Record {
   int id;
@@ -24,7 +24,9 @@ class Record {
   Record.fromJson(Map<String, dynamic> json) {
     id = json['id'] as int;
     //"10/03/2019",
-    createDate = DateFormat("M/d/yyyy").parse(json['createDate'] as String);
+    //2021-04-04T08:26:03
+    createDate =
+        DateTimeHelper.instance.stringToDate(json['created_date'] as String);
     title = json['title'] as String;
     note = json['note'] as String;
     amount = double.parse(json['amount'].toString());
@@ -35,7 +37,7 @@ class Record {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
-    data['createDate'] = createDate;
+    data['created_date'] = createDate;
     data['title'] = title;
     data['note'] = note;
     data['amount'] = amount;

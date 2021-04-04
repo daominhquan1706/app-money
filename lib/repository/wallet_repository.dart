@@ -12,10 +12,8 @@ class WalletRepository {
     final user = await SharedPreferenceService.instance.getUser();
     if (user != null) {
       final params = {"userId": user.id.toString()};
-      final data = await ApiService.instance.get(
-        ApiURL.listWallets,
-        params: params,
-      );
+      final data =
+          await ApiService.instance.get(ApiURL.listWallets, params: params);
       final listRecord =
           (data["result"] as Map<String, dynamic>)["list_wallet"];
       final list = (listRecord as List)

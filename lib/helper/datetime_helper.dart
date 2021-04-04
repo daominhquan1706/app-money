@@ -5,6 +5,6 @@ class DateTimeHelper {
   static final DateTimeHelper instance = DateTimeHelper._privateConstructor();
 
   DateTime stringToDate(String str) {
-    return DateFormat("M/d/yyyy").parse(str);
+    return DateFormat("yyyy-MM-ddThh:mm:ss").parse(str);
   }
 }
