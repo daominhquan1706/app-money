@@ -5,6 +5,7 @@ class Wallet {
   String name;
   DateTime createdDate;
   DateTime modifiedDate;
+  int userId;
 
   Wallet({this.id, this.name, this.createdDate, this.modifiedDate});
 
@@ -24,6 +25,13 @@ class Wallet {
     data['wallet_name'] = name;
     data['created_date'] = createdDate;
     data['modified_date'] = modifiedDate;
+    return data;
+  }
+
+  Map<String, dynamic> toCreateJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['user_id'] = userId;
+    data['wallet_name'] = name;
     return data;
   }
 }

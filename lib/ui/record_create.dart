@@ -14,7 +14,7 @@ class _AddRecordState extends State<AddRecord> {
   double _amount;
   DateTime _date;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  HomeViewModel _homeViewModel = HomeViewModel.instance;
+  final HomeViewModel _homeViewModel = HomeViewModel.instance;
   String _note;
   String _title;
   Wallet _wallet = HomeViewModel.instance.currentWallet;
@@ -186,7 +186,7 @@ class _AddRecordState extends State<AddRecord> {
         ),
         actions: [
           FlatButton(
-            onPressed: () {
+            onPressed: () async {
               if (_formState.validate()) {
                 _formState.save();
                 final Record record = Record(
@@ -197,7 +197,13 @@ class _AddRecordState extends State<AddRecord> {
                   walletId: _wallet.id,
                   note: _note,
                 );
-                Navigator.of(context).pop<Record>(record);
+                final success = await _homeViewModel.onCreateRecord(record);
+                if (success == "SUCCESS") {
+                  Navigator.of(context).pop();
+                } else {
+                  final snackBar = SnackBar(content: Text(success ?? "FAIL"));
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
               }
             },
             child: const Text(

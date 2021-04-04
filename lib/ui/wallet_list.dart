@@ -48,11 +48,8 @@ class _WalletListState extends State<WalletList> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final Wallet wallet = await Navigator.of(context).push(
+          Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => WalletCreatePage()));
-          setState(() {
-            _homeViewModel.onCreateWallet(wallet);
-          });
         },
         child: const Icon(Icons.add),
       ),

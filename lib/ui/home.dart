@@ -51,9 +51,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           onPressed: () async {
             final Record record = await Navigator.of(context).push<Record>(
                 MaterialPageRoute(builder: (context) => AddRecord()));
-            setState(() {
-              _homeViewModel.onCreateRecord(record);
-            });
           },
           child: const Icon(Icons.add),
         ),

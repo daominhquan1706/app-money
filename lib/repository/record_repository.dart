@@ -25,4 +25,11 @@ class RecordRepository {
 
     return [];
   }
+
+  Future<Map<String, dynamic>> createRecord(Record record) async {
+    final body = record.toCreateJson();
+    final data =
+        await ApiService.instance.post(ApiURL.createRecord, body: body);
+    return data["result"] as Map<String, dynamic>;
+  }
 }

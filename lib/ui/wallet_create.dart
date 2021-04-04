@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:money_app/model/wallet_model.dart';
+import 'package:money_app/view_models/home_viewmodel.dart';
 
 class WalletCreatePage extends StatefulWidget {
   @override
@@ -9,6 +10,7 @@ class WalletCreatePage extends StatefulWidget {
 
 class _WalletCreatePageState extends State<WalletCreatePage> {
   String _title;
+  final HomeViewModel _homeViewModel = HomeViewModel.instance;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   FormState get _formState => _formKey.currentState;
@@ -28,14 +30,21 @@ class _WalletCreatePageState extends State<WalletCreatePage> {
         ),
         actions: [
           FlatButton(
-            onPressed: () {
+            onPressed: () async {
               if (_formState.validate()) {
                 _formState.save();
                 final Wallet wallet = Wallet(
                   name: _title,
                   createdDate: DateTime.now(),
                 );
-                Navigator.of(context).pop(wallet);
+
+                final message = await _homeViewModel.onCreateWallet(wallet);
+                if (message == "SUCCESS") {
+                  Navigator.of(context).pop();
+                } else {
+                  final snackBar = SnackBar(content: Text(message ?? "FAIL"));
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
               }
             },
             child: const Text(

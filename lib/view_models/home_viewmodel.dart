@@ -56,33 +56,35 @@ class HomeViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void onCreateWallet(Wallet wallet) {
+  Future<String> onCreateWallet(Wallet wallet) async {
     if (wallet == null) {
-      return;
+      return "Wallet not null";
     }
-    int id = 0;
-    final listId = listWallet.map((e) => e.id ?? 0).toList();
-    while (listId.contains(id)) {
-      id++;
+    final result = await walletRepository.createWallet(wallet);
+    if (result != null) {
+      wallet.id = result["wallet_id"] as int;
+      listWallet.insert(0, wallet);
+      notifyListeners();
+      return "SUCCESS";
+    } else {
+      return "result not be null";
     }
-    wallet.id = id;
-    listWallet.add(wallet);
-    notifyListeners();
   }
 
-  void onCreateRecord(Record record) {
+  Future<String> onCreateRecord(Record record) async {
     if (record == null) {
-      return;
+      return "record not be null";
     }
-    int id = 0;
-    final listId = listRecord.map((e) => e.id ?? 0).toList();
-    while (listId.contains(id)) {
-      id++;
+    final result = await recordRepository.createRecord(record);
+    if (result != null) {
+      record.id = result["record_id"] as int;
+      listRecordFull.add(record);
+      onPickWallet(currentWallet);
+      notifyListeners();
+      return "SUCCESS";
+    } else {
+      return "result not be null";
     }
-    record.id = id;
-    listRecordFull.add(record);
-    onPickWallet(currentWallet);
-    notifyListeners();
   }
 
   double get amountListRecord => [

@@ -24,4 +24,14 @@ class WalletRepository {
     }
     return null;
   }
+
+  Future<Map<String, dynamic>> createWallet(Wallet wallet) async {
+    final user = await SharedPreferenceService.instance.getUser();
+    wallet.userId = user.id;
+    final body = wallet.toCreateJson();
+    final data =
+        await ApiService.instance.post(ApiURL.createWallet, body: body);
+
+    return data["result"] as Map<String, dynamic>;
+  }
 }

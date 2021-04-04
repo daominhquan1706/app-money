@@ -22,9 +22,15 @@ List<HomeMenu> get listHomeMenu {
 
 // ignore: avoid_classes_with_only_static_members
 class ApiURL {
+  //wallet
   static String listWallets = "wallet/list";
+  static String createWallet = "wallet/create";
+  //record
   static String listRecord = "records/list";
   static String listRecordByUserId = "record/listByUserId";
+  static String createRecord = "record/create";
+
+  //user
   static String login = "user/login";
   static String register = "user/signup";
 }
