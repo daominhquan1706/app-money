@@ -11,9 +11,9 @@ class HomeViewModel with ChangeNotifier {
   }
 
   static final HomeViewModel instance = HomeViewModel();
-  List<Record> listRecordFull;
-  List<Record> listRecord;
-  List<Wallet> listWallet;
+  List<Record> listRecordFull = [];
+  List<Record> listRecord = [];
+  List<Wallet> listWallet = [];
   final RecordRepository recordRepository = RecordRepository.instance;
   final WalletRepository walletRepository = WalletRepository.instance;
   Wallet currentWallet;

@@ -14,9 +14,9 @@ class Wallet {
         id: json['id'] as int,
         name: json['wallet_name'] as String,
         createdDate: DateTimeHelper.instance
-            .stringToDate(json['created_date'] as String),
+            .listIntToDate((json['created_date'] as List).map((s) => s as int).toList()),
         modifiedDate: DateTimeHelper.instance
-            .stringToDate(json['modified_date'] as String));
+            .listIntToDate((json['modified_date'] as List).map((s) => s as int).toList()));
   }
 
   Map<String, dynamic> toJson() {
