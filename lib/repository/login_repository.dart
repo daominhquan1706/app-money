@@ -18,6 +18,7 @@ class LoginRepository {
     final data = await ApiService.instance.post(ApiURL.register, body: {
       "user_name": username,
       "password": password,
+      "confirm_password": password,
     });
     return data;
   }

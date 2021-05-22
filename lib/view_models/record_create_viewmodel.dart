@@ -28,7 +28,7 @@ class RecordCreateViewModel with ChangeNotifier {
   SharedPreferenceService prefsService = SharedPreferenceService.instance;
 
   void fetchData() {
-    listWallet = HomeViewModel.instance.listWallet;
+    listWallet = HomeViewModel.instance.listWallet ?? [];
     date = DateTime.now();
     setWallet(HomeViewModel.instance.currentWallet);
     notifyListeners();
@@ -52,7 +52,7 @@ class RecordCreateViewModel with ChangeNotifier {
 
   Future getListTypeRecord(int walletId) async {
     final result = await walletRepository.listTypeRecord(walletId);
-    listTypeRecord = result;
+    listTypeRecord = result ?? [];
     notifyListeners();
   }
 

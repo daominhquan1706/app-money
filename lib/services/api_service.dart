@@ -24,7 +24,7 @@ class ApiService {
       }
     } catch (e) {
       EasyLoading.dismiss();
-      throw Exception(e);
+      //throw Exception(e);
     }
   }
 
