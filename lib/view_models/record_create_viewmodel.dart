@@ -60,4 +60,8 @@ class RecordCreateViewModel with ChangeNotifier {
     typeRecord = t;
     notifyListeners();
   }
+
+  String get dateString {
+    return date.toString().split(" ").first;
+  }
 }

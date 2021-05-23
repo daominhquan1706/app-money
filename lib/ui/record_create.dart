@@ -1,11 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/model/type_record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:money_app/view_models/record_create_viewmodel.dart';
+import 'package:money_app/widgets/custom_input_field.dart';
 import 'package:provider/provider.dart';
 
 class AddRecord extends StatefulWidget {
@@ -17,10 +17,15 @@ class _AddRecordState extends State<AddRecord> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final RecordCreateViewModel _viewModel = RecordCreateViewModel();
   final HomeViewModel _homeViewModel = HomeViewModel.instance;
+  final TextEditingController _dateTextController = TextEditingController();
+  final TextEditingController _walletTextController = TextEditingController();
+  final TextEditingController _typeRecordTextController =
+      TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    _dateTextController.text = _viewModel.dateString;
   }
 
   FormState get _formState => _formKey.currentState;
@@ -91,12 +96,8 @@ class _AddRecordState extends State<AddRecord> {
   }
 
   Widget _buildAmount() {
-    return TextFormField(
-      decoration: const InputDecoration(labelText: "Amount"),
-      inputFormatters: <TextInputFormatter>[
-        FilteringTextInputFormatter.digitsOnly
-      ],
-      keyboardType: TextInputType.number,
+    return CustomInputField(
+      inputType: InputType.amount,
       validator: (String value) {
         if (value.isEmpty) {
           return 'Amount isRequired';
@@ -115,11 +116,8 @@ class _AddRecordState extends State<AddRecord> {
   }
 
   Widget _buildTitle() {
-    return TextFormField(
-      decoration: const InputDecoration(labelText: "Title"),
-      inputFormatters: <TextInputFormatter>[
-        FilteringTextInputFormatter.singleLineFormatter
-      ],
+    return CustomInputField(
+      inputType: InputType.title,
       validator: (String value) {
         if (value.isEmpty) {
           return 'Title isRequired';
@@ -133,11 +131,8 @@ class _AddRecordState extends State<AddRecord> {
   }
 
   Widget _buildNote() {
-    return TextFormField(
-      decoration: const InputDecoration(labelText: "Note"),
-      inputFormatters: <TextInputFormatter>[
-        FilteringTextInputFormatter.singleLineFormatter
-      ],
+    return CustomInputField(
+      inputType: InputType.note,
       validator: (String value) {
         return null;
       },
@@ -148,80 +143,86 @@ class _AddRecordState extends State<AddRecord> {
   }
 
   Widget _buildDate() {
-    return Row(
-      children: [
-        Expanded(
-          flex: 1,
-          child: const Text("Date :   "),
+    return CustomInputField(
+      controller: _dateTextController,
+      inputType: InputType.date,
+      validator: (String value) {
+        if (value.isEmpty) {
+          return 'Date isRequired';
+        }
+        return null;
+      },
+      onTap: _showDatePicker,
+      trailingIcon: Icons.calendar_today,
+    );
+  }
+
+  void _showDatePicker() {
+    // showCupertinoModalPopup is a built-in function of the cupertino library
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) => Container(
+        height: 500,
+        color: const Color.fromARGB(255, 255, 255, 255),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 400,
+              child: CupertinoDatePicker(
+                initialDateTime: DateTime.now(),
+                mode: CupertinoDatePickerMode.date,
+                onDateTimeChanged: (picked) {
+                  setState(() {
+                    if (picked != null && picked != _viewModel.date) {
+                      setState(() {
+                        _viewModel.date = picked;
+                        _dateTextController.text = _viewModel.dateString;
+                      });
+                    }
+                  });
+                },
+              ),
+            ),
+            CupertinoButton(
+              child: Text('OK'),
+              onPressed: () => Navigator.of(context).pop(),
+            )
+          ],
         ),
-        Expanded(
-          flex: 3,
-          child: ElevatedButton(
-            onPressed: () async {
-              final DateTime picked = await showDatePicker(
-                context: context,
-                initialDate: _viewModel.date,
-                firstDate: DateTime(2000),
-                lastDate: DateTime(2025),
-              );
-              if (picked != null && picked != _viewModel.date) {
-                setState(() {
-                  _viewModel.date = picked;
-                });
-              }
-            },
-            child: Text(DateFormat('dd-MM-yyyy').format(_viewModel.date)),
-          ),
-        )
-      ],
+      ),
     );
   }
 
   Widget _buildWallet() {
-    return Row(
-      children: [
-        Expanded(
-          flex: 1,
-          child: const Text("Wallet :   "),
-        ),
-        Expanded(
-          flex: 3,
-          child: ElevatedButton(
-            onPressed: () {
-              _selectWallet(context);
-            },
-            child: Text(_viewModel.wallet != null
-                ? _viewModel.wallet.name
-                : "Please Pick Wallet"),
-          ),
-        )
-      ],
+    return CustomInputField(
+      controller: _walletTextController,
+      inputType: InputType.wallet,
+      validator: (String value) {
+        if (value.isEmpty) {
+          return 'Wallet isRequired';
+        }
+        return null;
+      },
+      onTap: _selectWallet,
+      trailingIcon: Icons.account_balance_wallet,
     );
   }
 
   Widget _buildTypeRecord() {
-    return Row(
-      children: [
-        Expanded(
-          flex: 1,
-          child: const Text("Type Record :   "),
-        ),
-        Expanded(
-          flex: 3,
-          child: ElevatedButton(
-            onPressed: () {
-              _selectTypeRecord(context);
-            },
-            child: Text(_viewModel.typeRecord != null
-                ? _viewModel.typeRecord.name
-                : "Type Record"),
-          ),
-        )
-      ],
+    return CustomInputField(
+      controller: _typeRecordTextController,
+      inputType: InputType.typeRecord,
+      validator: (String value) {
+        if (value.isEmpty) {
+          return 'Wallet isRequired';
+        }
+        return null;
+      },
+      onTap: _selectTypeRecord,
     );
   }
 
-  Future _selectWallet(BuildContext context) async {
+  Future _selectWallet() async {
     final Wallet wallet = await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -247,7 +248,7 @@ class _AddRecordState extends State<AddRecord> {
                     );
                   },
                 ).toList()
-              : [const Text("Dont you dont have wallet")],
+              : [const ListTile(title: Text("Empty Wallet"))],
         );
       },
     );
@@ -255,9 +256,11 @@ class _AddRecordState extends State<AddRecord> {
       return;
     }
     _viewModel.onPickWallet(wallet);
+    _walletTextController.text = wallet.name;
+    _typeRecordTextController.text = null;
   }
 
-  Future _selectTypeRecord(BuildContext context) async {
+  Future _selectTypeRecord() async {
     final TypeRecord typeRecord = await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -283,7 +286,7 @@ class _AddRecordState extends State<AddRecord> {
                     );
                   },
                 ).toList()
-              : [const Text("Dont you dont have wallet")],
+              : [const ListTile(title: Text("Empty Type Record"))],
         );
       },
     );
@@ -291,5 +294,6 @@ class _AddRecordState extends State<AddRecord> {
       return;
     }
     _viewModel.onPickTypeRecord(typeRecord);
+    _typeRecordTextController.text = typeRecord.name;
   }
 }
