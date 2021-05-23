@@ -79,12 +79,12 @@ class _AddRecordState extends State<AddRecord> {
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [
-                    _buildAmount(),
                     _buildTitle(),
-                    _buildNote(),
+                    _buildAmount(),
                     _buildDate(),
-                    _buildWallet(),
                     _buildTypeRecord(),
+                    _buildWallet(),
+                    _buildNote(),
                   ],
                 ),
               );

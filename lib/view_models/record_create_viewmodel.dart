@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'package:money_app/model/type_record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/repository/record_repository.dart';
@@ -62,6 +63,6 @@ class RecordCreateViewModel with ChangeNotifier {
   }
 
   String get dateString {
-    return date.toString().split(" ").first;
+    return DateFormat.yMMMd().format(date);
   }
 }

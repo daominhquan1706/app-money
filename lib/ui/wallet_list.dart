@@ -64,11 +64,11 @@ class _WalletListState extends State<WalletList> {
           onTap: () {
             Navigator.of(context).pop(wallet);
           },
-          leading: const CircleAvatar(
+          leading: CircleAvatar(
             backgroundColor: Colors.black12,
-            child: Icon(
-              Icons.account_balance_wallet,
-              color: Colors.black54,
+            child: Text(
+              "${wallet.id}",
+              style: const TextStyle(color: Colors.black),
             ),
           ),
           title: Text(wallet.name),

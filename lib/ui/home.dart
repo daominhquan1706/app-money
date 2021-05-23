@@ -57,7 +57,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         appBar: AppBar(
           titleSpacing: 0,
           leading: IconButton(
-            icon: const Icon(Icons.account_balance_wallet),
+            icon: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: Text(
+                "${_homeViewModel.currentWallet.id}",
+                style: const TextStyle(color: Colors.black),
+              ),
+            ),
             onPressed: () async {
               final Wallet wallet = await Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const WalletList()));
