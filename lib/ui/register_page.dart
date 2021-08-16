@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:money_app/ui/register_page.dart';
+import 'package:money_app/ui/login_page.dart';
 import 'package:money_app/view_models/login_viewmodel.dart';
 
-class LoginPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<RegisterPage> {
   final TextEditingController _passwordTEC = TextEditingController();
   final TextEditingController _userNameTEC = TextEditingController();
 
@@ -18,7 +18,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("Login Page"),
+            const Text("Register page"),
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
@@ -43,15 +43,15 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             expandButton(
-              text: "Login",
-              onPressed: () {
-                onLogin();
-              },
-            ),
-            flatButton(
               text: "Register",
               onPressed: () {
                 onRegister();
+              },
+            ),
+            flatButton(
+              text: "Login",
+              onPressed: () {
+                onLogin();
               },
             ),
           ],
@@ -87,19 +87,14 @@ class _LoginPageState extends State<LoginPage> {
       child: TextButton(
         style: flatButtonStyle,
         onPressed: onPressed,
-        child: const Text('Register'),
+        child: Text(text),
       ),
     );
   }
 
   void onRegister() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => RegisterPage()));
-  }
-
-  void onLogin() {
     LoginViewModel.instance
-        .login(username: _userNameTEC.text, password: _passwordTEC.text)
+        .register(username: _userNameTEC.text, password: _passwordTEC.text)
         .then((String value) {
       if (value != null) {
         showDialog(
@@ -137,5 +132,10 @@ class _LoginPageState extends State<LoginPage> {
         },
       );
     });
+  }
+
+  void onLogin() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => LoginPage()));
   }
 }

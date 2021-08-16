@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             icon: CircleAvatar(
               backgroundColor: Colors.white,
               child: Text(
-                "${_homeViewModel.currentWallet.id}",
+                "${_homeViewModel.currentWallet?.id ?? ""}",
                 style: const TextStyle(color: Colors.black),
               ),
             ),

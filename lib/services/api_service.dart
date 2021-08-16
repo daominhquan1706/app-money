@@ -31,20 +31,17 @@ class ApiService {
   Future<Map<String, dynamic>> post(String url,
       {Map<String, String> params, Map<String, dynamic> body}) async {
     EasyLoading.show(status: 'loading...');
+    final http.Response response = await http.post(
+      Uri.http(_rootUrl, url),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(body),
+    );
+    EasyLoading.dismiss();
     try {
-      final http.Response response = await http.post(
-        Uri.http(_rootUrl, url),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(body),
-      );
-      EasyLoading.dismiss();
-      if (response.statusCode == 200) {
-        return jsonDecode(utf8.decode(response.bodyBytes))
-            as Map<String, dynamic>;
-      } else {
-        throw Exception('Failed to load album');
-      }
+      return jsonDecode(utf8.decode(response.bodyBytes))
+          as Map<String, dynamic>;
     } catch (e) {
+      EasyLoading.dismiss();
       throw Exception(e);
     }
   }
