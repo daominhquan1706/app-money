@@ -4,6 +4,7 @@ import 'package:money_app/model/type_record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/repository/record_repository.dart';
 import 'package:money_app/repository/wallet_repository.dart';
+import 'package:money_app/services/locator_service.dart';
 import 'package:money_app/services/shared_preference_service.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
 
@@ -11,7 +12,7 @@ class RecordCreateViewModel with ChangeNotifier {
   List<Wallet> listWallet = [];
   List<TypeRecord> listTypeRecord = [];
   double amount;
-  DateTime date;
+  DateTime date = DateTime.now();
   String note;
   String title;
   Wallet wallet;
@@ -20,18 +21,16 @@ class RecordCreateViewModel with ChangeNotifier {
   RecordCreateViewModel() {
     fetchData();
   }
-
-  static final RecordCreateViewModel instance = RecordCreateViewModel();
+  RecordCreateViewModel get instance => locator<RecordCreateViewModel>();
 
   final RecordRepository recordRepository = RecordRepository.instance;
   final WalletRepository walletRepository = WalletRepository.instance;
-  Wallet currentWallet;
-  SharedPreferenceService prefsService = SharedPreferenceService.instance;
-
+  final SharedPreferenceService _prefsService =
+      SharedPreferenceService().instance;
+  final HomeViewModel _homeViewModel = HomeViewModel().instance;
   void fetchData() {
-    listWallet = HomeViewModel.instance.listWallet ?? [];
-    date = DateTime.now();
-    setWallet(HomeViewModel.instance.currentWallet);
+    listWallet = _homeViewModel.listWallet;
+    setWallet(_homeViewModel.currentWallet);
     notifyListeners();
   }
 

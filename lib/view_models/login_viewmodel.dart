@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:money_app/model/user_model.dart';
 import 'package:money_app/repository/login_repository.dart';
+import 'package:money_app/services/locator_service.dart';
 import 'package:money_app/services/shared_preference_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,9 +10,9 @@ class LoginViewModel with ChangeNotifier {
     fetchData();
   }
 
-  static final LoginViewModel instance = LoginViewModel();
+  LoginViewModel get instance => locator<LoginViewModel>();
 
-  SharedPreferenceService prefsService = SharedPreferenceService.instance;
+  SharedPreferenceService prefsService = locator<SharedPreferenceService>();
   User user;
   bool isLoggedIn;
 
@@ -33,23 +34,18 @@ class LoginViewModel with ChangeNotifier {
     });
   }
 
-  Future<String> login(
-      {@required String username, @required String password}) async {
+  Future login({@required String username, @required String password}) async {
     await Future.delayed(const Duration(microseconds: 1));
     final data = await LoginRepository.instance.login(username, password);
     if (data["result"] != null) {
       final result = data["result"] as Map<String, dynamic>;
       await prefsService.saveUser(User.fromJson(result));
-
       isLoggedIn = true;
       notifyListeners();
-      return null;
-    } else {
-      return data["message"] as String;
     }
   }
 
-  Future<String> register(
+  Future register(
       {@required String username, @required String password}) async {
     await Future.delayed(const Duration(microseconds: 1));
     final result = await LoginRepository.instance.register(username, password);
@@ -58,9 +54,6 @@ class LoginViewModel with ChangeNotifier {
           .saveUser(User.fromJson(result["result"] as Map<String, dynamic>));
       isLoggedIn = true;
       notifyListeners();
-      return null;
-    } else {
-      return result["message"] as String;
     }
   }
 

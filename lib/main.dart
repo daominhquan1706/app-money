@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:money_app/services/dialog_service.dart';
+import 'package:money_app/services/locator_service.dart';
 import 'package:money_app/ui/login_page.dart';
 import 'package:money_app/ui/main_page.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:money_app/view_models/login_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 void main() {
-  runApp(MyApp());
+  setupGetIt();
   configLoading();
+  setupDialogUi();
+  runApp(MyApp());
 }
 
 void configLoading() {
@@ -22,6 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      navigatorKey: StackedService.navigatorKey,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -29,9 +35,9 @@ class MyApp extends StatelessWidget {
       home: MultiProvider(
         providers: [
           ChangeNotifierProvider<LoginViewModel>(
-              create: (_) => LoginViewModel.instance),
+              create: (_) => LoginViewModel().instance),
           ChangeNotifierProvider<HomeViewModel>(
-              create: (_) => HomeViewModel.instance),
+              create: (_) => HomeViewModel().instance),
         ],
         child: navigateTo(),
       ),

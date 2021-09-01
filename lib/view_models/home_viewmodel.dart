@@ -3,6 +3,7 @@ import 'package:money_app/model/record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/repository/record_repository.dart';
 import 'package:money_app/repository/wallet_repository.dart';
+import 'package:money_app/services/locator_service.dart';
 import 'package:money_app/services/shared_preference_service.dart';
 
 class HomeViewModel with ChangeNotifier {
@@ -10,14 +11,14 @@ class HomeViewModel with ChangeNotifier {
     fetchData();
   }
 
-  static final HomeViewModel instance = HomeViewModel();
+  HomeViewModel get instance => locator<HomeViewModel>();
   List<Record> listRecordFull = [];
   List<Record> listRecord = [];
   List<Wallet> listWallet = [];
   final RecordRepository recordRepository = RecordRepository.instance;
   final WalletRepository walletRepository = WalletRepository.instance;
   Wallet currentWallet;
-  SharedPreferenceService prefsService = SharedPreferenceService.instance;
+  SharedPreferenceService prefsService = SharedPreferenceService().instance;
 
   void fetchData() {
     getRecord();
@@ -56,18 +57,18 @@ class HomeViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String> onCreateWallet(Wallet wallet) async {
+  Future<bool> onCreateWallet(Wallet wallet) async {
     if (wallet == null) {
-      return "Wallet not null";
+      return false;
     }
     final result = await walletRepository.createWallet(wallet);
     if (result != null) {
       wallet.id = result["wallet_id"] as int;
       listWallet.insert(0, wallet);
       notifyListeners();
-      return "SUCCESS";
+      return true;
     } else {
-      return "result not be null";
+      return false;
     }
   }
 

@@ -16,7 +16,7 @@ class AddRecord extends StatefulWidget {
 class _AddRecordState extends State<AddRecord> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final RecordCreateViewModel _viewModel = RecordCreateViewModel();
-  final HomeViewModel _homeViewModel = HomeViewModel.instance;
+  final HomeViewModel _homeViewModel = HomeViewModel().instance;
   final TextEditingController _dateTextController = TextEditingController();
   final TextEditingController _walletTextController = TextEditingController();
   final TextEditingController _typeRecordTextController =

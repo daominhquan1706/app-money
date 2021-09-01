@@ -10,7 +10,7 @@ class WalletCreatePage extends StatefulWidget {
 
 class _WalletCreatePageState extends State<WalletCreatePage> {
   String _title;
-  final HomeViewModel _homeViewModel = HomeViewModel.instance;
+  final HomeViewModel _homeViewModel = HomeViewModel().instance;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   FormState get _formState => _formKey.currentState;
@@ -29,7 +29,7 @@ class _WalletCreatePageState extends State<WalletCreatePage> {
           "Create Wallet",
         ),
         actions: [
-          FlatButton(
+          TextButton(
             onPressed: () async {
               if (_formState.validate()) {
                 _formState.save();
@@ -38,12 +38,10 @@ class _WalletCreatePageState extends State<WalletCreatePage> {
                   createdDate: DateTime.now(),
                 );
 
-                final message = await _homeViewModel.onCreateWallet(wallet);
-                if (message == "SUCCESS") {
-                  Navigator.of(context).pop();
-                } else {
-                  final snackBar = SnackBar(content: Text(message ?? "FAIL"));
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                final success = await _homeViewModel.onCreateWallet(wallet);
+                if (success) {
+                  // Navigator.of(context).pop();
+                  Navigator.pop(context);
                 }
               }
             },

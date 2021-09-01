@@ -13,7 +13,7 @@ class WalletList extends StatefulWidget {
 }
 
 class _WalletListState extends State<WalletList> {
-  final HomeViewModel _homeViewModel = HomeViewModel.instance;
+  final HomeViewModel _homeViewModel = HomeViewModel().instance;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class _WalletListState extends State<WalletList> {
       appBar: AppBar(
         title: const Text("List Wallet"),
       ),
-      body: Column(
+      body: ListView(
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -35,13 +35,13 @@ class _WalletListState extends State<WalletList> {
                   backgroundColor: Colors.black12,
                   child: FlutterLogo(),
                 ),
-                title: Text("All"),
-                subtitle: Text(""),
+                title: const Text("All"),
+                subtitle: const Text(""),
               ),
             ),
           ),
           const Divider(),
-          ...(HomeViewModel.instance.listWallet ?? [])
+          ...(HomeViewModel().instance.listWallet ?? [])
               .map((e) => walletView(e))
               .toList()
         ],
@@ -72,7 +72,7 @@ class _WalletListState extends State<WalletList> {
             ),
           ),
           title: Text(wallet.name),
-          subtitle: Text(""),
+          subtitle: const Text(""),
         ),
       ),
     );

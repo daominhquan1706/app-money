@@ -2,12 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
+import 'package:money_app/services/locator_service.dart';
+import 'package:stacked_services/stacked_services.dart';
+
+import 'dialog_service.dart';
 
 class ApiService {
-  ApiService._privateConstructor();
-  static final ApiService instance = ApiService._privateConstructor();
-
+  ApiService get service => locator<ApiService>();
   final String _rootUrl = "localhost:8080";
+  final _dialogService = DialogService();
 
   Future<Map<String, dynamic>> get(String url,
       {Map<String, String> params}) async {
@@ -31,17 +34,32 @@ class ApiService {
   Future<Map<String, dynamic>> post(String url,
       {Map<String, String> params, Map<String, dynamic> body}) async {
     EasyLoading.show(status: 'loading...');
-    final http.Response response = await http.post(
-      Uri.http(_rootUrl, url),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(body),
-    );
-    EasyLoading.dismiss();
     try {
+      final http.Response response = await http.post(
+        Uri.http(_rootUrl, url),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(body),
+      );
+      EasyLoading.dismiss();
+      final data =
+          jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+      final message = data["message"] as String;
+      if (message != null) {
+        _dialogService.showDialog(
+          title: 'Error',
+          description: message,
+          buttonTitle: "OK",
+        );
+      }
       return jsonDecode(utf8.decode(response.bodyBytes))
           as Map<String, dynamic>;
     } catch (e) {
       EasyLoading.dismiss();
+      _dialogService.showDialog(
+        title: 'Error',
+        description: e.toString(),
+        buttonTitle: "OK",
+      );
       throw Exception(e);
     }
   }

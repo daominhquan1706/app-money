@@ -14,7 +14,7 @@ class DetailsRecord extends StatefulWidget {
 }
 
 class _DetailsRecordState extends State<DetailsRecord> {
-  final HomeViewModel _homeViewModel = HomeViewModel.instance;
+  final HomeViewModel _homeViewModel = HomeViewModel().instance;
 
   @override
   Widget build(BuildContext context) {

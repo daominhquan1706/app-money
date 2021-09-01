@@ -26,7 +26,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return newDate;
   });
   TabController _tabController;
-  final HomeViewModel _homeViewModel = HomeViewModel.instance;
+  final HomeViewModel _homeViewModel = HomeViewModel().instance;
 
   _MyHomePageState();
   @override
@@ -108,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               onSelected: (text) {
                 switch (text) {
                   case "Sign Out":
-                    LoginViewModel.instance.logout();
+                    LoginViewModel().instance.logout();
                     break;
                   default:
                     break;

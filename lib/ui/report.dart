@@ -23,7 +23,7 @@ class _ReportPageState extends State<ReportPage> with TickerProviderStateMixin {
     return newDate;
   });
   TabController _tabController;
-  final HomeViewModel _homeViewModel = HomeViewModel.instance;
+  final HomeViewModel _homeViewModel = HomeViewModel().instance;
 
   @override
   void initState() {

@@ -93,49 +93,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void onRegister() {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => RegisterPage()));
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => RegisterPage()));
   }
 
   void onLogin() {
-    LoginViewModel.instance
-        .login(username: _userNameTEC.text, password: _passwordTEC.text)
-        .then((String value) {
-      if (value != null) {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text("fail"),
-              content: Text(value),
-              actions: [
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text("OK"))
-              ],
-            );
-          },
-        );
-      }
-    }).catchError((error) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text("fail"),
-            content: Text(error.toString()),
-            actions: [
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text("OK"))
-            ],
-          );
-        },
-      );
-    });
+    LoginViewModel()
+        .instance
+        .login(username: _userNameTEC.text, password: _passwordTEC.text);
   }
 }
