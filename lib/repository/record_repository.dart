@@ -1,7 +1,6 @@
 import 'package:money_app/constants/constant.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/services/api_service.dart';
-import 'package:money_app/services/locator_service.dart';
 import 'package:money_app/services/shared_preference_service.dart';
 
 class RecordRepository {

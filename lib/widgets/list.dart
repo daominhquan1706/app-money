@@ -42,7 +42,7 @@ class MyList extends StatelessWidget {
   }
 
   Widget _buildReportView() {
-    if (listRecord.length == 0) {
+    if (listRecord.isEmpty) {
       return Container();
     }
     final inputAmount = [

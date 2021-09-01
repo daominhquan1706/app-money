@@ -5,8 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:money_app/services/locator_service.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-import 'dialog_service.dart';
-
 class ApiService {
   ApiService get service => locator<ApiService>();
   final String _rootUrl = "localhost:8080";
@@ -28,6 +26,7 @@ class ApiService {
     } catch (e) {
       EasyLoading.dismiss();
       //throw Exception(e);
+      return null;
     }
   }
 
@@ -45,8 +44,8 @@ class ApiService {
           jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
       final message = data["message"] as String;
       if (message != null) {
-        _dialogService.showDialog(
-          title: 'Error',
+        await _dialogService.showDialog(
+          title: 'Message',
           description: message,
           buttonTitle: "OK",
         );

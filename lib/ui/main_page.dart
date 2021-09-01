@@ -25,7 +25,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     _tabController = TabController(length: 3, vsync: this);
   }
 
-  Widget _buildHomePage() {
+  @override
+  Widget build(BuildContext context) {
     return Consumer<HomeViewModel>(
       builder: (context, value, child) {
         if (value.listRecord == null) {
@@ -77,10 +78,5 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         ),
       ),
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildHomePage();
   }
 }

@@ -21,8 +21,7 @@ class SharedPreferenceService {
 
   Future<User> getUser() async {
     prefs ??= await SharedPreferences.getInstance();
-    var strUser = prefs.getString('user');
-    print(strUser);
+    final strUser = prefs.getString('user');
     if (strUser != null) {
       final json = jsonDecode(strUser) as Map<String, dynamic>;
       return User.fromJson(json);

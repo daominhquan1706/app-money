@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:money_app/ui/register_page.dart';
 import 'package:money_app/view_models/login_viewmodel.dart';
 
 class LoginPage extends StatefulWidget {
@@ -10,7 +9,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordTEC = TextEditingController();
   final TextEditingController _userNameTEC = TextEditingController();
-
+  final LoginViewModel viewModel = LoginViewModel().instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,13 +92,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void onRegister() {
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => RegisterPage()));
+    viewModel.changeState(LoginState.register);
   }
 
   void onLogin() {
-    LoginViewModel()
-        .instance
-        .login(username: _userNameTEC.text, password: _passwordTEC.text);
+    viewModel.login(username: _userNameTEC.text, password: _passwordTEC.text);
   }
 }

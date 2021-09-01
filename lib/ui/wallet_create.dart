@@ -16,35 +16,14 @@ class _WalletCreatePageState extends State<WalletCreatePage> {
   FormState get _formState => _formKey.currentState;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final scaffold = Scaffold(
+    return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: const Text(
-          "Create Wallet",
-        ),
+        title: const Text("Create Wallet"),
         actions: [
           TextButton(
-            onPressed: () async {
-              if (_formState.validate()) {
-                _formState.save();
-                final Wallet wallet = Wallet(
-                  name: _title,
-                  createdDate: DateTime.now(),
-                );
-
-                final success = await _homeViewModel.onCreateWallet(wallet);
-                if (success) {
-                  // Navigator.of(context).pop();
-                  Navigator.pop(context);
-                }
-              }
-            },
+            onPressed: onCreateWallet,
             child: const Text(
               "Add",
               style: TextStyle(color: Colors.white),
@@ -56,15 +35,10 @@ class _WalletCreatePageState extends State<WalletCreatePage> {
         key: _formKey,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              _buildTitle(),
-            ],
-          ),
+          child: Column(children: [_buildTitle()]),
         ),
       ),
     );
-    return scaffold;
   }
 
   Widget _buildTitle() {
@@ -83,5 +57,19 @@ class _WalletCreatePageState extends State<WalletCreatePage> {
         _title = value;
       },
     );
+  }
+
+  Future<void> onCreateWallet() async {
+    if (_formState.validate()) {
+      _formState.save();
+      final Wallet wallet = Wallet(
+        name: _title,
+        createdDate: DateTime.now(),
+      );
+      final isSuccess = await _homeViewModel.onCreateWallet(wallet);
+      if (isSuccess) {
+        Navigator.of(context).pop();
+      }
+    }
   }
 }

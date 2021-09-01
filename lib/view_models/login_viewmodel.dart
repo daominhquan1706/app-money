@@ -5,6 +5,8 @@ import 'package:money_app/services/locator_service.dart';
 import 'package:money_app/services/shared_preference_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum LoginState { login, register }
+
 class LoginViewModel with ChangeNotifier {
   LoginViewModel() {
     fetchData();
@@ -15,6 +17,21 @@ class LoginViewModel with ChangeNotifier {
   SharedPreferenceService prefsService = locator<SharedPreferenceService>();
   User user;
   bool isLoggedIn;
+  bool _disposed = false;
+  LoginState state = LoginState.login;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) {
+      super.notifyListeners();
+    }
+  }
 
   void fetchData() {
     setUpSharedPreference();
@@ -58,10 +75,14 @@ class LoginViewModel with ChangeNotifier {
   }
 
   void logout() {
-    print("Logout");
     user = null;
     isLoggedIn = false;
     prefsService.saveUser(null);
+    notifyListeners();
+  }
+
+  void changeState(LoginState state) {
+    this.state = state;
     notifyListeners();
   }
 }

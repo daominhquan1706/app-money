@@ -32,7 +32,7 @@ class _DetailsRecordState extends State<DetailsRecord> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: Text("Do you want to Delete this Record"),
+                      title: const Text("Do you want to Delete this Record"),
                       actions: [
                         ElevatedButton(
                           onPressed: () {

@@ -5,7 +5,6 @@ import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/repository/record_repository.dart';
 import 'package:money_app/repository/wallet_repository.dart';
 import 'package:money_app/services/locator_service.dart';
-import 'package:money_app/services/shared_preference_service.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
 
 class RecordCreateViewModel with ChangeNotifier {
@@ -25,8 +24,6 @@ class RecordCreateViewModel with ChangeNotifier {
 
   final RecordRepository recordRepository = RecordRepository.instance;
   final WalletRepository walletRepository = WalletRepository.instance;
-  final SharedPreferenceService _prefsService =
-      SharedPreferenceService().instance;
   final HomeViewModel _homeViewModel = HomeViewModel().instance;
   void fetchData() {
     listWallet = _homeViewModel.listWallet;

@@ -8,6 +8,8 @@ import 'package:money_app/view_models/record_create_viewmodel.dart';
 import 'package:money_app/widgets/custom_input_field.dart';
 import 'package:provider/provider.dart';
 
+import 'dialogs/pick_wallet_dialog.dart';
+
 class AddRecord extends StatefulWidget {
   @override
   _AddRecordState createState() => _AddRecordState();
@@ -15,7 +17,7 @@ class AddRecord extends StatefulWidget {
 
 class _AddRecordState extends State<AddRecord> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final RecordCreateViewModel _viewModel = RecordCreateViewModel();
+  final RecordCreateViewModel _viewModel = RecordCreateViewModel().instance;
   final HomeViewModel _homeViewModel = HomeViewModel().instance;
   final TextEditingController _dateTextController = TextEditingController();
   final TextEditingController _walletTextController = TextEditingController();
@@ -39,7 +41,7 @@ class _AddRecordState extends State<AddRecord> {
           "Create Record",
         ),
         actions: [
-          FlatButton(
+          TextButton(
             onPressed: () async {
               if (_formState.validate()) {
                 _formState.save();
@@ -71,25 +73,22 @@ class _AddRecordState extends State<AddRecord> {
       ),
       body: Form(
         key: _formKey,
-        child: ChangeNotifierProvider<RecordCreateViewModel>(
-          create: (_) => _viewModel,
-          child: Consumer<RecordCreateViewModel>(
-            builder: (context, viewModel, child) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    _buildTitle(),
-                    _buildAmount(),
-                    _buildDate(),
-                    _buildTypeRecord(),
-                    _buildWallet(),
-                    _buildNote(),
-                  ],
-                ),
-              );
-            },
-          ),
+        child: Consumer<RecordCreateViewModel>(
+          builder: (context, viewModel, child) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  _buildTitle(),
+                  _buildAmount(),
+                  _buildDate(),
+                  _buildTypeRecord(),
+                  _buildWallet(),
+                  _buildNote(),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
@@ -184,8 +183,8 @@ class _AddRecordState extends State<AddRecord> {
               ),
             ),
             CupertinoButton(
-              child: Text('OK'),
               onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
             )
           ],
         ),
@@ -226,30 +225,7 @@ class _AddRecordState extends State<AddRecord> {
     final Wallet wallet = await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return SimpleDialog(
-          title: const Text("Pick Wallet"),
-          children: _viewModel.listWallet.isNotEmpty
-              ? _viewModel.listWallet.map(
-                  (wallet) {
-                    return Card(
-                      child: ListTile(
-                        title: Text(wallet.name),
-                        leading: const Icon(Icons.account_balance_wallet),
-                        onTap: () {
-                          Navigator.of(context).pop<Wallet>(wallet);
-                        },
-                        trailing: _viewModel.wallet?.id == wallet.id
-                            ? const Icon(
-                                Icons.check_circle,
-                                color: Colors.green,
-                              )
-                            : const SizedBox.shrink(),
-                      ),
-                    );
-                  },
-                ).toList()
-              : [const ListTile(title: Text("Empty Wallet"))],
-        );
+        return PickWalletDialog();
       },
     );
     if (wallet == null) {

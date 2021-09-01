@@ -1,6 +1,5 @@
 import 'package:money_app/constants/constant.dart';
 import 'package:money_app/services/api_service.dart';
-import 'package:money_app/services/locator_service.dart';
 
 class LoginRepository {
   LoginRepository._privateConstructor();

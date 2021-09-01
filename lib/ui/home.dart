@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            final Record record = await Navigator.of(context).push<Record>(
+            await Navigator.of(context).push<Record>(
                 MaterialPageRoute(builder: (context) => AddRecord()));
           },
           child: const Icon(Icons.add),
@@ -99,8 +99,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 return listHomeMenu
                     .map(
                       (e) => PopupMenuItem<String>(
-                        child: Text(e.name),
                         value: e.name,
+                        child: Text(e.name),
                       ),
                     )
                     .toList();
