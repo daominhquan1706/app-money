@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:money_app/helper/datetime_helper.dart';
 
 class Record {
-  int id;
+  String id;
   String title;
   String note;
   double amount;
@@ -9,8 +10,9 @@ class Record {
   DateTime date;
   DateTime createDate;
   DateTime modifiedDate;
-  int walletId;
+  String walletId;
   int typeRecordId;
+  String uid;
 
   Record({
     this.id,
@@ -26,17 +28,29 @@ class Record {
   });
 
   Record.fromJson(Map<String, dynamic> json) {
-    id = json['id'] as int;
-    //"10/03/2019",
-    //2021-04-04T08:26:03
+    id = json['id'] as String;
     createDate =
         DateTimeHelper.instance.stringToDate(json['created_date'] as String);
     title = json['title'] as String;
     note = json['note'] as String;
     amount = double.parse(json['amount'].toString());
     isAdd = amount >= 0;
-    walletId = json['wallet_id'] as int;
+    walletId = json['wallet_id'] as String;
     typeRecordId = json['typeRecord_id'] as int;
+    uid = json['uid'] as String;
+  }
+
+  Record.fromSnapshot(QueryDocumentSnapshot snapshot) {
+    id = snapshot.get('id') as String;
+    createDate = DateTimeHelper.instance
+        .stringToDate(snapshot.get('created_date') as String);
+    title = snapshot.get('title') as String;
+    note = snapshot.get('note') as String;
+    amount = double.parse(snapshot.get('amount').toString());
+    isAdd = amount >= 0;
+    walletId = snapshot.get('wallet_id') as String;
+    typeRecordId = snapshot.get('typeRecord_id') as int;
+    uid = snapshot.get('uid') as String;
   }
 
   Map<String, dynamic> toJson() {
@@ -47,6 +61,7 @@ class Record {
     data['note'] = note;
     data['amount'] = amount;
     data['isAdd'] = isAdd;
+    data['uid'] = uid;
     return data;
   }
 
@@ -64,6 +79,7 @@ class Record {
     data["amount"] = amount;
     data["wallet_id"] = walletId;
     data["typeRecord_id"] = typeRecordId;
+    data['uid'] = uid;
     return data;
   }
 }

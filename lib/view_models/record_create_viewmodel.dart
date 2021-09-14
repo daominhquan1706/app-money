@@ -17,14 +17,19 @@ class RecordCreateViewModel with ChangeNotifier {
   Wallet wallet;
   TypeRecord typeRecord;
 
-  RecordCreateViewModel() {
-    fetchData();
-  }
-  RecordCreateViewModel get instance => locator<RecordCreateViewModel>();
-
   final RecordRepository recordRepository = RecordRepository.instance;
   final WalletRepository walletRepository = WalletRepository.instance;
-  final HomeViewModel _homeViewModel = HomeViewModel().instance;
+  HomeViewModel _homeViewModel;
+
+  HomeViewModel get homeViewModel => _homeViewModel;
+
+  set homeViewModel(HomeViewModel value) {
+    if (_homeViewModel == null) {
+      _homeViewModel ??= value;
+      fetchData();
+    }
+  }
+
   void fetchData() {
     listWallet = _homeViewModel.listWallet;
     setWallet(_homeViewModel.currentWallet);
@@ -47,7 +52,7 @@ class RecordCreateViewModel with ChangeNotifier {
     getListTypeRecord(wallet.id);
   }
 
-  Future getListTypeRecord(int walletId) async {
+  Future getListTypeRecord(String walletId) async {
     final result = await walletRepository.listTypeRecord(walletId);
     listTypeRecord = result ?? [];
     notifyListeners();

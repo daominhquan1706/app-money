@@ -3,8 +3,9 @@ import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/view_models/record_create_viewmodel.dart';
 
 class PickWalletDialog extends StatelessWidget {
-  PickWalletDialog({Key key}) : super(key: key);
-  final RecordCreateViewModel _viewModel = RecordCreateViewModel().instance;
+  const PickWalletDialog({Key key, this.recordCreateViewModel})
+      : super(key: key);
+  final RecordCreateViewModel recordCreateViewModel;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -27,7 +28,7 @@ class PickWalletDialog extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.of(context).pop();
               },
               child: const Text("+ Add new"),
             ),
@@ -36,8 +37,8 @@ class PickWalletDialog extends StatelessWidget {
       ],
       content: SingleChildScrollView(
         child: Column(
-          children: _viewModel.listWallet.isNotEmpty
-              ? _viewModel.listWallet.map(
+          children: recordCreateViewModel.listWallet.isNotEmpty
+              ? recordCreateViewModel.listWallet.map(
                   (wallet) {
                     return Card(
                       child: ListTile(
@@ -50,7 +51,7 @@ class PickWalletDialog extends StatelessWidget {
                         onTap: () {
                           Navigator.of(context).pop<Wallet>(wallet);
                         },
-                        trailing: _viewModel.wallet?.id == wallet.id
+                        trailing: recordCreateViewModel.wallet?.id == wallet.id
                             ? const Icon(
                                 Icons.check_circle,
                                 color: Colors.green,

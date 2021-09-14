@@ -14,42 +14,52 @@ class WalletList extends StatefulWidget {
 }
 
 class _WalletListState extends State<WalletList> {
+  final HomeViewModel _homeViewModel = HomeViewModel();
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeViewModel>(
-      builder: (context, value, child) => Scaffold(
-        backgroundColor: Colors.grey.shade50,
-        appBar: AppBar(
-          title: const Text("List Wallet"),
-        ),
-        body: ListView(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Card(
-                child: ListTile(
-                  onTap: () {
-                    Navigator.of(context).pop(Wallet(id: -1));
-                  },
-                  leading: const CircleAvatar(
-                    backgroundColor: Colors.black12,
-                    child: FlutterLogo(),
+    return ChangeNotifierProvider<HomeViewModel>(
+      create: (_) => _homeViewModel,
+      child: Consumer<HomeViewModel>(
+        builder: (context, value, child) => Scaffold(
+          backgroundColor: Colors.grey.shade50,
+          appBar: AppBar(
+            title: const Text("List Wallet"),
+          ),
+          body: ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Card(
+                  child: ListTile(
+                    onTap: () {
+                      Navigator.of(context).pop(Wallet(id: "all"));
+                    },
+                    leading: const CircleAvatar(
+                      backgroundColor: Colors.black12,
+                      child: FlutterLogo(),
+                    ),
+                    title: const Text("All"),
+                    subtitle: const Text(""),
                   ),
-                  title: const Text("All"),
-                  subtitle: const Text(""),
                 ),
               ),
-            ),
-            const Divider(),
-            ...(value.listWallet ?? []).map((e) => walletView(e)).toList()
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            Navigator.of(context).push<bool>(
-                MaterialPageRoute(builder: (context) => WalletCreatePage()));
-          },
-          child: const Icon(Icons.add),
+              const Divider(),
+              ...(value.listWallet ?? []).map((e) => walletView(e)).toList()
+            ],
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              Navigator.of(context).push<bool>(
+                MaterialPageRoute(
+                  builder: (context) => WalletCreatePage(
+                    homeViewModel: _homeViewModel,
+                  ),
+                ),
+              );
+            },
+            child: const Icon(Icons.add),
+          ),
         ),
       ),
     );

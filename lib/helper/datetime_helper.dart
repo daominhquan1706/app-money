@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class DateTimeHelper {
@@ -15,5 +16,9 @@ class DateTimeHelper {
 
   String dateToString(DateTime date) {
     return DateFormat("dd/MM/yyyy").format(date);
+  }
+
+  DateTime stampTimeToDate(Timestamp timestamp) {
+    return timestamp?.toDate();
   }
 }

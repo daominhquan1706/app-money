@@ -1,12 +1,12 @@
-class User {
-  int id;
+class AppUser {
+  String id;
   String name;
 
-  User({this.id, this.name});
+  AppUser({this.id, this.name});
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'] as int,
+  factory AppUser.fromJson(Map<String, dynamic> json) {
+    return AppUser(
+      id: json['id'] as String,
       name: json['name'] as String,
     );
   }

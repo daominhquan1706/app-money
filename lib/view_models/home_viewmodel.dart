@@ -11,7 +11,6 @@ class HomeViewModel with ChangeNotifier {
     fetchData();
   }
 
-  HomeViewModel get instance => locator<HomeViewModel>();
   List<Record> listRecordFull = [];
   List<Record> listRecord = [];
   List<Wallet> listWallet = [];
@@ -44,7 +43,7 @@ class HomeViewModel with ChangeNotifier {
   }
 
   void onPickWallet(Wallet wallet) {
-    if (wallet.id == -1) {
+    if (wallet.id == "all") {
       prefsService.changeWallet(null);
       listRecord = listRecordFull;
     } else {
@@ -63,8 +62,7 @@ class HomeViewModel with ChangeNotifier {
     }
     final result = await walletRepository.createWallet(wallet);
     if (result != null) {
-      wallet.id = result["wallet_id"] as int;
-      listWallet.insert(0, wallet);
+      listWallet.insert(0, result);
       notifyListeners();
       return true;
     } else {
@@ -78,7 +76,6 @@ class HomeViewModel with ChangeNotifier {
     }
     final result = await recordRepository.createRecord(record);
     if (result != null) {
-      record.id = result["record_id"] as int;
       listRecordFull.add(record);
       notifyListeners();
       return "SUCCESS";

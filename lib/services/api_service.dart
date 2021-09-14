@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
+import 'package:money_app/constants/constant.dart';
 import 'package:money_app/services/locator_service.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -9,6 +11,9 @@ class ApiService {
   ApiService get service => locator<ApiService>();
   final String _rootUrl = "localhost:8080";
   final _dialogService = DialogService();
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  CollectionReference users =
+      FirebaseFirestore.instance.collection(CollectionName.user);
 
   Future<Map<String, dynamic>> get(String url,
       {Map<String, String> params}) async {

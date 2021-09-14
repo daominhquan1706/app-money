@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:money_app/helper/string_helper.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class DetailsRecord extends StatefulWidget {
   final Record record;
@@ -14,10 +15,17 @@ class DetailsRecord extends StatefulWidget {
 }
 
 class _DetailsRecordState extends State<DetailsRecord> {
-  final HomeViewModel _homeViewModel = HomeViewModel().instance;
+  HomeViewModel _homeViewModel;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    _homeViewModel ??= Provider.of<HomeViewModel>(context);
+
     final record = widget.record;
     return Scaffold(
       appBar: AppBar(

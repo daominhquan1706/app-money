@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:money_app/services/dialog_service.dart';
@@ -12,10 +13,11 @@ import 'package:provider/provider.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   setupGetIt();
   configLoading();
   setupDialogUi();
-  runApp(MyApp());
+  runApp(const App());
 }
 
 void configLoading() {
@@ -24,47 +26,70 @@ void configLoading() {
     ..dismissOnTap = false;
 }
 
-class MyApp extends StatelessWidget {
+class App extends StatefulWidget {
+  const App({Key key}) : super(key: key);
+
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<LoginViewModel>(
-            create: (_) => LoginViewModel().instance),
-        ChangeNotifierProvider<HomeViewModel>(
-            create: (_) => HomeViewModel().instance),
-        ChangeNotifierProvider<RecordCreateViewModel>(
-            create: (_) => RecordCreateViewModel().instance),
-        // ChangeNotifierProvider<HomeViewModel>(
-        //     create: (_) => HomeViewModel().instance),
-      ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        navigatorKey: StackedService.navigatorKey,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        home: navigateTo(),
-        builder: EasyLoading.init(),
+    return MaterialApp(
+      title: 'Flutter Demo',
+      navigatorKey: StackedService.navigatorKey,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-    );
-  }
+      home: FutureBuilder(
+        future: _initialization,
+        builder: (context, snapshot) {
+          // Check for errors
+          if (snapshot.hasError) {
+            return const Scaffold(
+              body: Text("SomethingWentWrong"),
+            );
+          }
 
-  Widget navigateTo() {
-    return Consumer<LoginViewModel>(
-      builder: (context, value, child) {
-        if (value.isLoggedIn != null && value.isLoggedIn) {
-          return const MainPage();
-        }
-        switch (value.state) {
-          case LoginState.login:
-            return LoginPage();
-          case LoginState.register:
-            return RegisterPage();
-        }
-        return null;
-      },
+          // Once complete, show your application
+          if (snapshot.connectionState == ConnectionState.done) {
+            return MultiProvider(
+              providers: [
+                ChangeNotifierProvider<LoginViewModel>(
+                    create: (_) => LoginViewModel()),
+                ChangeNotifierProvider<HomeViewModel>(
+                    create: (_) => HomeViewModel()),
+                ChangeNotifierProvider<RecordCreateViewModel>(
+                    create: (_) => RecordCreateViewModel()),
+              ],
+              child: Consumer<LoginViewModel>(
+                builder: (context, value, child) {
+                  if (value.isLoggedIn != null && value.isLoggedIn) {
+                    return const MainPage();
+                  }
+                  switch (value.state) {
+                    case LoginState.login:
+                      return LoginPage();
+                    case LoginState.register:
+                      return RegisterPage();
+                  }
+                  return null;
+                },
+              ),
+            );
+          }
+
+          // Otherwise, show something whilst waiting for initialization to complete
+          return const Scaffold(
+            body: Text("Loading"),
+          );
+        },
+      ),
+      builder: EasyLoading.init(),
     );
   }
 }

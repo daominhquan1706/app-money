@@ -26,7 +26,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return newDate;
   });
   TabController _tabController;
-  final HomeViewModel _homeViewModel = HomeViewModel().instance;
+  HomeViewModel _homeViewModel;
 
   _MyHomePageState();
   @override
@@ -44,13 +44,17 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   // ignore: must_call_super
   Widget build(BuildContext context) {
+    _homeViewModel ??= Provider.of<HomeViewModel>(context);
+
     return DefaultTabController(
       length: listMonth.length,
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            await Navigator.of(context).push<Record>(
-                MaterialPageRoute(builder: (context) => AddRecord()));
+            await Navigator.of(context).push<Record>(MaterialPageRoute(
+                builder: (context) => AddRecord(
+                      homeViewModel: _homeViewModel,
+                    )));
           },
           child: const Icon(Icons.add),
         ),

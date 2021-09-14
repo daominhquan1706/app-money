@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:money_app/model/user_model.dart';
-import 'package:money_app/repository/login_repository.dart';
 import 'package:money_app/services/locator_service.dart';
 import 'package:money_app/services/shared_preference_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 enum LoginState { login, register }
 
@@ -16,9 +18,10 @@ class LoginViewModel with ChangeNotifier {
 
   SharedPreferenceService prefsService = locator<SharedPreferenceService>();
   User user;
-  bool isLoggedIn;
   bool _disposed = false;
   LoginState state = LoginState.login;
+  FirebaseAuth auth = FirebaseAuth.instance;
+  bool isLoggedIn = false;
 
   @override
   void dispose() {
@@ -33,9 +36,14 @@ class LoginViewModel with ChangeNotifier {
     }
   }
 
-  void fetchData() {
+  Future<void> fetchData() async {
+    FirebaseAuth.instance.authStateChanges().listen((User user) {
+      this.user = user;
+      isLoggedIn = user != null;
+      setUser(user);
+      notifyListeners();
+    });
     setUpSharedPreference();
-    checkLogin();
   }
 
   Future setUpSharedPreference() async {
@@ -43,46 +51,59 @@ class LoginViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void checkLogin() {
-    prefsService.getUser().then((value) {
-      user = value;
-      isLoggedIn = user != null;
-      notifyListeners();
-    });
+  Future login({@required String username, @required String password}) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: username, password: password);
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = "Login Fail, please try again";
+      if (e.code == 'user-not-found') {
+        errorMessage = 'No user found for that email.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Wrong password provided for that user.';
+      }
+      showFailDialog(errorMessage);
+    }
   }
 
-  Future login({@required String username, @required String password}) async {
-    await Future.delayed(const Duration(microseconds: 1));
-    final data = await LoginRepository.instance.login(username, password);
-    if (data["result"] != null) {
-      final result = data["result"] as Map<String, dynamic>;
-      await prefsService.saveUser(User.fromJson(result));
-      isLoggedIn = true;
-      notifyListeners();
-    }
+  Future<void> showFailDialog(String message) async {
+    await DialogService().showDialog(
+      title: 'Message',
+      description: message,
+      buttonTitle: "OK",
+    );
   }
 
   Future register(
       {@required String username, @required String password}) async {
-    await Future.delayed(const Duration(microseconds: 1));
-    final result = await LoginRepository.instance.register(username, password);
-    if (result["result"] != null) {
-      await prefsService
-          .saveUser(User.fromJson(result["result"] as Map<String, dynamic>));
-      isLoggedIn = true;
-      notifyListeners();
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: username, password: password);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
-  void logout() {
+  Future<void> logout() async {
     user = null;
-    isLoggedIn = false;
-    prefsService.saveUser(null);
-    notifyListeners();
+    prefsService.saveUserId(null);
+    await FirebaseAuth.instance.signOut();
   }
 
   void changeState(LoginState state) {
     this.state = state;
     notifyListeners();
+  }
+
+  Future<void> setUser(User user) async {
+    this.user = user;
+    var newUser = AppUser(name: user.displayName, id: user.uid);
+    prefsService.saveUserId(newUser);
   }
 }

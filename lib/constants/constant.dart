@@ -21,7 +21,7 @@ List<HomeMenu> get listHomeMenu {
 }
 
 // ignore: avoid_classes_with_only_static_members
-class ApiURL {
+mixin ApiURL {
   //wallet
   static String listWallets = "wallet/list";
   static String createWallet = "wallet/create";
@@ -35,4 +35,10 @@ class ApiURL {
   //user
   static String login = "user/login";
   static String register = "user/signup";
+}
+
+mixin CollectionName {
+  static String user = "user";
+  static String record = "record";
+  static String wallet = "wallet";
 }

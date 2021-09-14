@@ -23,7 +23,7 @@ class _ReportPageState extends State<ReportPage> with TickerProviderStateMixin {
     return newDate;
   });
   TabController _tabController;
-  final HomeViewModel _homeViewModel = HomeViewModel().instance;
+  HomeViewModel _homeViewModel;
 
   @override
   void initState() {
@@ -40,6 +40,8 @@ class _ReportPageState extends State<ReportPage> with TickerProviderStateMixin {
   @override
   // ignore: must_call_super
   Widget build(BuildContext context) {
+    _homeViewModel ??= Provider.of<HomeViewModel>(context);
+
     return DefaultTabController(
       length: listMonth.length,
       child: Scaffold(

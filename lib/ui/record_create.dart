@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/model/type_record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
@@ -8,17 +9,21 @@ import 'package:money_app/view_models/record_create_viewmodel.dart';
 import 'package:money_app/widgets/custom_input_field.dart';
 import 'package:provider/provider.dart';
 
+import 'dialogs/pick_type_record.dart';
 import 'dialogs/pick_wallet_dialog.dart';
 
 class AddRecord extends StatefulWidget {
+  final HomeViewModel homeViewModel;
+
+  const AddRecord({Key key, this.homeViewModel}) : super(key: key);
+
   @override
   _AddRecordState createState() => _AddRecordState();
 }
 
 class _AddRecordState extends State<AddRecord> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final RecordCreateViewModel _viewModel = RecordCreateViewModel().instance;
-  final HomeViewModel _homeViewModel = HomeViewModel().instance;
+  final RecordCreateViewModel _viewModel = RecordCreateViewModel();
   final TextEditingController _dateTextController = TextEditingController();
   final TextEditingController _walletTextController = TextEditingController();
   final TextEditingController _typeRecordTextController =
@@ -27,68 +32,73 @@ class _AddRecordState extends State<AddRecord> {
   @override
   void initState() {
     super.initState();
-    _dateTextController.text = _viewModel.dateString;
+    _dateTextController.text = DateFormat.yMMMd().format(DateTime.now());
   }
 
   FormState get _formState => _formKey.currentState;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: const Text(
-          "Create Record",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              if (_formState.validate()) {
-                _formState.save();
-                final Record record = Record(
-                  createDate: DateTime.now(),
-                  amount: _viewModel.amount,
-                  title: _viewModel.title,
-                  isAdd: _viewModel.amount >= 0,
-                  walletId: _viewModel.wallet.id,
-                  typeRecordId: _viewModel.typeRecord.id,
-                  note: _viewModel.note,
-                  date: _viewModel.date,
-                );
-                final success = await _homeViewModel.onCreateRecord(record);
-                if (success == "SUCCESS") {
-                  Navigator.of(context).pop();
-                } else {
-                  final snackBar = SnackBar(content: Text(success ?? "FAIL"));
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    _viewModel.homeViewModel ??= widget.homeViewModel;
+    return ChangeNotifierProvider<RecordCreateViewModel>(
+      create: (_) => _viewModel,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: false,
+          title: const Text("Create Record"),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                if (_formState.validate()) {
+                  _formState.save();
+                  final Record record = Record(
+                    createDate: DateTime.now(),
+                    amount: _viewModel.amount,
+                    title: _viewModel.title,
+                    isAdd: _viewModel.amount >= 0,
+                    walletId: _viewModel.wallet.id,
+                    typeRecordId: _viewModel.typeRecord.id,
+                    note: _viewModel.note,
+                    date: _viewModel.date,
+                  );
+                  final success =
+                      await _viewModel.homeViewModel.onCreateRecord(record);
+                  if (success == "SUCCESS") {
+                    Navigator.of(context).pop();
+                  } else {
+                    final snackBar = SnackBar(content: Text(success ?? "FAIL"));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
                 }
-              }
-            },
-            child: const Text(
-              "Add",
-              style: TextStyle(color: Colors.white),
-            ),
-          )
-        ],
-      ),
-      body: Form(
-        key: _formKey,
-        child: Consumer<RecordCreateViewModel>(
-          builder: (context, viewModel, child) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  _buildTitle(),
-                  _buildAmount(),
-                  _buildDate(),
-                  _buildTypeRecord(),
-                  _buildWallet(),
-                  _buildNote(),
-                ],
+              },
+              child: const Text(
+                "Add",
+                style: TextStyle(color: Colors.white),
               ),
-            );
-          },
+            )
+          ],
+        ),
+        body: Form(
+          key: _formKey,
+          child: Consumer<RecordCreateViewModel>(
+            builder: (context, viewModel, child) {
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      _buildTitle(),
+                      _buildAmount(),
+                      _buildDate(),
+                      _buildTypeRecord(),
+                      _buildWallet(),
+                      _buildNote(),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -225,7 +235,9 @@ class _AddRecordState extends State<AddRecord> {
     final Wallet wallet = await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return PickWalletDialog();
+        return PickWalletDialog(
+          recordCreateViewModel: _viewModel,
+        );
       },
     );
     if (wallet == null) {
@@ -240,29 +252,8 @@ class _AddRecordState extends State<AddRecord> {
     final TypeRecord typeRecord = await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return SimpleDialog(
-          title: const Text("Pick Type Record"),
-          children: _viewModel.listTypeRecord.isNotEmpty
-              ? _viewModel.listTypeRecord.map(
-                  (typeRecord) {
-                    return Card(
-                      child: ListTile(
-                        title: Text(typeRecord.name),
-                        leading: const Icon(Icons.account_balance_wallet),
-                        onTap: () {
-                          Navigator.of(context).pop<TypeRecord>(typeRecord);
-                        },
-                        trailing: _viewModel.typeRecord?.id == typeRecord.id
-                            ? const Icon(
-                                Icons.check_circle,
-                                color: Colors.green,
-                              )
-                            : const SizedBox.shrink(),
-                      ),
-                    );
-                  },
-                ).toList()
-              : [const ListTile(title: Text("Empty Type Record"))],
+        return PickTypeRecord(
+          recordCreateViewModel: _viewModel,
         );
       },
     );
