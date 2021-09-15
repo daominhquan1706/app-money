@@ -11,7 +11,7 @@ class Record {
   DateTime createDate;
   DateTime modifiedDate;
   String walletId;
-  int typeRecordId;
+  String typeRecordId;
   String uid;
 
   Record({
@@ -36,12 +36,12 @@ class Record {
     amount = double.parse(json['amount'].toString());
     isAdd = amount >= 0;
     walletId = json['wallet_id'] as String;
-    typeRecordId = json['typeRecord_id'] as int;
+    typeRecordId = json['typeRecord_id'] as String;
     uid = json['uid'] as String;
   }
 
   Record.fromSnapshot(QueryDocumentSnapshot snapshot) {
-    id = snapshot.get('id') as String;
+    id = snapshot.id;
     createDate = DateTimeHelper.instance
         .stringToDate(snapshot.get('created_date') as String);
     title = snapshot.get('title') as String;
@@ -49,13 +49,13 @@ class Record {
     amount = double.parse(snapshot.get('amount').toString());
     isAdd = amount >= 0;
     walletId = snapshot.get('wallet_id') as String;
-    typeRecordId = snapshot.get('typeRecord_id') as int;
+    typeRecordId = snapshot.get('typeRecord_id') as String;
     uid = snapshot.get('uid') as String;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
+    // data['id'] = id;
     data['created_date'] = createDate;
     data['title'] = title;
     data['note'] = note;

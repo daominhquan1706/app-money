@@ -3,8 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:money_app/model/type_record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/repository/record_repository.dart';
+import 'package:money_app/repository/type_record_repository.dart';
 import 'package:money_app/repository/wallet_repository.dart';
-import 'package:money_app/services/locator_service.dart';
+import 'package:money_app/services/shared_preference_service.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
 
 class RecordCreateViewModel with ChangeNotifier {
@@ -19,13 +20,16 @@ class RecordCreateViewModel with ChangeNotifier {
 
   final RecordRepository recordRepository = RecordRepository.instance;
   final WalletRepository walletRepository = WalletRepository.instance;
+  final TypeRecordRepository typeRecordRepository =
+      TypeRecordRepository.instance;
   HomeViewModel _homeViewModel;
 
   HomeViewModel get homeViewModel => _homeViewModel;
-
+  final SharedPreferenceService _sharedPreferenceService =
+      SharedPreferenceService().instance;
   set homeViewModel(HomeViewModel value) {
     if (_homeViewModel == null) {
-      _homeViewModel ??= value;
+      _homeViewModel = value;
       fetchData();
     }
   }
@@ -53,7 +57,7 @@ class RecordCreateViewModel with ChangeNotifier {
   }
 
   Future getListTypeRecord(String walletId) async {
-    final result = await walletRepository.listTypeRecord(walletId);
+    final result = await typeRecordRepository.getTypeRecords(walletId);
     listTypeRecord = result ?? [];
     notifyListeners();
   }
@@ -65,5 +69,22 @@ class RecordCreateViewModel with ChangeNotifier {
 
   String get dateString {
     return DateFormat.yMMMd().format(date);
+  }
+
+  Future<TypeRecord> onCreateTypeRecord(TypeRecord typeRecord) async {
+    if (typeRecord == null) {
+      return null;
+    }
+    typeRecord.walletId = wallet.id;
+    final user = await _sharedPreferenceService.getUser();
+    typeRecord.uid = user.id;
+    final result = await typeRecordRepository.createTypeRecord(typeRecord);
+    if (result != null) {
+      listTypeRecord.add(result);
+      notifyListeners();
+      return result;
+    } else {
+      return null;
+    }
   }
 }

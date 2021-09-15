@@ -8,6 +8,7 @@ import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:money_app/view_models/record_create_viewmodel.dart';
 import 'package:money_app/widgets/custom_input_field.dart';
 import 'package:provider/provider.dart';
+import 'package:stacked_services/stacked_services.dart';
 
 import 'dialogs/pick_type_record.dart';
 import 'dialogs/pick_wallet_dialog.dart';
@@ -82,6 +83,7 @@ class _AddRecordState extends State<AddRecord> {
           key: _formKey,
           child: Consumer<RecordCreateViewModel>(
             builder: (context, viewModel, child) {
+              _walletTextController.text = viewModel.wallet?.name;
               return SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -227,12 +229,22 @@ class _AddRecordState extends State<AddRecord> {
         }
         return null;
       },
-      onTap: _selectTypeRecord,
+      onTap: () {
+        if (_viewModel.wallet != null) {
+          _selectTypeRecord();
+        } else {
+          DialogService().showDialog(
+            title: 'Message',
+            description: "please pick wallet first !",
+            buttonTitle: "OK",
+          );
+        }
+      },
     );
   }
 
   Future _selectWallet() async {
-    final Wallet wallet = await showDialog(
+    final Wallet wallet = await showDialog<Wallet>(
       context: context,
       builder: (BuildContext context) {
         return PickWalletDialog(

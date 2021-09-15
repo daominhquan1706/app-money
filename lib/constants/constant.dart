@@ -41,4 +41,5 @@ mixin CollectionName {
   static String user = "user";
   static String record = "record";
   static String wallet = "wallet";
+  static String typeRecord = "type_record";
 }

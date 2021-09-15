@@ -22,7 +22,7 @@ class Wallet {
   }
 
   Wallet.fromSnapshot(QueryDocumentSnapshot snapshot) {
-    id = snapshot.get('id') as String ?? snapshot.id;
+    id = snapshot.id;
     name = snapshot.get('wallet_name') as String;
     createdDate = DateTimeHelper.instance
         .stampTimeToDate(snapshot.get('created_date') as Timestamp);
@@ -33,7 +33,7 @@ class Wallet {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
+    // data['id'] = id;
     data['wallet_name'] = name;
     data['created_date'] = createdDate;
     data['modified_date'] = modifiedDate;

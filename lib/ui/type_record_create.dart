@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:money_app/model/wallet_model.dart';
-import 'package:money_app/view_models/home_viewmodel.dart';
-import 'package:provider/provider.dart';
+import 'package:money_app/model/type_record_model.dart';
+import 'package:money_app/view_models/record_create_viewmodel.dart';
 
-class WalletCreatePage extends StatefulWidget {
-  final HomeViewModel homeViewModel;
+class TypeRecordCreatePage extends StatefulWidget {
+  final RecordCreateViewModel recordCreateViewModel;
 
-  const WalletCreatePage({Key key, @required this.homeViewModel})
+  const TypeRecordCreatePage({Key key, @required this.recordCreateViewModel})
       : super(key: key);
   @override
-  _WalletCreatePageState createState() => _WalletCreatePageState();
+  _TypeRecordCreatePageState createState() => _TypeRecordCreatePageState();
 }
 
-class _WalletCreatePageState extends State<WalletCreatePage> {
+class _TypeRecordCreatePageState extends State<TypeRecordCreatePage> {
   String _title;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -28,10 +27,10 @@ class _WalletCreatePageState extends State<WalletCreatePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: const Text("Create Wallet"),
+        title: const Text("Create Type Record"),
         actions: [
           TextButton(
-            onPressed: onCreateWallet,
+            onPressed: _onCreateTypeRecord,
             child: const Text(
               "Add",
               style: TextStyle(color: Colors.white),
@@ -67,15 +66,15 @@ class _WalletCreatePageState extends State<WalletCreatePage> {
     );
   }
 
-  Future<void> onCreateWallet() async {
+  Future<void> _onCreateTypeRecord() async {
     if (_formState.validate()) {
       _formState.save();
-      final Wallet wallet = Wallet(
+      final TypeRecord typeRecord = TypeRecord(
         name: _title,
-        createdDate: DateTime.now(),
       );
-      final result = await widget.homeViewModel.onCreateWallet(wallet);
-      Navigator.of(context).pop<Wallet>(result);
+      final result =
+          await widget.recordCreateViewModel.onCreateTypeRecord(typeRecord);
+      Navigator.of(context).pop<TypeRecord>(result);
     }
   }
 }

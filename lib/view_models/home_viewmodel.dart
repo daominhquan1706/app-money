@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:money_app/model/record_model.dart';
+import 'package:money_app/model/type_record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/repository/record_repository.dart';
+import 'package:money_app/repository/type_record_repository.dart';
 import 'package:money_app/repository/wallet_repository.dart';
 import 'package:money_app/services/locator_service.dart';
 import 'package:money_app/services/shared_preference_service.dart';
@@ -16,6 +18,7 @@ class HomeViewModel with ChangeNotifier {
   List<Wallet> listWallet = [];
   final RecordRepository recordRepository = RecordRepository.instance;
   final WalletRepository walletRepository = WalletRepository.instance;
+
   Wallet currentWallet;
   SharedPreferenceService prefsService = SharedPreferenceService().instance;
 
@@ -39,12 +42,16 @@ class HomeViewModel with ChangeNotifier {
 
   Future getWallet() async {
     listWallet = await walletRepository.getWallets();
+    final currentWalletId = await prefsService.getCurrentWalletId();
+    currentWallet = listWallet.firstWhere(
+        (element) => element.id == currentWalletId,
+        orElse: () => null);
     notifyListeners();
   }
 
   void onPickWallet(Wallet wallet) {
     if (wallet.id == "all") {
-      prefsService.changeWallet(null);
+      prefsService.changeWallet("all");
       listRecord = listRecordFull;
     } else {
       prefsService.changeWallet(wallet.id);
@@ -56,17 +63,17 @@ class HomeViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> onCreateWallet(Wallet wallet) async {
+  Future<Wallet> onCreateWallet(Wallet wallet) async {
     if (wallet == null) {
-      return false;
+      return null;
     }
     final result = await walletRepository.createWallet(wallet);
     if (result != null) {
-      listWallet.insert(0, result);
+      listWallet.add(result);
       notifyListeners();
-      return true;
+      return result;
     } else {
-      return false;
+      return null;
     }
   }
 

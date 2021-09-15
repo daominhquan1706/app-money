@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/view_models/record_create_viewmodel.dart';
 
+import '../wallet_create.dart';
+
 class PickWalletDialog extends StatelessWidget {
   const PickWalletDialog({Key key, this.recordCreateViewModel})
       : super(key: key);
@@ -27,8 +29,15 @@ class PickWalletDialog extends StatelessWidget {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
+              onPressed: () async {
+                final result = await Navigator.of(context).push<Wallet>(
+                  MaterialPageRoute(
+                    builder: (context) => WalletCreatePage(
+                      homeViewModel: recordCreateViewModel.homeViewModel,
+                    ),
+                  ),
+                );
+                Navigator.of(context).pop<Wallet>(result);
               },
               child: const Text("+ Add new"),
             ),

@@ -12,35 +12,23 @@ class RecordRepository {
   final apiService = ApiService().service;
   CollectionReference recordRef =
       FirebaseFirestore.instance.collection(CollectionName.record);
+  final SharedPreferenceService _sharedPreferenceService =
+      SharedPreferenceService().instance;
 
   Future<List<Record>> getRecords() async {
-    final snapshot = await recordRef
-        .where('uid', isEqualTo: LoginViewModel().instance.user.uid)
-        .get();
+    final user = await _sharedPreferenceService.getUser();
+    final snapshot = await recordRef.where('uid', isEqualTo: user.id).get();
     final records = snapshot.docs
         .map((QueryDocumentSnapshot documentSnapshot) =>
             Record.fromSnapshot(documentSnapshot))
         .toList();
     records.sort((a, b) => b.createDate.compareTo(a.createDate));
     return records;
-    // final user = await SharedPreferenceService().instance.getUser();
-    // final params = {"userId": user.id.toString()};
-    // final data =
-    //     await apiService.get(ApiURL.listRecordByUserId, params: params);
-    // if (data["result"] != null) {
-    //   final listRecord =
-    //       (data["result"] as Map<String, dynamic>)["list_record"];
-    //   final list = (listRecord as List)
-    //       .map<Record>((e) => Record.fromJson(e as Map<String, dynamic>))
-    //       .toList();
-    //   list.sort((a, b) => b.createDate.compareTo(a.createDate));
-    //   return list ?? [];
-    // }
-    //
-    // return [];
   }
 
   Future<Record> createRecord(Record record) async {
+    final user = await _sharedPreferenceService.getUser();
+    record.uid = user.id;
     final value = await recordRef.add(record.toJson());
     record.id = value.id;
     return record;
