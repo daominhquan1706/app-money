@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:money_app/constants/constant.dart';
-import 'package:money_app/model/type_record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/services/api_service.dart';
+import 'package:money_app/services/locator_service.dart';
+import 'package:money_app/services/login_manager.dart';
 import 'package:money_app/services/shared_preference_service.dart';
 import 'package:money_app/view_models/login_viewmodel.dart';
 
 class WalletRepository {
-  WalletRepository._privateConstructor();
-  static final WalletRepository instance =
-      WalletRepository._privateConstructor();
-  final apiService = ApiService().service;
+  static final WalletRepository instance = locator<WalletRepository>();
+
+  final apiService = ApiService().instance;
   final SharedPreferenceService _sharedPreferenceService =
       SharedPreferenceService().instance;
   CollectionReference walletRef =
@@ -28,7 +28,7 @@ class WalletRepository {
   }
 
   Future<Wallet> createWallet(Wallet wallet) async {
-    final uid = LoginViewModel().instance.user.uid;
+    final uid = LoginManager.instance.user.uid;
     wallet.uid = uid;
     final value = await walletRef.add(wallet.toJson());
     wallet.id = value.id;

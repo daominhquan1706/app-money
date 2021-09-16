@@ -13,8 +13,8 @@ class MyList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final listDate = listRecord
-        .map((e) =>
-            DateTime(e.createDate.year, e.createDate.month, e.createDate.day))
+        .map((e) => DateTime(e.createDate.toDate().year,
+            e.createDate.toDate().month, e.createDate.toDate().day))
         .toSet()
         .toList();
     final sections = listDate
@@ -22,8 +22,10 @@ class MyList extends StatelessWidget {
             date: date,
             list: listRecord
                 .where((r) =>
-                    DateTime.utc(r.createDate.year, r.createDate.month,
-                        r.createDate.day) ==
+                    DateTime.utc(
+                        r.createDate.toDate().year,
+                        r.createDate.toDate().month,
+                        r.createDate.toDate().day) ==
                     DateTime.utc(date.year, date.month, date.day))
                 .toList()))
         .toList();

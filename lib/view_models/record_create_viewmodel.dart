@@ -1,65 +1,38 @@
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
+import 'package:money_app/model/record_model.dart';
 import 'package:money_app/model/type_record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
-import 'package:money_app/repository/record_repository.dart';
-import 'package:money_app/repository/type_record_repository.dart';
-import 'package:money_app/repository/wallet_repository.dart';
-import 'package:money_app/services/shared_preference_service.dart';
-import 'package:money_app/view_models/home_viewmodel.dart';
+import 'package:money_app/services/wallet_manager.dart';
 
 class RecordCreateViewModel with ChangeNotifier {
-  List<Wallet> listWallet = [];
-  List<TypeRecord> listTypeRecord = [];
   double amount;
   DateTime date = DateTime.now();
   String note;
   String title;
-  Wallet wallet;
+  Wallet get wallet => _walletManager.currentWallet;
   TypeRecord typeRecord;
 
-  final RecordRepository recordRepository = RecordRepository.instance;
-  final WalletRepository walletRepository = WalletRepository.instance;
-  final TypeRecordRepository typeRecordRepository =
-      TypeRecordRepository.instance;
-  HomeViewModel _homeViewModel;
+  final WalletManager _walletManager = WalletManager.instance;
 
-  HomeViewModel get homeViewModel => _homeViewModel;
-  final SharedPreferenceService _sharedPreferenceService =
-      SharedPreferenceService().instance;
-  set homeViewModel(HomeViewModel value) {
-    if (_homeViewModel == null) {
-      _homeViewModel = value;
-      fetchData();
-    }
+  List<TypeRecord> get listTypeRecord => _walletManager.listTypeRecord;
+  List<Wallet> get listWallet => _walletManager.listWallet;
+
+  Future initialize() async {
+    await getListTypeRecord(_walletManager.currentWallet.id);
   }
 
-  void fetchData() {
-    listWallet = _homeViewModel.listWallet;
-    setWallet(_homeViewModel.currentWallet);
+  Future onPickWallet(Wallet wallet) async {
+    _walletManager.onPickWallet(wallet);
+    typeRecord = null;
+    await getListTypeRecord(wallet.id);
     notifyListeners();
-  }
-
-  void setWallet(Wallet wallet) {
-    if (wallet != null) {
-      this.wallet = wallet;
-      if (wallet != null && wallet.id != null) {
-        getListTypeRecord(wallet.id);
-      }
-      notifyListeners();
-    }
-  }
-
-  void onPickWallet(Wallet w) {
-    wallet = w;
-    notifyListeners();
-    getListTypeRecord(wallet.id);
   }
 
   Future getListTypeRecord(String walletId) async {
-    final result = await typeRecordRepository.getTypeRecords(walletId);
-    listTypeRecord = result ?? [];
-    notifyListeners();
+    _walletManager.getListTypeRecord(walletId).then((value) {
+      notifyListeners();
+    });
   }
 
   void onPickTypeRecord(TypeRecord t) {
@@ -72,19 +45,14 @@ class RecordCreateViewModel with ChangeNotifier {
   }
 
   Future<TypeRecord> onCreateTypeRecord(TypeRecord typeRecord) async {
-    if (typeRecord == null) {
-      return null;
-    }
-    typeRecord.walletId = wallet.id;
-    final user = await _sharedPreferenceService.getUser();
-    typeRecord.uid = user.id;
-    final result = await typeRecordRepository.createTypeRecord(typeRecord);
-    if (result != null) {
-      listTypeRecord.add(result);
-      notifyListeners();
-      return result;
-    } else {
-      return null;
-    }
+    final result = await _walletManager.onCreateTypeRecord(typeRecord);
+    notifyListeners();
+    return result;
+  }
+
+  Future<Record> onCreateRecord(Record record) async {
+    record.typeRecordId = typeRecord.id;
+    final result = await _walletManager.onCreateRecord(record);
+    return result;
   }
 }

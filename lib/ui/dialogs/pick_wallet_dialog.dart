@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:money_app/model/wallet_model.dart';
-import 'package:money_app/view_models/record_create_viewmodel.dart';
+import 'package:money_app/services/locator_service.dart';
+import 'package:money_app/services/wallet_manager.dart';
 
 import '../wallet_create.dart';
 
 class PickWalletDialog extends StatelessWidget {
-  const PickWalletDialog({Key key, this.recordCreateViewModel})
-      : super(key: key);
-  final RecordCreateViewModel recordCreateViewModel;
+  PickWalletDialog({Key key}) : super(key: key);
+  final WalletManager walletManager = locator<WalletManager>();
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -32,9 +32,7 @@ class PickWalletDialog extends StatelessWidget {
               onPressed: () async {
                 final result = await Navigator.of(context).push<Wallet>(
                   MaterialPageRoute(
-                    builder: (context) => WalletCreatePage(
-                      homeViewModel: recordCreateViewModel.homeViewModel,
-                    ),
+                    builder: (context) => WalletCreatePage(),
                   ),
                 );
                 Navigator.of(context).pop<Wallet>(result);
@@ -46,8 +44,8 @@ class PickWalletDialog extends StatelessWidget {
       ],
       content: SingleChildScrollView(
         child: Column(
-          children: recordCreateViewModel.listWallet.isNotEmpty
-              ? recordCreateViewModel.listWallet.map(
+          children: walletManager.listWallet.isNotEmpty
+              ? walletManager.listWallet.map(
                   (wallet) {
                     return Card(
                       child: ListTile(
@@ -60,7 +58,7 @@ class PickWalletDialog extends StatelessWidget {
                         onTap: () {
                           Navigator.of(context).pop<Wallet>(wallet);
                         },
-                        trailing: recordCreateViewModel.wallet?.id == wallet.id
+                        trailing: walletManager.currentWallet?.id == wallet.id
                             ? const Icon(
                                 Icons.check_circle,
                                 color: Colors.green,

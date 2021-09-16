@@ -102,8 +102,8 @@ class _DetailsRecordState extends State<DetailsRecord> {
               leading: const Icon(Icons.note),
             ),
             ListTile(
-              title:
-                  Text(DateFormat('EEEE, d/M/yyyy').format(record.createDate)),
+              title: Text(DateFormat('EEEE, d/M/yyyy')
+                  .format(record.createDate.toDate())),
               leading: const Icon(Icons.calendar_today_outlined),
             ),
           ],

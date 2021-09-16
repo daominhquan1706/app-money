@@ -4,8 +4,9 @@ import 'package:money_app/constants/constant.dart';
 import 'package:money_app/helper/string_helper.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
+import 'package:money_app/services/login_manager.dart';
 import 'package:money_app/ui/record_create.dart';
-import 'package:money_app/ui/wallet_list.dart';
+import 'package:money_app/ui/list_wallet.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:money_app/view_models/login_viewmodel.dart';
 import 'package:money_app/widgets/empty_page.dart';
@@ -63,18 +64,19 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           leading: IconButton(
             icon: CircleAvatar(
               backgroundColor: Colors.white,
-              child: Text(
-                "${_homeViewModel.currentWallet?.id ?? ""}",
-                style: const TextStyle(color: Colors.black),
-              ),
+              child: Consumer<HomeViewModel>(builder: (context, value, child) {
+                return Text(
+                  value.currentWallet?.id ?? "",
+                  style: const TextStyle(color: Colors.black),
+                );
+              }),
             ),
             onPressed: () async {
-              final Wallet wallet = await Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const WalletList()));
+              final Wallet wallet = await Navigator.of(context).push<Wallet>(
+                  MaterialPageRoute(
+                      builder: (context) => const ListWalletPage()));
               if (wallet != null) {
-                setState(() {
-                  _homeViewModel.onPickWallet(wallet);
-                });
+                _homeViewModel.onPickWallet(wallet);
               }
             },
           ),
@@ -112,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               onSelected: (text) {
                 switch (text) {
                   case "Sign Out":
-                    LoginViewModel().instance.logout();
+                    LoginManager.instance.logout();
                     break;
                   default:
                     break;
@@ -138,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Widget getPage(DateTime date, List<Record> listRecord) {
     final list = listRecord
         .where((r) =>
-            DateTime(r.createDate.year, r.createDate.month) ==
+            DateTime(r.createDate.toDate().year, r.createDate.toDate().month) ==
             DateTime(date.year, date.month))
         .toList();
     return list.isEmpty ? EmptyPage() : MyList(listRecord: list);

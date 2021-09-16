@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:money_app/helper/string_helper.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
-import 'package:money_app/ui/wallet_list.dart';
+import 'package:money_app/ui/list_wallet.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:money_app/widgets/empty_page.dart';
 import 'package:money_app/widgets/report_page.dart';
@@ -51,7 +51,8 @@ class _ReportPageState extends State<ReportPage> with TickerProviderStateMixin {
             icon: const Icon(Icons.account_balance_wallet),
             onPressed: () async {
               final Wallet wallet = await Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const WalletList()));
+                  MaterialPageRoute(
+                      builder: (context) => const ListWalletPage()));
               if (wallet != null) {
                 setState(() {
                   _homeViewModel.onPickWallet(wallet);
@@ -100,7 +101,7 @@ class _ReportPageState extends State<ReportPage> with TickerProviderStateMixin {
   Widget getPage(DateTime date, List<Record> listRecord) {
     final list = listRecord
         .where((r) =>
-            DateTime(r.createDate.year, r.createDate.month) ==
+            DateTime(r.createDate.toDate().year, r.createDate.toDate().month) ==
             DateTime(date.year, date.month))
         .toList();
     return list.isEmpty ? EmptyPage() : ReportBody(listRecord: list);

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:money_app/model/wallet_model.dart';
-import 'package:money_app/view_models/home_viewmodel.dart';
-import 'package:provider/provider.dart';
+import 'package:money_app/services/locator_service.dart';
+import 'package:money_app/services/wallet_manager.dart';
 
 class WalletCreatePage extends StatefulWidget {
-  final HomeViewModel homeViewModel;
-
-  const WalletCreatePage({Key key, @required this.homeViewModel})
-      : super(key: key);
   @override
   _WalletCreatePageState createState() => _WalletCreatePageState();
 }
@@ -18,6 +14,8 @@ class _WalletCreatePageState extends State<WalletCreatePage> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   FormState get _formState => _formKey.currentState;
+  WalletManager walletManager = locator<WalletManager>();
+
   @override
   void initState() {
     super.initState();
@@ -74,7 +72,8 @@ class _WalletCreatePageState extends State<WalletCreatePage> {
         name: _title,
         createdDate: DateTime.now(),
       );
-      final result = await widget.homeViewModel.onCreateWallet(wallet);
+      final result = await walletManager.onCreateWallet(wallet);
+      print(result);
       Navigator.of(context).pop<Wallet>(result);
     }
   }

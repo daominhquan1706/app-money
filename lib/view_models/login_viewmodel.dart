@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:money_app/model/user_model.dart';
 import 'package:money_app/services/locator_service.dart';
+import 'package:money_app/services/login_manager.dart';
 import 'package:money_app/services/shared_preference_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -15,63 +14,31 @@ class LoginViewModel with ChangeNotifier {
   }
 
   LoginViewModel get instance => locator<LoginViewModel>();
-
-  SharedPreferenceService prefsService = locator<SharedPreferenceService>();
-  User user;
-  bool _disposed = false;
-  LoginState state = LoginState.login;
+  final LoginManager _loginManager = LoginManager.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
-  bool isLoggedIn = false;
+  LoginState _state = LoginState.login;
 
-  @override
-  void dispose() {
-    _disposed = true;
-    super.dispose();
+  LoginState get state => _state;
+
+  bool get isLoggedIn {
+    return _loginManager.user != null;
   }
 
-  @override
-  void notifyListeners() {
-    if (!_disposed) {
-      super.notifyListeners();
-    }
+  set state(LoginState value) {
+    _state = value;
+    notifyListeners();
   }
 
   Future<void> fetchData() async {
     FirebaseAuth.instance.authStateChanges().listen((User user) {
-      this.user = user;
-      isLoggedIn = user != null;
-      setUser(user);
+      _loginManager.setUser(user);
       notifyListeners();
     });
-    setUpSharedPreference();
-  }
-
-  Future setUpSharedPreference() async {
-    prefsService.prefs ??= await SharedPreferences.getInstance();
-    notifyListeners();
   }
 
   Future login({@required String username, @required String password}) async {
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: username, password: password);
-    } on FirebaseAuthException catch (e) {
-      String errorMessage = "Login Fail, please try again";
-      if (e.code == 'user-not-found') {
-        errorMessage = 'No user found for that email.';
-      } else if (e.code == 'wrong-password') {
-        errorMessage = 'Wrong password provided for that user.';
-      }
-      showFailDialog(errorMessage);
-    }
-  }
-
-  Future<void> showFailDialog(String message) async {
-    await DialogService().showDialog(
-      title: 'Message',
-      description: message,
-      buttonTitle: "OK",
-    );
+    await _loginManager.login(username: username, password: password);
+    notifyListeners();
   }
 
   Future register(
@@ -88,22 +55,5 @@ class LoginViewModel with ChangeNotifier {
     } catch (e) {
       print(e);
     }
-  }
-
-  Future<void> logout() async {
-    user = null;
-    prefsService.saveUserId(null);
-    await FirebaseAuth.instance.signOut();
-  }
-
-  void changeState(LoginState state) {
-    this.state = state;
-    notifyListeners();
-  }
-
-  Future<void> setUser(User user) async {
-    this.user = user;
-    var newUser = AppUser(name: user.displayName, id: user.uid);
-    prefsService.saveUserId(newUser);
   }
 }

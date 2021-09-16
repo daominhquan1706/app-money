@@ -29,7 +29,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Consumer<HomeViewModel>(
       builder: (context, value, child) {
-        if (value.listRecord == null) {
+        if (value?.listRecord == null) {
           return SplashScreen();
         }
         return _buildMainLayout();

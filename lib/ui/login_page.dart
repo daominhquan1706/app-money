@@ -92,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void onRegister() {
-    viewModel.changeState(LoginState.register);
+    viewModel.state = LoginState.register;
   }
 
   void onLogin() {

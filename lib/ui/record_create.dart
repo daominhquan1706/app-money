@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -34,13 +35,16 @@ class _AddRecordState extends State<AddRecord> {
   void initState() {
     super.initState();
     _dateTextController.text = DateFormat.yMMMd().format(DateTime.now());
+    _viewModel.initialize().then((value) {
+      _walletTextController.text = _viewModel.wallet?.name ?? "";
+      _typeRecordTextController.text = _viewModel.typeRecord?.name ?? "";
+    });
   }
 
   FormState get _formState => _formKey.currentState;
 
   @override
   Widget build(BuildContext context) {
-    _viewModel.homeViewModel ??= widget.homeViewModel;
     return ChangeNotifierProvider<RecordCreateViewModel>(
       create: (_) => _viewModel,
       child: Scaffold(
@@ -53,21 +57,20 @@ class _AddRecordState extends State<AddRecord> {
                 if (_formState.validate()) {
                   _formState.save();
                   final Record record = Record(
-                    createDate: DateTime.now(),
+                    createDate: Timestamp.fromDate(DateTime.now()),
                     amount: _viewModel.amount,
                     title: _viewModel.title,
                     isAdd: _viewModel.amount >= 0,
                     walletId: _viewModel.wallet.id,
                     typeRecordId: _viewModel.typeRecord.id,
                     note: _viewModel.note,
-                    date: _viewModel.date,
+                    date: Timestamp.fromDate(_viewModel.date),
                   );
-                  final success =
-                      await _viewModel.homeViewModel.onCreateRecord(record);
-                  if (success == "SUCCESS") {
+                  final result = await _viewModel.onCreateRecord(record);
+                  if (result != null) {
                     Navigator.of(context).pop();
                   } else {
-                    final snackBar = SnackBar(content: Text(success ?? "FAIL"));
+                    const snackBar = SnackBar(content: Text("FAIL"));
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }
                 }
@@ -83,7 +86,6 @@ class _AddRecordState extends State<AddRecord> {
           key: _formKey,
           child: Consumer<RecordCreateViewModel>(
             builder: (context, viewModel, child) {
-              _walletTextController.text = viewModel.wallet?.name;
               return SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -247,17 +249,15 @@ class _AddRecordState extends State<AddRecord> {
     final Wallet wallet = await showDialog<Wallet>(
       context: context,
       builder: (BuildContext context) {
-        return PickWalletDialog(
-          recordCreateViewModel: _viewModel,
-        );
+        return PickWalletDialog();
       },
     );
     if (wallet == null) {
       return;
     }
-    _viewModel.onPickWallet(wallet);
-    _walletTextController.text = wallet.name;
-    _typeRecordTextController.text = null;
+    await _viewModel.onPickWallet(wallet);
+    _walletTextController.text = _viewModel.wallet?.name ?? "";
+    _typeRecordTextController.text = _viewModel.typeRecord?.name ?? "";
   }
 
   Future _selectTypeRecord() async {

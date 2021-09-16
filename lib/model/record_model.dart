@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:money_app/helper/datetime_helper.dart';
 
 class Record {
   String id;
@@ -7,9 +6,9 @@ class Record {
   String note;
   double amount;
   bool isAdd;
-  DateTime date;
-  DateTime createDate;
-  DateTime modifiedDate;
+  Timestamp date;
+  Timestamp createDate;
+  Timestamp modifiedDate;
   String walletId;
   String typeRecordId;
   String uid;
@@ -29,8 +28,7 @@ class Record {
 
   Record.fromJson(Map<String, dynamic> json) {
     id = json['id'] as String;
-    createDate =
-        DateTimeHelper.instance.stringToDate(json['created_date'] as String);
+    createDate = json['created_date'] as Timestamp;
     title = json['title'] as String;
     note = json['note'] as String;
     amount = double.parse(json['amount'].toString());
@@ -42,44 +40,26 @@ class Record {
 
   Record.fromSnapshot(QueryDocumentSnapshot snapshot) {
     id = snapshot.id;
-    createDate = DateTimeHelper.instance
-        .stringToDate(snapshot.get('created_date') as String);
+    createDate = snapshot.get('created_date') as Timestamp;
     title = snapshot.get('title') as String;
     note = snapshot.get('note') as String;
     amount = double.parse(snapshot.get('amount').toString());
     isAdd = amount >= 0;
     walletId = snapshot.get('wallet_id') as String;
-    typeRecordId = snapshot.get('typeRecord_id') as String;
+    typeRecordId = snapshot.get('type_record_id') as String;
     uid = snapshot.get('uid') as String;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    // data['id'] = id;
     data['created_date'] = createDate;
     data['title'] = title;
     data['note'] = note;
     data['amount'] = amount;
     data['isAdd'] = isAdd;
     data['uid'] = uid;
-    return data;
-  }
-
-  Map<String, dynamic> toCreateJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    // "date": "01/01/2021",
-    // "title": "Record title example",
-    // "note": "Record note example",
-    // "amount": 100000,
-    // "wallet_id": 10,
-    // "typeRecord_id": 1
-    data["date"] = DateTimeHelper.instance.dateToString(date);
-    data["title"] = title;
-    data["note"] = note;
-    data["amount"] = amount;
-    data["wallet_id"] = walletId;
-    data["typeRecord_id"] = typeRecordId;
-    data['uid'] = uid;
+    data['wallet_id'] = walletId;
+    data['type_record_id'] = typeRecordId;
     return data;
   }
 }

@@ -8,7 +8,7 @@ import 'package:money_app/services/locator_service.dart';
 import 'package:stacked_services/stacked_services.dart';
 
 class ApiService {
-  ApiService get service => locator<ApiService>();
+  ApiService get instance => locator<ApiService>();
   final String _rootUrl = "localhost:8080";
   final _dialogService = DialogService();
   FirebaseFirestore firestore = FirebaseFirestore.instance;

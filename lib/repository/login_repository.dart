@@ -1,13 +1,10 @@
 import 'package:money_app/constants/constant.dart';
 import 'package:money_app/services/api_service.dart';
-import 'package:money_app/services/shared_preference_service.dart';
 
 class LoginRepository {
   LoginRepository._privateConstructor();
   static final LoginRepository instance = LoginRepository._privateConstructor();
-  final apiService = ApiService().service;
-  final SharedPreferenceService _sharedPreferenceService =
-      SharedPreferenceService().instance;
+  final apiService = ApiService().instance;
 
   Future<Map<String, dynamic>> login(String username, String password) async {
     final data = await apiService.post(ApiURL.login, body: {
