@@ -21,35 +21,20 @@ class HomeViewModel with ChangeNotifier {
   }
 
   void onPickWallet(Wallet wallet) {
-    _walletManager.onPickWallet(wallet);
-    notifyListeners();
-  }
-
-  Future<String> onCreateRecord(Record record) async {
-    if (record == null) {
-      return "record not be null";
-    }
-    final result = await _walletManager.onCreateRecord(record);
-    if (result != null) {
-      notifyListeners();
-      return "SUCCESS";
-    } else {
-      return "result not be null";
-    }
+    _walletManager.onPickWallet(wallet).then((value) => notifyListeners());
   }
 
   double get amountListRecord => [
-        ..._walletManager.listRecord
+        ..._walletManager.listRecordDisplay
             .map((e) => e.isAdd ? e.amount : 0 - e.amount),
         0.0,
       ].reduce((a, b) => a + b);
 
   List<Record> get listRecord {
-    return _walletManager == null ? [] : _walletManager.listRecord;
+    return _walletManager == null ? [] : _walletManager.listRecordDisplay;
   }
 
-  void deleteRecord(Record record) {
-    _walletManager.deleteRecord(record);
+  void refresh() {
     notifyListeners();
   }
 }

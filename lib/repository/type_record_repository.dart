@@ -3,7 +3,6 @@ import 'package:money_app/constants/constant.dart';
 import 'package:money_app/model/type_record_model.dart';
 import 'package:money_app/services/api_service.dart';
 import 'package:money_app/services/login_manager.dart';
-import 'package:money_app/view_models/login_viewmodel.dart';
 
 class TypeRecordRepository {
   TypeRecordRepository._privateConstructor();
@@ -16,6 +15,7 @@ class TypeRecordRepository {
   Future<List<TypeRecord>> getTypeRecords(String walletId) async {
     final snapshot = await typeRecordRef
         .where('uid', isEqualTo: LoginManager.instance.user.uid)
+        .where('wallet_id', isEqualTo: walletId)
         .get();
     final typeRecords = snapshot.docs
         .map((QueryDocumentSnapshot documentSnapshot) =>

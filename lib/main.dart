@@ -6,6 +6,7 @@ import 'package:money_app/services/locator_service.dart';
 import 'package:money_app/ui/login_page.dart';
 import 'package:money_app/ui/main_page.dart';
 import 'package:money_app/ui/register_page.dart';
+import 'package:money_app/ui/splash_screen.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:money_app/view_models/login_viewmodel.dart';
 import 'package:money_app/view_models/record_create_viewmodel.dart';
@@ -68,16 +69,22 @@ class _AppState extends State<App> {
               ],
               child: Consumer<LoginViewModel>(
                 builder: (context, value, child) {
-                  if (value.isLoggedIn != null && value.isLoggedIn) {
-                    return const MainPage();
+                  switch (value.authState) {
+                    case AuthState.loading:
+                      return SplashScreen();
+                    case AuthState.notLogin:
+                      switch (value.state) {
+                        case AuthPageType.login:
+                          return LoginPage();
+                        case AuthPageType.register:
+                          return RegisterPage();
+                      }
+                      return null;
+                    case AuthState.loggedIn:
+                      return const MainPage();
+                    default:
+                      return null;
                   }
-                  switch (value.state) {
-                    case LoginState.login:
-                      return LoginPage();
-                    case LoginState.register:
-                      return RegisterPage();
-                  }
-                  return null;
                 },
               ),
             );

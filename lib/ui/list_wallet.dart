@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_app/model/wallet_model.dart';
+import 'package:money_app/services/wallet_manager.dart';
 import 'package:money_app/ui/wallet_create.dart';
 import 'package:money_app/view_models/list_wallet_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -69,6 +70,9 @@ class _ListWalletPageState extends State<ListWalletPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Card(
+        color: WalletManager.instance.currentWallet.id == wallet.id
+            ? Colors.green
+            : Colors.white,
         child: ListTile(
           onTap: () {
             Navigator.of(context).pop<Wallet>(wallet);

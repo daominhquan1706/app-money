@@ -16,7 +16,7 @@ class WalletManager {
   List<Record> _listRecord = [];
   List<TypeRecord> listTypeRecord = [];
 
-  List<Record> get listRecord {
+  List<Record> get listRecordDisplay {
     if (currentWallet != null) {
       return _listRecord
           .where((element) => element.walletId == currentWallet.id)
@@ -59,13 +59,14 @@ class WalletManager {
     }
   }
 
-  void onPickWallet(Wallet wallet) {
+  Future<void> onPickWallet(Wallet wallet) async {
     if (wallet.id == "all") {
       _sharedPreferenceService.changeWallet("all");
     } else {
       _sharedPreferenceService.changeWallet(wallet.id);
       currentWallet = wallet;
     }
+    await getRecords();
   }
 
   Future getRecords() async {
@@ -77,11 +78,13 @@ class WalletManager {
     record.uid = user.id;
     record.walletId = currentWallet.id;
     final result = await _recordRepository.createRecord(record);
+    await getRecords();
     return result;
   }
 
-  void deleteRecord(Record record) {
-    listRecord.removeWhere((element) => element.id == record.id);
+  Future<void> onDeleteRecord(Record record) async {
+    // await _recordRepository.deleteRecord(record);
+    _listRecord.removeWhere((element) => element.id == record.id);
   }
 
   Future getListTypeRecord(String walletId) async {

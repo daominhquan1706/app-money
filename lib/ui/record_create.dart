@@ -57,7 +57,7 @@ class _AddRecordState extends State<AddRecord> {
                 if (_formState.validate()) {
                   _formState.save();
                   final Record record = Record(
-                    createDate: Timestamp.fromDate(DateTime.now()),
+                    createDate: Timestamp.fromDate(_viewModel.date),
                     amount: _viewModel.amount,
                     title: _viewModel.title,
                     isAdd: _viewModel.amount >= 0,
@@ -69,6 +69,9 @@ class _AddRecordState extends State<AddRecord> {
                   final result = await _viewModel.onCreateRecord(record);
                   if (result != null) {
                     Navigator.of(context).pop();
+                    const snackBar =
+                        SnackBar(content: Text("Create Record Success !"));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   } else {
                     const snackBar = SnackBar(content: Text("FAIL"));
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);

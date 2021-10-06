@@ -6,7 +6,8 @@ import 'package:money_app/services/shared_preference_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-enum LoginState { login, register }
+enum AuthPageType { login, register }
+enum AuthState { loading, notLogin, loggedIn, error }
 
 class LoginViewModel with ChangeNotifier {
   LoginViewModel() {
@@ -16,22 +17,20 @@ class LoginViewModel with ChangeNotifier {
   LoginViewModel get instance => locator<LoginViewModel>();
   final LoginManager _loginManager = LoginManager.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
-  LoginState _state = LoginState.login;
+  AuthState authState = AuthState.loading;
+  AuthPageType _state = AuthPageType.login;
+  AuthPageType get state => _state;
 
-  LoginState get state => _state;
-
-  bool get isLoggedIn {
-    return _loginManager.user != null;
-  }
-
-  set state(LoginState value) {
+  set state(AuthPageType value) {
     _state = value;
     notifyListeners();
   }
 
   Future<void> fetchData() async {
+    authState = AuthState.loading;
     FirebaseAuth.instance.authStateChanges().listen((User user) {
       _loginManager.setUser(user);
+      authState = user == null ? AuthState.notLogin : AuthState.loggedIn;
       notifyListeners();
     });
   }

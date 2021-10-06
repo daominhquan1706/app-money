@@ -5,10 +5,9 @@ import 'package:money_app/helper/string_helper.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/services/login_manager.dart';
-import 'package:money_app/ui/record_create.dart';
 import 'package:money_app/ui/list_wallet.dart';
+import 'package:money_app/ui/record_create.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
-import 'package:money_app/view_models/login_viewmodel.dart';
 import 'package:money_app/widgets/empty_page.dart';
 import 'package:money_app/widgets/list.dart';
 import 'package:provider/provider.dart';
@@ -38,7 +37,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         .indexWhere((date) => date.year == now.year && date.month == now.month);
     _tabController = TabController(
         initialIndex: initialPage, vsync: this, length: listMonth.length);
-
     super.initState();
   }
 
@@ -46,16 +44,16 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   // ignore: must_call_super
   Widget build(BuildContext context) {
     _homeViewModel ??= Provider.of<HomeViewModel>(context);
-
     return DefaultTabController(
       length: listMonth.length,
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            await Navigator.of(context).push<Record>(MaterialPageRoute(
-                builder: (context) => AddRecord(
-                      homeViewModel: _homeViewModel,
-                    )));
+            await Navigator.of(context).push<Record>(
+              MaterialPageRoute(
+                builder: (context) => AddRecord(homeViewModel: _homeViewModel),
+              ),
+            );
           },
           child: const Icon(Icons.add),
         ),
@@ -73,8 +71,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             ),
             onPressed: () async {
               final Wallet wallet = await Navigator.of(context).push<Wallet>(
-                  MaterialPageRoute(
-                      builder: (context) => const ListWalletPage()));
+                MaterialPageRoute(
+                  builder: (context) => const ListWalletPage(),
+                ),
+              );
               if (wallet != null) {
                 _homeViewModel.onPickWallet(wallet);
               }

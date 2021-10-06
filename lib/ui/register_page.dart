@@ -98,6 +98,6 @@ class _LoginPageState extends State<RegisterPage> {
   }
 
   void onLogin() {
-    viewModel.state = LoginState.login;
+    viewModel.state = AuthPageType.login;
   }
 }
