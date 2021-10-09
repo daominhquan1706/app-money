@@ -3,8 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:money_app/helper/string_helper.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/services/wallet_manager.dart';
-import 'package:money_app/view_models/home_viewmodel.dart';
-import 'package:provider/provider.dart';
 
 class DetailsRecord extends StatefulWidget {
   final Record record;

@@ -8,15 +8,17 @@ class CustomInputField extends StatefulWidget {
   TextEditingController controller;
   GestureTapCallback onTap;
   IconData trailingIcon;
-  CustomInputField({
-    Key key,
-    this.onSaved,
-    this.validator,
-    this.inputType,
-    this.controller,
-    this.onTap,
-    this.trailingIcon,
-  }) : super(key: key);
+  String placeHolder;
+  CustomInputField(
+      {Key key,
+      this.onSaved,
+      this.validator,
+      this.inputType,
+      this.controller,
+      this.onTap,
+      this.trailingIcon,
+      this.placeHolder})
+      : super(key: key);
 
   @override
   _CustomInputFieldState createState() => _CustomInputFieldState();
@@ -25,26 +27,41 @@ class CustomInputField extends StatefulWidget {
 class _CustomInputFieldState extends State<CustomInputField> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: TextFormField(
-        onTap: widget.onTap,
-        focusNode: widget.onTap != null ? AlwaysDisabledFocusNode() : null,
-        controller: widget.controller,
-        decoration: InputDecoration(
-          labelText: widget.inputType.label,
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(10.0),
+    return Row(
+      children: [
+        SizedBox(
+          width: 85,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(widget.inputType.label),
+          ),
+        ),
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 4, 8, 4),
+            child: Padding(
+              padding: EdgeInsets.zero, //const EdgeInsets.fromLTRB(0, 4, 4, 4),
+              child: TextFormField(
+                onTap: widget.onTap,
+                focusNode:
+                    widget.onTap != null ? AlwaysDisabledFocusNode() : null,
+                controller: widget.controller,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  suffixIcon: Icon(widget.trailingIcon),
+                  hintText: widget.placeHolder,
+                  filled: true,
+                  fillColor: Colors.yellow.shade50,
+                ),
+                inputFormatters: widget.inputType.inputFormatters,
+                keyboardType: widget.inputType.keyboardType,
+                validator: widget.validator,
+                onSaved: widget.onSaved,
+              ),
             ),
           ),
-          suffixIcon: Icon(widget.trailingIcon),
         ),
-        inputFormatters: widget.inputType.inputFormatters,
-        keyboardType: widget.inputType.keyboardType,
-        validator: widget.validator,
-        onSaved: widget.onSaved,
-      ),
+      ],
     );
   }
 }

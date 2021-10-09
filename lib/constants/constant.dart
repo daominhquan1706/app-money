@@ -14,6 +14,17 @@ extension HomeMenuExtension on HomeMenu {
         return null;
     }
   }
+
+  String get key {
+    switch (this) {
+      case HomeMenu.search:
+        return 'search';
+      case HomeMenu.signOut:
+        return 'signOut';
+      default:
+        return null;
+    }
+  }
 }
 
 List<HomeMenu> get listHomeMenu {

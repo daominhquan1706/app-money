@@ -11,10 +11,12 @@ class LoginManager {
   SharedPreferenceService prefsService = locator<SharedPreferenceService>();
   User user;
 
-  Future login({@required String username, @required String password}) async {
+  Future<String> login(
+      {@required String username, @required String password}) async {
     try {
-      final UserCredential userCredential = await FirebaseAuth.instance
+      final UserCredential _ = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: username, password: password);
+      return "Login Success !";
     } on FirebaseAuthException catch (e) {
       String errorMessage = "Login Fail, please try again";
       if (e.code == 'user-not-found') {
@@ -22,7 +24,28 @@ class LoginManager {
       } else if (e.code == 'wrong-password') {
         errorMessage = 'Wrong password provided for that user.';
       }
-      showFailDialog(errorMessage);
+      return errorMessage;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  Future<String> register(
+      {@required String username, @required String password}) async {
+    try {
+      final UserCredential _ = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: username, password: password);
+      return "Register Success !";
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        return "The password provided is too weak !";
+      } else if (e.code == 'email-already-in-use') {
+        return "The account already exists for that email !";
+      } else {
+        return e.message;
+      }
+    } catch (e) {
+      return e.toString();
     }
   }
 
@@ -37,12 +60,13 @@ class LoginManager {
   Future<void> logout() async {
     user = null;
     prefsService.saveUserId(null);
+    prefsService.setWalletId(null);
     await FirebaseAuth.instance.signOut();
   }
 
   Future<void> setUser(User user) async {
     this.user = user;
-    final newUser = AppUser(name: user.displayName, id: user.uid);
+    final newUser = AppUser(name: user.displayName, id: user?.uid);
     prefsService.saveUserId(newUser);
   }
 }

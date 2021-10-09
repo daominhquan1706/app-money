@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_app/helper/dialog_helper.dart';
 import 'package:money_app/view_models/login_viewmodel.dart';
 
 class LoginPage extends StatefulWidget {
@@ -17,11 +18,16 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text("Login Page"),
+            Text(
+              viewModel.pageType == AuthPageType.login
+                  ? "Login Page"
+                  : "Register Page",
+            ),
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
               child: TextFormField(
+                key: const ValueKey("username"),
                 controller: _userNameTEC,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
@@ -33,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
               child: TextFormField(
+                key: const ValueKey("password"),
                 controller: _passwordTEC,
                 obscureText: true,
                 decoration: const InputDecoration(
@@ -41,36 +48,56 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            expandButton(
-              text: "Login",
-              onPressed: () {
-                onLogin();
-              },
-            ),
-            flatButton(
-              text: "Register",
-              onPressed: () {
-                onRegister();
-              },
-            ),
+            if (viewModel.pageType == AuthPageType.login) ...[
+              expandButton(
+                key: const ValueKey("login"),
+                text: "Login",
+                onPressed: () {
+                  onLogin();
+                },
+              ),
+              flatButton(
+                key: const ValueKey("register"),
+                text: "Register",
+                onPressed: () {
+                  onRegister();
+                },
+              )
+            ] else ...[
+              expandButton(
+                key: const ValueKey("register"),
+                text: "Register",
+                onPressed: () {
+                  onRegister();
+                },
+              ),
+              flatButton(
+                key: const ValueKey("login"),
+                text: "Login",
+                onPressed: () {
+                  onLogin();
+                },
+              )
+            ]
           ],
         ),
       ),
     );
   }
 
-  Widget expandButton({String text, VoidCallback onPressed}) {
+  Widget expandButton({String text, VoidCallback onPressed, Key key}) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ElevatedButton(
+        key: key,
         onPressed: onPressed,
         child: Text(text ?? ""),
       ),
     );
   }
 
-  Widget flatButton({String text, VoidCallback onPressed}) {
+  Widget flatButton({String text, VoidCallback onPressed, ValueKey key}) {
     final ButtonStyle flatButtonStyle = TextButton.styleFrom(
       primary: Colors.blue,
       minimumSize: const Size(88, 44),
@@ -84,18 +111,35 @@ class _LoginPageState extends State<LoginPage> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: TextButton(
+        key: key,
         style: flatButtonStyle,
         onPressed: onPressed,
-        child: const Text('Register'),
+        child: Text(text),
       ),
     );
   }
 
   void onRegister() {
-    viewModel.state = AuthPageType.register;
+    if (viewModel.pageType == AuthPageType.login) {
+      viewModel.pageType = AuthPageType.register;
+    } else {
+      viewModel
+          .register(username: _userNameTEC.text, password: _passwordTEC.text)
+          .then(
+            (message) => DialogHelper.showSnackBar(context, message: message),
+          );
+    }
   }
 
   void onLogin() {
-    viewModel.login(username: _userNameTEC.text, password: _passwordTEC.text);
+    if (viewModel.pageType == AuthPageType.register) {
+      viewModel.pageType = AuthPageType.login;
+    } else {
+      viewModel
+          .login(username: _userNameTEC.text, password: _passwordTEC.text)
+          .then(
+            (message) => DialogHelper.showSnackBar(context, message: message),
+          );
+    }
   }
 }

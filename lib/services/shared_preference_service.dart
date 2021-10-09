@@ -8,22 +8,22 @@ class SharedPreferenceService {
   SharedPreferenceService get instance => locator<SharedPreferenceService>();
 
   SharedPreferences prefs;
-  static String USER_ID = 'user';
-  static String CURRENT_WALLET_ID = 'current_walletId';
+  static const String userID = 'user';
+  static String currentWalletID = 'current_walletId';
 
   Future saveUserId(AppUser user) async {
     if (user == null) {
-      await prefs.setString(USER_ID, null);
+      await prefs.setString(userID, null);
       return;
     }
     prefs ??= await SharedPreferences.getInstance();
     final strUser = jsonEncode(user.toJson());
-    await prefs.setString(USER_ID, strUser);
+    await prefs.setString(userID, strUser);
   }
 
   Future<AppUser> getUser() async {
     prefs ??= await SharedPreferences.getInstance();
-    final strUser = prefs.getString(USER_ID);
+    final strUser = prefs.getString(userID);
     if (strUser != null) {
       final json = jsonDecode(strUser) as Map<String, dynamic>;
       return AppUser.fromJson(json);
@@ -31,13 +31,13 @@ class SharedPreferenceService {
     return null;
   }
 
-  Future changeWallet(String walletId) async {
+  Future setWalletId(String walletId) async {
     prefs ??= await SharedPreferences.getInstance();
-    await prefs.setString(CURRENT_WALLET_ID, walletId);
+    await prefs.setString(currentWalletID, walletId);
   }
 
   Future<String> getCurrentWalletId() async {
     prefs ??= await SharedPreferences.getInstance();
-    return prefs.getString(CURRENT_WALLET_ID);
+    return prefs.getString(currentWalletID);
   }
 }

@@ -19,7 +19,9 @@ class RecordCreateViewModel with ChangeNotifier {
   List<Wallet> get listWallet => _walletManager.listWallet;
 
   Future initialize() async {
-    await getListTypeRecord(_walletManager.currentWallet.id);
+    if (_walletManager.currentWallet != null) {
+      await getListTypeRecord(_walletManager.currentWallet.id);
+    }
   }
 
   Future onPickWallet(Wallet wallet) async {

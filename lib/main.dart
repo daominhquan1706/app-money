@@ -1,11 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:money_app/services/dialog_service.dart';
 import 'package:money_app/services/locator_service.dart';
+import 'package:money_app/ui/loading_screen.dart';
 import 'package:money_app/ui/login_page.dart';
 import 'package:money_app/ui/main_page.dart';
-import 'package:money_app/ui/register_page.dart';
 import 'package:money_app/ui/splash_screen.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:money_app/view_models/login_viewmodel.dart';
@@ -52,7 +53,7 @@ class _AppState extends State<App> {
           // Check for errors
           if (snapshot.hasError) {
             return const Scaffold(
-              body: Text("SomethingWentWrong"),
+              body: Center(child: Text("SomethingWentWrong")),
             );
           }
 
@@ -61,7 +62,7 @@ class _AppState extends State<App> {
             return MultiProvider(
               providers: [
                 ChangeNotifierProvider<LoginViewModel>(
-                    create: (_) => LoginViewModel()),
+                    create: (_) => LoginViewModel().instance),
                 ChangeNotifierProvider<HomeViewModel>(
                     create: (_) => HomeViewModel()),
                 ChangeNotifierProvider<RecordCreateViewModel>(
@@ -71,17 +72,11 @@ class _AppState extends State<App> {
                 builder: (context, value, child) {
                   switch (value.authState) {
                     case AuthState.loading:
-                      return SplashScreen();
-                    case AuthState.notLogin:
-                      switch (value.state) {
-                        case AuthPageType.login:
-                          return LoginPage();
-                        case AuthPageType.register:
-                          return RegisterPage();
-                      }
-                      return null;
+                      return const LoadingScreen();
                     case AuthState.loggedIn:
                       return const MainPage();
+                    case AuthState.notLogin:
+                      return LoginPage();
                     default:
                       return null;
                   }
@@ -91,9 +86,7 @@ class _AppState extends State<App> {
           }
 
           // Otherwise, show something whilst waiting for initialization to complete
-          return const Scaffold(
-            body: Text("Loading"),
-          );
+          return SplashScreen();
         },
       ),
       builder: EasyLoading.init(),

@@ -7,6 +7,7 @@ import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/services/login_manager.dart';
 import 'package:money_app/ui/list_wallet.dart';
 import 'package:money_app/ui/record_create.dart';
+import 'package:money_app/ui/wallet_create.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:money_app/widgets/empty_page.dart';
 import 'package:money_app/widgets/list.dart';
@@ -26,11 +27,32 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     return newDate;
   });
   TabController _tabController;
-  HomeViewModel _homeViewModel;
+  final HomeViewModel _homeViewModel = HomeViewModel();
 
   _MyHomePageState();
   @override
   void initState() {
+    _homeViewModel.fetchData().then((_) => {
+          if (_homeViewModel.currentWallet == null)
+            {
+              Navigator.of(context)
+                  .push<Wallet>(
+                    MaterialPageRoute(
+                      builder: (context) => const WalletCreatePage(
+                        isPrenventBack: true,
+                      ),
+                    ),
+                  )
+                  .then((wallet) => {
+                        if (wallet != null)
+                          setState(() {
+                            {
+                              _homeViewModel.onPickWallet(wallet);
+                            }
+                          })
+                      })
+            }
+        });
     listMonth.sort((a, b) => a.compareTo(b));
     final now = DateTime.now();
     final initialPage = listMonth
@@ -41,99 +63,108 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   @override
-  // ignore: must_call_super
   Widget build(BuildContext context) {
-    _homeViewModel ??= Provider.of<HomeViewModel>(context);
-    return DefaultTabController(
-      length: listMonth.length,
-      child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            await Navigator.of(context).push<Record>(
-              MaterialPageRoute(
-                builder: (context) => AddRecord(homeViewModel: _homeViewModel),
-              ),
-            );
-          },
-          child: const Icon(Icons.add),
-        ),
-        appBar: AppBar(
-          titleSpacing: 0,
-          leading: IconButton(
-            icon: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Consumer<HomeViewModel>(builder: (context, value, child) {
-                return Text(
-                  value.currentWallet?.id ?? "",
-                  style: const TextStyle(color: Colors.black),
+    return ChangeNotifierProvider<HomeViewModel>(
+      create: (_) => _homeViewModel,
+      child: Consumer<HomeViewModel>(builder: (context, value, child) {
+        return DefaultTabController(
+          length: listMonth.length,
+          child: Scaffold(
+            floatingActionButton: FloatingActionButton(
+              onPressed: () async {
+                await Navigator.of(context).push<Record>(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        AddRecord(homeViewModel: _homeViewModel),
+                  ),
                 );
-              }),
+              },
+              child: const Icon(Icons.add),
             ),
-            onPressed: () async {
-              final Wallet wallet = await Navigator.of(context).push<Wallet>(
-                MaterialPageRoute(
-                  builder: (context) => const ListWalletPage(),
+            appBar: AppBar(
+              titleSpacing: 0,
+              leading: IconButton(
+                icon: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child:
+                      Consumer<HomeViewModel>(builder: (context, value, child) {
+                    return Text(
+                      value.currentWallet?.id ?? "",
+                      style: const TextStyle(color: Colors.black),
+                    );
+                  }),
                 ),
-              );
-              if (wallet != null) {
-                _homeViewModel.onPickWallet(wallet);
-              }
-            },
-          ),
-          bottom: TabBar(
-            controller: _tabController,
-            isScrollable: true,
-            tabs: listMonth
-                .map((e) => Tab(text: DateFormat('MMMM yyyy').format(e)))
-                .toList(),
-          ),
-          title: ListTile(
-            title: const Text(
-              "Total",
-              style: TextStyle(color: Colors.white54),
+                onPressed: () async {
+                  final Wallet wallet =
+                      await Navigator.of(context).push<Wallet>(
+                    MaterialPageRoute(
+                      builder: (context) => const ListWalletPage(),
+                    ),
+                  );
+                  if (wallet != null) {
+                    _homeViewModel.onPickWallet(wallet);
+                  }
+                },
+              ),
+              bottom: TabBar(
+                controller: _tabController,
+                isScrollable: true,
+                tabs: listMonth
+                    .map((e) => Tab(text: DateFormat('MMMM yyyy').format(e)))
+                    .toList(),
+              ),
+              title: ListTile(
+                title: const Text(
+                  "Total",
+                  style: TextStyle(color: Colors.white54),
+                ),
+                subtitle:
+                    Consumer<HomeViewModel>(builder: (context, value, child) {
+                  return Text(
+                    "${StringHelper.instance.getMoneyText(value.amountListRecord)} đ",
+                    style: const TextStyle(color: Colors.white, fontSize: 23),
+                  );
+                }),
+              ),
+              actions: [
+                PopupMenuButton<String>(
+                  key: const ValueKey("popUpMenu"),
+                  itemBuilder: (context) {
+                    return listHomeMenu
+                        .map(
+                          (item) => PopupMenuItem<String>(
+                            key: ValueKey(item.key),
+                            value: item.name,
+                            child: Text(item.name),
+                          ),
+                        )
+                        .toList();
+                  },
+                  onSelected: (text) {
+                    switch (text) {
+                      case "Sign Out":
+                        LoginManager.instance.logout();
+                        break;
+                      default:
+                        break;
+                    }
+                  },
+                )
+              ],
             ),
-            subtitle: Consumer<HomeViewModel>(builder: (context, value, child) {
-              return Text(
-                "${StringHelper.instance.getMoneyText(value.amountListRecord)} đ",
-                style: const TextStyle(color: Colors.white, fontSize: 23),
-              );
+            body: Consumer<HomeViewModel>(builder: (context, value, child) {
+              return value.listRecord == null
+                  ? EmptyPage()
+                  : TabBarView(
+                      controller: _tabController,
+                      children: listMonth
+                          .map((e) => getPage(e, value.listRecord))
+                          .toList(),
+                    );
             }),
           ),
-          actions: [
-            PopupMenuButton<String>(
-              itemBuilder: (context) {
-                return listHomeMenu
-                    .map(
-                      (e) => PopupMenuItem<String>(
-                        value: e.name,
-                        child: Text(e.name),
-                      ),
-                    )
-                    .toList();
-              },
-              onSelected: (text) {
-                switch (text) {
-                  case "Sign Out":
-                    LoginManager.instance.logout();
-                    break;
-                  default:
-                    break;
-                }
-              },
-            )
-          ],
-        ),
-        body: Consumer<HomeViewModel>(builder: (context, value, child) {
-          return value.listRecord == null
-              ? EmptyPage()
-              : TabBarView(
-                  controller: _tabController,
-                  children: listMonth
-                      .map((e) => getPage(e, value.listRecord))
-                      .toList(),
-                );
-        }),
-      ),
+        );
+      }),
     );
   }
 

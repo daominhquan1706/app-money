@@ -32,7 +32,7 @@ class PickWalletDialog extends StatelessWidget {
               onPressed: () async {
                 final result = await Navigator.of(context).push<Wallet>(
                   MaterialPageRoute(
-                    builder: (context) => WalletCreatePage(),
+                    builder: (context) => const WalletCreatePage(),
                   ),
                 );
                 Navigator.of(context).pop<Wallet>(result);

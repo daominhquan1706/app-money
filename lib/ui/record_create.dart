@@ -3,16 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_app/model/record_model.dart';
-import 'package:money_app/model/type_record_model.dart';
-import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:money_app/view_models/record_create_viewmodel.dart';
 import 'package:money_app/widgets/custom_input_field.dart';
+import 'package:money_app/widgets/type_record_grid_item.dart';
 import 'package:provider/provider.dart';
-import 'package:stacked_services/stacked_services.dart';
 
-import 'dialogs/pick_type_record.dart';
-import 'dialogs/pick_wallet_dialog.dart';
 
 class AddRecord extends StatefulWidget {
   final HomeViewModel homeViewModel;
@@ -85,27 +81,42 @@ class _AddRecordState extends State<AddRecord> {
             )
           ],
         ),
-        body: Form(
-          key: _formKey,
-          child: Consumer<RecordCreateViewModel>(
-            builder: (context, viewModel, child) {
-              return SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      _buildTitle(),
-                      _buildAmount(),
-                      _buildDate(),
-                      _buildTypeRecord(),
-                      _buildWallet(),
-                      _buildNote(),
-                    ],
-                  ),
+        body: Column(
+          children: [
+            Expanded(
+              child: Form(
+                key: _formKey,
+                child: Consumer<RecordCreateViewModel>(
+                  builder: (context, viewModel, child) {
+                    const divider = Divider(
+                      color: Colors.black26,
+                      indent: 12,
+                      height: 0,
+                    );
+                    return SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          child: Column(
+                            children: [
+                              _buildDate(),
+                              divider,
+                              _buildAmount(),
+                              divider,
+                              _buildNote(),
+                              divider,
+                              _buildTypeRecord(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
+              ),
+            ),
+            _bottomBar(),
+          ],
         ),
       ),
     );
@@ -125,23 +136,9 @@ class _AddRecordState extends State<AddRecord> {
         }
         return null;
       },
+      placeHolder: "0",
       onSaved: (String value) {
         _viewModel.amount = double.parse(value);
-      },
-    );
-  }
-
-  Widget _buildTitle() {
-    return CustomInputField(
-      inputType: InputType.title,
-      validator: (String value) {
-        if (value.isEmpty) {
-          return 'Title isRequired';
-        }
-        return null;
-      },
-      onSaved: (String value) {
-        _viewModel.title = value;
       },
     );
   }
@@ -152,6 +149,7 @@ class _AddRecordState extends State<AddRecord> {
       validator: (String value) {
         return null;
       },
+      placeHolder: "Has not been entered",
       onSaved: (String value) {
         _viewModel.note = value;
       },
@@ -169,113 +167,116 @@ class _AddRecordState extends State<AddRecord> {
         return null;
       },
       onTap: _showDatePicker,
-      trailingIcon: Icons.calendar_today,
     );
   }
 
-  void _showDatePicker() {
-    // showCupertinoModalPopup is a built-in function of the cupertino library
-    showCupertinoModalPopup(
+  Future<void> _showDatePicker() async {
+    DateTime pickedDate;
+    final result = await showCupertinoModalPopup<DateTime>(
       context: context,
       builder: (_) => Container(
-        height: 500,
-        color: const Color.fromARGB(255, 255, 255, 255),
+        height: 255,
+        //color: const Color.fromARGB(255, 255, 255, 255),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+              topRight: Radius.circular(10.0),
+              bottomRight: Radius.circular(10.0)),
+        ),
         child: Column(
           children: [
+            Row(
+              children: [
+                CupertinoButton(
+                  onPressed: () => Navigator.of(context).pop(null),
+                  child: const Text('Cancel'),
+                ),
+                const Spacer(),
+                CupertinoButton(
+                  onPressed: () => Navigator.of(context).pop(pickedDate),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
             SizedBox(
-              height: 400,
+              height: 180,
               child: CupertinoDatePicker(
                 initialDateTime: DateTime.now(),
                 mode: CupertinoDatePickerMode.date,
                 onDateTimeChanged: (picked) {
                   setState(() {
-                    if (picked != null && picked != _viewModel.date) {
-                      setState(() {
-                        _viewModel.date = picked;
-                        _dateTextController.text = _viewModel.dateString;
-                      });
+                    if (picked != null) {
+                      pickedDate = picked;
                     }
                   });
                 },
               ),
             ),
-            CupertinoButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            )
           ],
         ),
       ),
     );
-  }
-
-  Widget _buildWallet() {
-    return CustomInputField(
-      controller: _walletTextController,
-      inputType: InputType.wallet,
-      validator: (String value) {
-        if (value.isEmpty) {
-          return 'Wallet isRequired';
-        }
-        return null;
-      },
-      onTap: _selectWallet,
-      trailingIcon: Icons.account_balance_wallet,
-    );
+    if (result != null) {
+      setState(() {
+        _viewModel.date = result;
+        _dateTextController.text = _viewModel.dateString;
+      });
+    }
   }
 
   Widget _buildTypeRecord() {
-    return CustomInputField(
-      controller: _typeRecordTextController,
-      inputType: InputType.typeRecord,
-      validator: (String value) {
-        if (value.isEmpty) {
-          return 'Wallet isRequired';
-        }
-        return null;
-      },
-      onTap: () {
-        if (_viewModel.wallet != null) {
-          _selectTypeRecord();
-        } else {
-          DialogService().showDialog(
-            title: 'Message',
-            description: "please pick wallet first !",
-            buttonTitle: "OK",
-          );
-        }
-      },
+    if (_viewModel.listTypeRecord.isNotEmpty) {
+      _viewModel.typeRecord ??= _viewModel?.listTypeRecord?.first;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(bottom: 12),
+            child: Text("Type Record"),
+          ),
+          SizedBox(
+            width: double.infinity,
+            height: 300,
+            child: GridView.count(
+              childAspectRatio: 3 / 2,
+              crossAxisCount: 3,
+              children: _viewModel.listTypeRecord
+                  .map(
+                    (item) => TypeRecordGridItem(
+                      isSelect: item.id == _viewModel.typeRecord?.id,
+                      typeRecord: item,
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Future _selectWallet() async {
-    final Wallet wallet = await showDialog<Wallet>(
-      context: context,
-      builder: (BuildContext context) {
-        return PickWalletDialog();
-      },
+  Widget _bottomBar() {
+    return Column(
+      children: [
+        const Divider(height: 1),
+        SizedBox(
+          width: double.infinity,
+          child: Container(
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                onPressed: () {},
+                child: const Text("Add"),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
-    if (wallet == null) {
-      return;
-    }
-    await _viewModel.onPickWallet(wallet);
-    _walletTextController.text = _viewModel.wallet?.name ?? "";
-    _typeRecordTextController.text = _viewModel.typeRecord?.name ?? "";
-  }
-
-  Future _selectTypeRecord() async {
-    final TypeRecord typeRecord = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return PickTypeRecord(
-          recordCreateViewModel: _viewModel,
-        );
-      },
-    );
-    if (typeRecord == null) {
-      return;
-    }
-    _viewModel.onPickTypeRecord(typeRecord);
-    _typeRecordTextController.text = typeRecord.name;
   }
 }

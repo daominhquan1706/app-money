@@ -30,23 +30,6 @@ class _ListWalletPageState extends State<ListWalletPage> {
           body: ListView(
             children: [
               if (value.listWallet.isNotEmpty) ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Card(
-                    child: ListTile(
-                      onTap: () {
-                        Navigator.of(context).pop(Wallet(id: "all"));
-                      },
-                      leading: const CircleAvatar(
-                        backgroundColor: Colors.black12,
-                        child: FlutterLogo(),
-                      ),
-                      title: const Text("All"),
-                      subtitle: const Text(""),
-                    ),
-                  ),
-                ),
-                const Divider(),
                 ...(value.listWallet ?? []).map((e) => walletView(e)).toList()
               ],
             ],
@@ -55,7 +38,7 @@ class _ListWalletPageState extends State<ListWalletPage> {
             onPressed: () async {
               Navigator.of(context).push<bool>(
                 MaterialPageRoute(
-                  builder: (context) => WalletCreatePage(),
+                  builder: (context) => const WalletCreatePage(),
                 ),
               );
             },
@@ -70,7 +53,7 @@ class _ListWalletPageState extends State<ListWalletPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Card(
-        color: WalletManager.instance.currentWallet.id == wallet.id
+        color: WalletManager.instance.currentWallet?.id == wallet.id
             ? Colors.green
             : Colors.white,
         child: ListTile(

@@ -3,7 +3,6 @@ import 'package:money_app/constants/constant.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/services/locator_service.dart';
 import 'package:money_app/services/login_manager.dart';
-import 'package:money_app/services/shared_preference_service.dart';
 import 'package:money_app/services/wallet_manager.dart';
 
 class RecordRepository {
@@ -11,8 +10,6 @@ class RecordRepository {
 
   final CollectionReference _recordRef =
       FirebaseFirestore.instance.collection(CollectionName.record);
-  final SharedPreferenceService _sharedPreferenceService =
-      SharedPreferenceService().instance;
 
   Future<List<Record>> getRecords() async {
     final snapshot = await _recordRef

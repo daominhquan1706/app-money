@@ -60,17 +60,15 @@ class WalletManager {
   }
 
   Future<void> onPickWallet(Wallet wallet) async {
-    if (wallet.id == "all") {
-      _sharedPreferenceService.changeWallet("all");
-    } else {
-      _sharedPreferenceService.changeWallet(wallet.id);
-      currentWallet = wallet;
-    }
+    _sharedPreferenceService.setWalletId(wallet.id);
+    currentWallet = wallet;
     await getRecords();
   }
 
   Future getRecords() async {
-    _listRecord = await _recordRepository.getRecords();
+    if (currentWallet != null) {
+      _listRecord = await _recordRepository.getRecords();
+    }
   }
 
   Future<Record> onCreateRecord(Record record) async {
