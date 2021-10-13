@@ -11,11 +11,22 @@ class HomeViewModel with ChangeNotifier {
   }
 
   Future<void> fetchData() async {
-    await _walletManager.fetchData();
+    await _walletManager.fetchHomeData();
     if (_walletManager.currentWallet == null &&
         _walletManager.listWallet.isNotEmpty) {
       _walletManager.onPickWallet(_walletManager.listWallet.first);
+    } else if (_walletManager.listWallet.isEmpty) {
+      final Wallet wallet = Wallet(
+        name: "Wallet Default",
+        createdDate: DateTime.now(),
+      );
+      final createdWallet = await _walletManager.onCreateWallet(wallet);
+      _walletManager.onPickWallet(createdWallet);
+    } else {
+      final currentWallet = _walletManager.currentWallet;
+      _walletManager.onPickWallet(currentWallet);
     }
+
     notifyListeners();
   }
 

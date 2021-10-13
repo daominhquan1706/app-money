@@ -14,7 +14,8 @@ class WalletManager {
   static WalletManager get instance => locator<WalletManager>();
   List<Wallet> listWallet = [];
   List<Record> _listRecord = [];
-  List<TypeRecord> listTypeRecord = [];
+  List<TypeRecord> listTypeRecordOutcom = [];
+  List<TypeRecord> listTypeRecordIncome = [];
 
   List<Record> get listRecordDisplay {
     if (currentWallet != null) {
@@ -34,11 +35,12 @@ class WalletManager {
   final WalletRepository _walletRepository = WalletRepository.instance;
   final TypeRecordRepository typeRecordRepository =
       TypeRecordRepository.instance;
-  Future fetchData() async {
-    await Future.wait([getWallets(), getRecords()]);
+  Future fetchHomeData() async {
+    await fetchWallets();
+    await fetchRecords();
   }
 
-  Future<void> getWallets() async {
+  Future<void> fetchWallets() async {
     listWallet = await _walletRepository.getWallets();
     final currentWalletId = await _sharedPreferenceService.getCurrentWalletId();
     currentWallet = listWallet.firstWhere(
@@ -51,6 +53,7 @@ class WalletManager {
       return null;
     }
     final result = await _walletRepository.createWallet(wallet);
+
     if (result != null) {
       listWallet.add(result);
       return result;
@@ -62,10 +65,10 @@ class WalletManager {
   Future<void> onPickWallet(Wallet wallet) async {
     _sharedPreferenceService.setWalletId(wallet.id);
     currentWallet = wallet;
-    await getRecords();
+    await fetchRecords();
   }
 
-  Future getRecords() async {
+  Future fetchRecords() async {
     if (currentWallet != null) {
       _listRecord = await _recordRepository.getRecords();
     }
@@ -76,7 +79,7 @@ class WalletManager {
     record.uid = user.id;
     record.walletId = currentWallet.id;
     final result = await _recordRepository.createRecord(record);
-    await getRecords();
+    await fetchRecords();
     return result;
   }
 
@@ -87,7 +90,11 @@ class WalletManager {
 
   Future getListTypeRecord(String walletId) async {
     final result = await typeRecordRepository.getTypeRecords(walletId);
-    listTypeRecord = result ?? [];
+    result.sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
+    listTypeRecordOutcom =
+        result.where((element) => element.type == 0).toList() ?? [];
+    listTypeRecordIncome =
+        result.where((element) => element.type == 1).toList() ?? [];
   }
 
   Future<TypeRecord> onCreateTypeRecord(TypeRecord typeRecord) async {
@@ -99,10 +106,18 @@ class WalletManager {
     typeRecord.uid = user.id;
     final result = await typeRecordRepository.createTypeRecord(typeRecord);
     if (result != null) {
-      listTypeRecord.add(result);
+      // listTypeRecord.add(result);
       return result;
     } else {
       return null;
     }
+  }
+
+  Future<void> onReorderTypeRecord(List<TypeRecord> listTypeRecord) async {
+    await Future.wait(listTypeRecord
+        .where((e) => e.orderIndex != listTypeRecord.indexOf(e))
+        .map((e) => typeRecordRepository.updateOrderIndex(
+            e, listTypeRecord.indexOf(e))));
+    await getListTypeRecord(currentWallet.id);
   }
 }

@@ -29,4 +29,10 @@ class TypeRecordRepository {
     typeRecord.id = value.id;
     return typeRecord;
   }
+
+  Future updateOrderIndex(TypeRecord typeRecord, int newIndex) async {
+    final value = await typeRecordRef
+        .doc(typeRecord.id)
+        .update({"order_index": newIndex});
+  }
 }

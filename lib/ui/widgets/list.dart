@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:money_app/helper/string_helper.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/model/record_section_model.dart';
-import 'package:money_app/widgets/headerview.dart';
-import 'package:money_app/widgets/record_item_view.dart';
+import 'package:money_app/ui/widgets/record_item_view.dart';
+
+import 'headerview.dart';
 
 class MyList extends StatelessWidget {
   final List<Record> listRecord;
@@ -126,7 +127,11 @@ class RecordView extends StatelessWidget {
         ),
         Column(
           mainAxisSize: MainAxisSize.min,
-          children: section.list.map((e) => RecordItemView(record: e)).toList(),
+          children: section.list
+              .map(
+                (e) => RecordItemView(record: e),
+              )
+              .toList(),
         ),
       ],
     );

@@ -4,9 +4,9 @@ import 'package:money_app/helper/string_helper.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/ui/list_wallet.dart';
+import 'package:money_app/ui/widgets/empty_page.dart';
+import 'package:money_app/ui/widgets/report_page.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
-import 'package:money_app/widgets/empty_page.dart';
-import 'package:money_app/widgets/report_page.dart';
 import 'package:provider/provider.dart';
 
 class ReportPage extends StatefulWidget {

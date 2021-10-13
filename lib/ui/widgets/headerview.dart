@@ -29,7 +29,12 @@ class HeaderView extends StatelessWidget {
             ),
             title: Text(DateFormat('EEEE').format(date)),
             subtitle: Text(DateFormat('MMMM yyyy').format(date)),
-            trailing: Text(StringHelper.instance.getMoneyText(amount)),
+            trailing: Text(
+              "${StringHelper.instance.getMoneyText(amount)}đ",
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           const Divider(
             color: Colors.black12,

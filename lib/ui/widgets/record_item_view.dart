@@ -13,14 +13,27 @@ class RecordItemView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      // color: Colors.white,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(color: Colors.black12, width: 1),
+        ),
+      ),
       child: ListTile(
         leading: const CircleAvatar(),
-        title: Text(record.title),
-        subtitle: Text(record.note),
+        title: Text(
+          record.title ?? "",
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         trailing: Text(
-          StringHelper.instance.getMoneyText(record.amount),
-          style: TextStyle(color: record.isAdd ? Colors.blue : Colors.red),
+          "${StringHelper.instance.getMoneyText(record.amount)}đ",
+          style: TextStyle(
+            color: record.isAdd ? Colors.blue : Colors.red,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         onTap: () async {
           await Navigator.push(

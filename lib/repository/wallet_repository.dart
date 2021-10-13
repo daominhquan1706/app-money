@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:money_app/constants/constant.dart';
+import 'package:money_app/model/type_record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/services/api_service.dart';
 import 'package:money_app/services/locator_service.dart';
@@ -13,12 +14,13 @@ class WalletRepository {
   final apiService = ApiService().instance;
   final SharedPreferenceService _sharedPreferenceService =
       SharedPreferenceService().instance;
-  CollectionReference walletRef =
+  final CollectionReference _walletRef =
       FirebaseFirestore.instance.collection(CollectionName.wallet);
-
+  final CollectionReference _typeRecordRef =
+      FirebaseFirestore.instance.collection(CollectionName.typeRecord);
   Future<List<Wallet>> getWallets() async {
     final user = await _sharedPreferenceService.getUser();
-    final snapshot = await walletRef.where('uid', isEqualTo: user.id).get();
+    final snapshot = await _walletRef.where('uid', isEqualTo: user.id).get();
     final wallets = snapshot.docs
         .map((QueryDocumentSnapshot documentSnapshot) =>
             Wallet.fromSnapshot(documentSnapshot))
@@ -30,8 +32,14 @@ class WalletRepository {
   Future<Wallet> createWallet(Wallet wallet) async {
     final uid = LoginManager.instance.user.uid;
     wallet.uid = uid;
-    final value = await walletRef.add(wallet.toJson());
+    final value = await _walletRef.add(wallet.toJson());
     wallet.id = value.id;
+    await Future.wait(listTypeRecordDefault.map((element) {
+      element.uid = uid;
+      element.walletId = wallet.id;
+      return _typeRecordRef.add(element.toJson());
+    }));
+
     return wallet;
   }
 }

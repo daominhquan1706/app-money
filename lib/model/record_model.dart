@@ -44,7 +44,7 @@ class Record {
     title = snapshot.get('title') as String;
     note = snapshot.get('note') as String;
     amount = double.parse(snapshot.get('amount').toString());
-    isAdd = amount >= 0;
+    isAdd = snapshot.get('isAdd') as bool;
     walletId = snapshot.get('wallet_id') as String;
     typeRecordId = snapshot.get('type_record_id') as String;
     uid = snapshot.get('uid') as String;

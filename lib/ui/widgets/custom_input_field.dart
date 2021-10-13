@@ -9,6 +9,7 @@ class CustomInputField extends StatefulWidget {
   GestureTapCallback onTap;
   IconData trailingIcon;
   String placeHolder;
+  bool isRequire;
   CustomInputField(
       {Key key,
       this.onSaved,
@@ -17,7 +18,8 @@ class CustomInputField extends StatefulWidget {
       this.controller,
       this.onTap,
       this.trailingIcon,
-      this.placeHolder})
+      this.placeHolder,
+      this.isRequire = true})
       : super(key: key);
 
   @override
@@ -33,14 +35,17 @@ class _CustomInputFieldState extends State<CustomInputField> {
           width: 85,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Text(widget.inputType.label),
+            child: Text(
+              widget.inputType.label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ),
         Flexible(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 4, 8, 4),
-            child: Padding(
-              padding: EdgeInsets.zero, //const EdgeInsets.fromLTRB(0, 4, 4, 4),
+            child: SizedBox(
+              height: 30,
               child: TextFormField(
                 onTap: widget.onTap,
                 focusNode:
@@ -51,7 +56,12 @@ class _CustomInputFieldState extends State<CustomInputField> {
                   suffixIcon: Icon(widget.trailingIcon),
                   hintText: widget.placeHolder,
                   filled: true,
-                  fillColor: Colors.yellow.shade50,
+                  fillColor: widget.isRequire
+                      ? Colors.yellow.shade50
+                      : Colors.transparent,
+                  hintStyle: TextStyle(color: Colors.grey.shade300),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.all(10),
                 ),
                 inputFormatters: widget.inputType.inputFormatters,
                 keyboardType: widget.inputType.keyboardType,

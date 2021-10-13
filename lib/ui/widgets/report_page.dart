@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_app/helper/string_helper.dart';
 import 'package:money_app/model/record_model.dart';
-import 'package:money_app/widgets/pie_chart.dart';
+import 'package:money_app/ui/widgets/pie_chart.dart';
 
 class ReportBody extends StatelessWidget {
   ReportBody({Key key, @required this.listRecord}) : super(key: key);

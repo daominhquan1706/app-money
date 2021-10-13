@@ -1,14 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
+import 'package:money_app/helper/dialog_helper.dart';
 import 'package:money_app/model/record_model.dart';
+import 'package:money_app/model/type_record_model.dart';
+import 'package:money_app/ui/list_typerecord_page.dart';
+import 'package:money_app/ui/widgets/custom_input_field.dart';
+import 'package:money_app/ui/widgets/type_record_grid_item.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:money_app/view_models/record_create_viewmodel.dart';
-import 'package:money_app/widgets/custom_input_field.dart';
-import 'package:money_app/widgets/type_record_grid_item.dart';
 import 'package:provider/provider.dart';
-
 
 class AddRecord extends StatefulWidget {
   final HomeViewModel homeViewModel;
@@ -23,10 +26,12 @@ class _AddRecordState extends State<AddRecord> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final RecordCreateViewModel _viewModel = RecordCreateViewModel();
   final TextEditingController _dateTextController = TextEditingController();
+  final TextEditingController _amountTextController = TextEditingController();
+
   final TextEditingController _walletTextController = TextEditingController();
   final TextEditingController _typeRecordTextController =
       TextEditingController();
-
+  int segmentedControlGroupValue = 0;
   @override
   void initState() {
     super.initState();
@@ -34,10 +39,18 @@ class _AddRecordState extends State<AddRecord> {
     _viewModel.initialize().then((value) {
       _walletTextController.text = _viewModel.wallet?.name ?? "";
       _typeRecordTextController.text = _viewModel.typeRecord?.name ?? "";
+      _amountTextController.text = "0";
     });
   }
 
   FormState get _formState => _formKey.currentState;
+  List<TypeRecord> get _listTypeRecord {
+    if (segmentedControlGroupValue == 0) {
+      return _viewModel.listTypeRecordOutCome;
+    } else {
+      return _viewModel.listTypeRecordInCome;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,76 +60,58 @@ class _AddRecordState extends State<AddRecord> {
         appBar: AppBar(
           centerTitle: false,
           title: const Text("Create Record"),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                if (_formState.validate()) {
-                  _formState.save();
-                  final Record record = Record(
-                    createDate: Timestamp.fromDate(_viewModel.date),
-                    amount: _viewModel.amount,
-                    title: _viewModel.title,
-                    isAdd: _viewModel.amount >= 0,
-                    walletId: _viewModel.wallet.id,
-                    typeRecordId: _viewModel.typeRecord.id,
-                    note: _viewModel.note,
-                    date: Timestamp.fromDate(_viewModel.date),
-                  );
-                  final result = await _viewModel.onCreateRecord(record);
-                  if (result != null) {
-                    Navigator.of(context).pop();
-                    const snackBar =
-                        SnackBar(content: Text("Create Record Success !"));
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  } else {
-                    const snackBar = SnackBar(content: Text("FAIL"));
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  }
-                }
-              },
-              child: const Text(
-                "Add",
-                style: TextStyle(color: Colors.white),
-              ),
-            )
-          ],
         ),
-        body: Column(
-          children: [
-            Expanded(
-              child: Form(
-                key: _formKey,
-                child: Consumer<RecordCreateViewModel>(
-                  builder: (context, viewModel, child) {
-                    const divider = Divider(
-                      color: Colors.black26,
-                      indent: 12,
-                      height: 0,
-                    );
-                    return SingleChildScrollView(
-                      child: Padding(
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CupertinoSlidingSegmentedControl(
+                    groupValue: segmentedControlGroupValue,
+                    children: const <int, Widget>{
+                      0: Text('Tiền Chi'),
+                      1: Text('Tiền Thu')
+                    },
+                    onValueChanged: (int i) {
+                      setState(() {
+                        segmentedControlGroupValue = i;
+                      });
+                      _viewModel.onSwithType(i);
+                    }),
+              ),
+              Expanded(
+                child: Form(
+                  key: _formKey,
+                  child: Consumer<RecordCreateViewModel>(
+                    builder: (context, viewModel, child) {
+                      const divider = Divider(
+                        color: Colors.black26,
+                        indent: 12,
+                        height: 0,
+                      );
+                      return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Card(
-                          child: Column(
-                            children: [
-                              _buildDate(),
-                              divider,
-                              _buildAmount(),
-                              divider,
-                              _buildNote(),
-                              divider,
-                              _buildTypeRecord(),
-                            ],
-                          ),
+                        child: Column(
+                          children: [
+                            _buildDate(),
+                            divider,
+                            _buildNote(),
+                            divider,
+                            _buildAmount(),
+                            divider,
+                            Expanded(
+                              child: _buildTypeRecord(),
+                            ),
+                          ],
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
-            _bottomBar(),
-          ],
+              _bottomBar(),
+            ],
+          ),
         ),
       ),
     );
@@ -124,6 +119,7 @@ class _AddRecordState extends State<AddRecord> {
 
   Widget _buildAmount() {
     return CustomInputField(
+      controller: _amountTextController,
       inputType: InputType.amount,
       validator: (String value) {
         if (value.isEmpty) {
@@ -136,7 +132,6 @@ class _AddRecordState extends State<AddRecord> {
         }
         return null;
       },
-      placeHolder: "0",
       onSaved: (String value) {
         _viewModel.amount = double.parse(value);
       },
@@ -146,6 +141,7 @@ class _AddRecordState extends State<AddRecord> {
   Widget _buildNote() {
     return CustomInputField(
       inputType: InputType.note,
+      isRequire: false,
       validator: (String value) {
         return null;
       },
@@ -225,8 +221,8 @@ class _AddRecordState extends State<AddRecord> {
   }
 
   Widget _buildTypeRecord() {
-    if (_viewModel.listTypeRecord.isNotEmpty) {
-      _viewModel.typeRecord ??= _viewModel?.listTypeRecord?.first;
+    if (_listTypeRecord.isNotEmpty) {
+      _viewModel.typeRecord ??= _listTypeRecord?.first;
     }
 
     return Padding(
@@ -236,22 +232,52 @@ class _AddRecordState extends State<AddRecord> {
         children: [
           const Padding(
             padding: EdgeInsets.only(bottom: 12),
-            child: Text("Type Record"),
+            child: Text(
+              "Type Record",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
-          SizedBox(
-            width: double.infinity,
-            height: 300,
-            child: GridView.count(
-              childAspectRatio: 3 / 2,
-              crossAxisCount: 3,
-              children: _viewModel.listTypeRecord
-                  .map(
-                    (item) => TypeRecordGridItem(
-                      isSelect: item.id == _viewModel.typeRecord?.id,
-                      typeRecord: item,
-                    ),
+          Expanded(
+            child: SizedBox(
+              width: double.infinity,
+              // height: 300,
+              child: GridView.count(
+                childAspectRatio: 3 / 2,
+                crossAxisCount: 3,
+                children: [
+                  ...(_listTypeRecord ?? [])
+                      .map(
+                        (item) => TypeRecordGridItem(
+                          isSelect: item.id == _viewModel.typeRecord?.id,
+                          typeRecord: item,
+                          onTapItem: (typeRecord) {
+                            setState(() {
+                              _viewModel.onPickTypeRecord(typeRecord);
+                            });
+                          },
+                        ),
+                      )
+                      .toList(),
+                  TypeRecordGridItem(
+                    isSelect: false,
+                    typeRecord: TypeRecord(name: "Edit"),
+                    onTapItem: (_) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ListTypeRecordPage(
+                            recordCreateViewModel: _viewModel,
+                            initIndexSegmentControl: segmentedControlGroupValue,
+                            listTypeRecordIncome:
+                                _viewModel.listTypeRecordInCome,
+                            listTypeRecordOutcome:
+                                _viewModel.listTypeRecordOutCome,
+                          ),
+                        ),
+                      );
+                    },
                   )
-                  .toList(),
+                ],
+              ),
             ),
           ),
         ],
@@ -270,7 +296,7 @@ class _AddRecordState extends State<AddRecord> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: onSaveRecord,
                 child: const Text("Add"),
               ),
             ),
@@ -278,5 +304,30 @@ class _AddRecordState extends State<AddRecord> {
         ),
       ],
     );
+  }
+
+  Future<void> onSaveRecord() async {
+    if (_formState.validate()) {
+      _formState.save();
+      final Record record = Record(
+        createDate: Timestamp.fromDate(_viewModel.date),
+        amount: _viewModel.amount,
+        title: _viewModel.typeRecord.name,
+        isAdd: segmentedControlGroupValue == 1,
+        walletId: _viewModel.wallet.id,
+        typeRecordId: _viewModel.typeRecord.id,
+        note: _viewModel.note,
+        date: Timestamp.fromDate(_viewModel.date),
+      );
+      DialogHelper.showLoading();
+      final result = await _viewModel.onCreateRecord(record);
+      EasyLoading.dismiss();
+      if (result != null) {
+        Navigator.of(context).pop();
+        EasyLoading.showToast('Create Record Success !');
+      } else {
+        EasyLoading.showToast('Create Record Fail !');
+      }
+    }
   }
 }

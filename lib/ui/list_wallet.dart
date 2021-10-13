@@ -36,7 +36,7 @@ class _ListWalletPageState extends State<ListWalletPage> {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
-              Navigator.of(context).push<bool>(
+              Navigator.of(context).push<Wallet>(
                 MaterialPageRoute(
                   builder: (context) => const WalletCreatePage(),
                 ),

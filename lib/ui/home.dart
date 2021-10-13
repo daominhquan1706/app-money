@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:money_app/constants/constant.dart';
+import 'package:money_app/helper/dialog_helper.dart';
 import 'package:money_app/helper/string_helper.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/services/login_manager.dart';
 import 'package:money_app/ui/list_wallet.dart';
 import 'package:money_app/ui/record_create.dart';
-import 'package:money_app/ui/wallet_create.dart';
+import 'package:money_app/ui/widgets/empty_page.dart';
+import 'package:money_app/ui/widgets/list.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
-import 'package:money_app/widgets/empty_page.dart';
-import 'package:money_app/widgets/list.dart';
 import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -32,27 +33,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   _MyHomePageState();
   @override
   void initState() {
-    _homeViewModel.fetchData().then((_) => {
-          if (_homeViewModel.currentWallet == null)
-            {
-              Navigator.of(context)
-                  .push<Wallet>(
-                    MaterialPageRoute(
-                      builder: (context) => const WalletCreatePage(
-                        isPrenventBack: true,
-                      ),
-                    ),
-                  )
-                  .then((wallet) => {
-                        if (wallet != null)
-                          setState(() {
-                            {
-                              _homeViewModel.onPickWallet(wallet);
-                            }
-                          })
-                      })
-            }
-        });
+    DialogHelper.showLoading();
+    _homeViewModel.fetchData().then((value) => DialogHelper.dismissLoading());
     listMonth.sort((a, b) => a.compareTo(b));
     final now = DateTime.now();
     final initialPage = listMonth
