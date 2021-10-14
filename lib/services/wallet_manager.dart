@@ -83,6 +83,15 @@ class WalletManager {
     return result;
   }
 
+  Future<Record> onUpdateRecord(Record record) async {
+    final user = await _sharedPreferenceService.getUser();
+    record.uid = user.id;
+    record.walletId = currentWallet.id;
+    await _recordRepository.updateRecord(record);
+    await fetchRecords();
+    return record;
+  }
+
   Future<void> onDeleteRecord(Record record) async {
     // await _recordRepository.deleteRecord(record);
     _listRecord.removeWhere((element) => element.id == record.id);

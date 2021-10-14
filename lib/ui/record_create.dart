@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -13,44 +12,45 @@ import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:money_app/view_models/record_create_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class AddRecord extends StatefulWidget {
+class AddEditRecord extends StatefulWidget {
+  final bool isEdit;
+  final Record record;
   final HomeViewModel homeViewModel;
 
-  const AddRecord({Key key, this.homeViewModel}) : super(key: key);
+  const AddEditRecord({
+    Key key,
+    this.homeViewModel,
+    this.isEdit = false,
+    this.record,
+  }) : super(key: key);
 
   @override
-  _AddRecordState createState() => _AddRecordState();
+  _AddEditRecordState createState() => _AddEditRecordState();
 }
 
-class _AddRecordState extends State<AddRecord> {
+class _AddEditRecordState extends State<AddEditRecord> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final RecordCreateViewModel _viewModel = RecordCreateViewModel();
   final TextEditingController _dateTextController = TextEditingController();
   final TextEditingController _amountTextController = TextEditingController();
 
-  final TextEditingController _walletTextController = TextEditingController();
-  final TextEditingController _typeRecordTextController =
-      TextEditingController();
-  int segmentedControlGroupValue = 0;
   @override
   void initState() {
     super.initState();
-    _dateTextController.text = DateFormat.yMMMd().format(DateTime.now());
-    _viewModel.initialize().then((value) {
-      _walletTextController.text = _viewModel.wallet?.name ?? "";
-      _typeRecordTextController.text = _viewModel.typeRecord?.name ?? "";
-      _amountTextController.text = "0";
+
+    _viewModel.initialize(record: widget.record).then((value) {
+      if (widget.record == null) {
+        _dateTextController.text = DateFormat.yMMMd().format(DateTime.now());
+        _amountTextController.text = "0";
+      } else {
+        _dateTextController.text =
+            DateFormat.yMMMd().format(widget.record.createDate.toDate());
+        _amountTextController.text = widget.record.amount.toString();
+      }
     });
   }
 
   FormState get _formState => _formKey.currentState;
-  List<TypeRecord> get _listTypeRecord {
-    if (segmentedControlGroupValue == 0) {
-      return _viewModel.listTypeRecordOutCome;
-    } else {
-      return _viewModel.listTypeRecordInCome;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,26 +59,41 @@ class _AddRecordState extends State<AddRecord> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: false,
-          title: const Text("Create Record"),
+          title: !widget.isEdit
+              ? Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CupertinoSlidingSegmentedControl(
+                      groupValue: _viewModel.segmentIndex,
+                      children: <int, Widget>{
+                        0: Text(
+                          'Tiền Chi',
+                          style: TextStyle(
+                            color: _viewModel.segmentIndex == 1
+                                ? Colors.white
+                                : Colors.blue,
+                          ),
+                        ),
+                        1: Text(
+                          'Tiền Thu',
+                          style: TextStyle(
+                            color: _viewModel.segmentIndex == 0
+                                ? Colors.white
+                                : Colors.blue,
+                          ),
+                        )
+                      },
+                      onValueChanged: (int i) {
+                        setState(() {
+                          _viewModel.segmentIndex = i;
+                        });
+                        _viewModel.onSwithType(i);
+                      }),
+                )
+              : Text(widget.isEdit ? "Chỉnh sửa" : ""),
         ),
         body: SafeArea(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CupertinoSlidingSegmentedControl(
-                    groupValue: segmentedControlGroupValue,
-                    children: const <int, Widget>{
-                      0: Text('Tiền Chi'),
-                      1: Text('Tiền Thu')
-                    },
-                    onValueChanged: (int i) {
-                      setState(() {
-                        segmentedControlGroupValue = i;
-                      });
-                      _viewModel.onSwithType(i);
-                    }),
-              ),
               Expanded(
                 child: Form(
                   key: _formKey,
@@ -145,7 +160,7 @@ class _AddRecordState extends State<AddRecord> {
       validator: (String value) {
         return null;
       },
-      placeHolder: "Has not been entered",
+      placeHolder: "Chưa nhập vào",
       onSaved: (String value) {
         _viewModel.note = value;
       },
@@ -221,9 +236,9 @@ class _AddRecordState extends State<AddRecord> {
   }
 
   Widget _buildTypeRecord() {
-    if (_listTypeRecord.isNotEmpty) {
-      _viewModel.typeRecord ??= _listTypeRecord?.first;
-    }
+    // if (_listTypeRecord.isNotEmpty) {
+    //   _viewModel.typeRecord ??= _listTypeRecord?.first;
+    // }
 
     return Padding(
       padding: const EdgeInsets.all(12.0),
@@ -233,7 +248,7 @@ class _AddRecordState extends State<AddRecord> {
           const Padding(
             padding: EdgeInsets.only(bottom: 12),
             child: Text(
-              "Type Record",
+              "Danh mục",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -245,7 +260,7 @@ class _AddRecordState extends State<AddRecord> {
                 childAspectRatio: 3 / 2,
                 crossAxisCount: 3,
                 children: [
-                  ...(_listTypeRecord ?? [])
+                  ...(_viewModel.listTypeRecord ?? [])
                       .map(
                         (item) => TypeRecordGridItem(
                           isSelect: item.id == _viewModel.typeRecord?.id,
@@ -259,14 +274,14 @@ class _AddRecordState extends State<AddRecord> {
                       )
                       .toList(),
                   TypeRecordGridItem(
-                    isSelect: false,
+                    isEditButton: true,
                     typeRecord: TypeRecord(name: "Edit"),
                     onTapItem: (_) {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => ListTypeRecordPage(
                             recordCreateViewModel: _viewModel,
-                            initIndexSegmentControl: segmentedControlGroupValue,
+                            initIndexSegmentControl: _viewModel.segmentIndex,
                             listTypeRecordIncome:
                                 _viewModel.listTypeRecordInCome,
                             listTypeRecordOutcome:
@@ -297,7 +312,8 @@ class _AddRecordState extends State<AddRecord> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 onPressed: onSaveRecord,
-                child: const Text("Add"),
+                child: Text(
+                    "${widget.isEdit ? "Chỉnh sửa" : "Nhập"} ${_viewModel.segmentIndex == 0 ? "khoản chi" : "khoản thu"}"),
               ),
             ),
           ),
@@ -309,25 +325,20 @@ class _AddRecordState extends State<AddRecord> {
   Future<void> onSaveRecord() async {
     if (_formState.validate()) {
       _formState.save();
-      final Record record = Record(
-        createDate: Timestamp.fromDate(_viewModel.date),
-        amount: _viewModel.amount,
-        title: _viewModel.typeRecord.name,
-        isAdd: segmentedControlGroupValue == 1,
-        walletId: _viewModel.wallet.id,
-        typeRecordId: _viewModel.typeRecord.id,
-        note: _viewModel.note,
-        date: Timestamp.fromDate(_viewModel.date),
-      );
       DialogHelper.showLoading();
-      final result = await _viewModel.onCreateRecord(record);
+      final result = await _viewModel.onSaveRecord();
       EasyLoading.dismiss();
+      final isEdit = _viewModel.recordForEdit != null;
       if (result != null) {
         Navigator.of(context).pop();
-        EasyLoading.showToast('Create Record Success !');
+        EasyLoading.showToast('${isEdit ? "Chỉnh sửa" : "Tạo"} thành công !');
       } else {
-        EasyLoading.showToast('Create Record Fail !');
+        EasyLoading.showToast('${isEdit ? "Chỉnh sửa" : "Tạo"} thất bại !');
       }
     }
+  }
+
+  void setUpEditState(Record record) {
+    _viewModel.setUpRecordForEdit(record);
   }
 }

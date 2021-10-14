@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:money_app/constants/constant.dart';
 import 'package:money_app/helper/dialog_helper.dart';
@@ -10,7 +10,7 @@ import 'package:money_app/services/login_manager.dart';
 import 'package:money_app/ui/list_wallet.dart';
 import 'package:money_app/ui/record_create.dart';
 import 'package:money_app/ui/widgets/empty_page.dart';
-import 'package:money_app/ui/widgets/list.dart';
+import 'package:money_app/ui/widgets/list_record_widget.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -57,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 await Navigator.of(context).push<Record>(
                   MaterialPageRoute(
                     builder: (context) =>
-                        AddRecord(homeViewModel: _homeViewModel),
+                        AddEditRecord(homeViewModel: _homeViewModel),
                   ),
                 );
               },
@@ -66,15 +66,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             appBar: AppBar(
               titleSpacing: 0,
               leading: IconButton(
-                icon: CircleAvatar(
+                icon: const CircleAvatar(
                   backgroundColor: Colors.white,
-                  child:
-                      Consumer<HomeViewModel>(builder: (context, value, child) {
-                    return Text(
-                      value.currentWallet?.id ?? "",
-                      style: const TextStyle(color: Colors.black),
-                    );
-                  }),
+                  child: FaIcon(FontAwesomeIcons.wallet),
                 ),
                 onPressed: () async {
                   final Wallet wallet =
@@ -156,6 +150,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             DateTime(r.createDate.toDate().year, r.createDate.toDate().month) ==
             DateTime(date.year, date.month))
         .toList();
-    return list.isEmpty ? EmptyPage() : MyList(listRecord: list);
+    return list.isEmpty ? EmptyPage() : ListRecordWidget(listRecord: list);
   }
 }

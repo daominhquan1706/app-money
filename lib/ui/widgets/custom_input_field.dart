@@ -107,17 +107,17 @@ extension InputTypeExtension on InputType {
   String get label {
     switch (this) {
       case InputType.amount:
-        return "Amount";
+        return "Tiền";
       case InputType.title:
-        return "Title";
+        return "Tiêu đề";
       case InputType.note:
-        return "Note";
+        return "Ghi chú";
       case InputType.date:
-        return "Date";
+        return "Ngày";
       case InputType.wallet:
-        return "Wallet";
+        return "Ví";
       case InputType.typeRecord:
-        return "Type Record";
+        return "Danh mục";
     }
     return "null";
   }

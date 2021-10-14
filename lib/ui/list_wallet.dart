@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/services/wallet_manager.dart';
 import 'package:money_app/ui/wallet_create.dart';
@@ -38,7 +39,8 @@ class _ListWalletPageState extends State<ListWalletPage> {
             onPressed: () async {
               Navigator.of(context).push<Wallet>(
                 MaterialPageRoute(
-                  builder: (context) => const WalletCreatePage(),
+                  builder: (context) =>
+                      WalletCreatePage(viewModel: _listWalletViewModel),
                 ),
               );
             },
@@ -50,21 +52,20 @@ class _ListWalletPageState extends State<ListWalletPage> {
   }
 
   Widget walletView(Wallet wallet) {
+    final bool isSelect = WalletManager.instance.currentWallet?.id == wallet.id;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Card(
-        color: WalletManager.instance.currentWallet?.id == wallet.id
-            ? Colors.green
-            : Colors.white,
+        color: isSelect ? Colors.green.shade100 : Colors.white,
         child: ListTile(
           onTap: () {
             Navigator.of(context).pop<Wallet>(wallet);
           },
           leading: CircleAvatar(
-            backgroundColor: Colors.black12,
-            child: Text(
-              wallet.id,
-              style: const TextStyle(color: Colors.black),
+            backgroundColor: isSelect ? Colors.green : Colors.black12,
+            child: const FaIcon(
+              FontAwesomeIcons.wallet,
+              color: Colors.white,
             ),
           ),
           title: Text(wallet.name),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_app/helper/string_helper.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/ui/details_record.dart';
+import 'package:money_app/ui/record_create.dart';
 import 'package:money_app/view_models/home_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +22,7 @@ class RecordItemView extends StatelessWidget {
         ),
       ),
       child: ListTile(
-        leading: const CircleAvatar(),
+        // leading: const CircleAvatar(),
         title: Text(
           record.title ?? "",
           style: const TextStyle(
@@ -39,12 +40,15 @@ class RecordItemView extends StatelessWidget {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DetailsRecord(record: record),
+              builder: (context) => AddEditRecord(
+                isEdit: true,
+                record: record,
+              ),
             ),
           );
           Provider.of<HomeViewModel>(context, listen: false).refresh();
-          const snackBar = SnackBar(content: Text("Delete Record Success !"));
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          // const snackBar = SnackBar(content: Text("Delete Record Success !"));
+          // ScaffoldMessenger.of(context).showSnackBar(snackBar);
         },
       ),
     );

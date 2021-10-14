@@ -30,6 +30,10 @@ class RecordRepository {
     return record;
   }
 
+  Future updateRecord(Record record) async {
+    await _recordRef.doc(record.id).update(record.toJson());
+  }
+
   Future<void> deleteRecord(Record record) async {
     await _recordRef.doc(record.id).delete();
   }

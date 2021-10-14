@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:money_app/helper/dialog_helper.dart';
 import 'package:money_app/model/wallet_model.dart';
-import 'package:money_app/services/locator_service.dart';
-import 'package:money_app/services/wallet_manager.dart';
+import 'package:money_app/view_models/list_wallet_viewmodel.dart';
 
 class WalletCreatePage extends StatefulWidget {
   final bool isPrenventBack;
-
-  const WalletCreatePage({Key key, this.isPrenventBack = false})
+  final ListWalletViewModel viewModel;
+  const WalletCreatePage({Key key, this.isPrenventBack = false, this.viewModel})
       : super(key: key);
   @override
   _WalletCreatePageState createState() => _WalletCreatePageState();
@@ -18,7 +18,6 @@ class _WalletCreatePageState extends State<WalletCreatePage> {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   FormState get _formState => _formKey.currentState;
-  WalletManager walletManager = locator<WalletManager>();
 
   @override
   void initState() {
@@ -35,18 +34,20 @@ class _WalletCreatePageState extends State<WalletCreatePage> {
           centerTitle: false,
           title: const Text("Create Wallet"),
         ),
-        body: Column(
-          children: [
-            Form(
-              key: _formKey,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(children: [_buildTitle()]),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Form(
+                key: _formKey,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(children: [_buildTitle()]),
+                ),
               ),
-            ),
-            const Spacer(),
-            _bottomBar(),
-          ],
+              const Spacer(),
+              _bottomBar(),
+            ],
+          ),
         ),
       ),
     );
@@ -77,7 +78,9 @@ class _WalletCreatePageState extends State<WalletCreatePage> {
         name: _title,
         createdDate: DateTime.now(),
       );
-      final result = await walletManager.onCreateWallet(wallet);
+      DialogHelper.showLoading();
+      final result = await widget.viewModel.onCreateWallet(wallet);
+      DialogHelper.dismissLoading();
       Navigator.of(context).pop<Wallet>(result);
     }
   }

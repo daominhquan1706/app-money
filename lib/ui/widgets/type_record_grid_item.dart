@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:money_app/model/type_record_model.dart';
 
 class TypeRecordGridItem extends StatelessWidget {
   final TypeRecord typeRecord;
   final bool isSelect;
   final Function(TypeRecord) onTapItem;
+  final bool isEditButton;
   const TypeRecordGridItem({
     Key key,
     this.typeRecord,
-    this.isSelect,
+    this.isSelect = false,
     this.onTapItem,
+    this.isEditButton = false,
   }) : super(key: key);
 
   @override
@@ -35,10 +38,12 @@ class TypeRecordGridItem extends StatelessWidget {
             ),
           ),
           child: Center(
-            child: Text(
-              typeRecord.name,
-              textAlign: TextAlign.center,
-            ),
+            child: isEditButton
+                ? const FaIcon(FontAwesomeIcons.edit)
+                : Text(
+                    typeRecord.name,
+                    textAlign: TextAlign.center,
+                  ),
           ),
         ),
       ),

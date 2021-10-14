@@ -15,6 +15,7 @@ class ListTypeRecordPage extends StatefulWidget {
   final int initIndexSegmentControl;
   final List<TypeRecord> listTypeRecordOutcome;
   final List<TypeRecord> listTypeRecordIncome;
+
   const ListTypeRecordPage({
     Key key,
     this.recordCreateViewModel,

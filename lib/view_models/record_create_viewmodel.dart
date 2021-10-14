@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:money_app/model/record_model.dart';
@@ -14,6 +15,7 @@ class RecordCreateViewModel with ChangeNotifier {
   String title;
   Wallet get wallet => _walletManager.currentWallet;
   TypeRecord typeRecord;
+  int segmentIndex = 0;
 
   final WalletManager _walletManager = WalletManager.instance;
 
@@ -22,8 +24,18 @@ class RecordCreateViewModel with ChangeNotifier {
   List<TypeRecord> get listTypeRecordInCome =>
       _walletManager.listTypeRecordIncome;
   List<Wallet> get listWallet => _walletManager.listWallet;
+  Record recordForEdit;
 
-  Future initialize() async {
+  List<TypeRecord> get listTypeRecord {
+    if (segmentIndex == 0) {
+      return _walletManager.listTypeRecordOutcom;
+    } else {
+      return _walletManager.listTypeRecordIncome;
+    }
+  }
+
+  Future initialize({Record record}) async {
+    recordForEdit = record;
     if (_walletManager.currentWallet != null) {
       await getListTypeRecord(_walletManager.currentWallet.id);
     }
@@ -38,12 +50,18 @@ class RecordCreateViewModel with ChangeNotifier {
 
   Future getListTypeRecord(String walletId) async {
     _walletManager.getListTypeRecord(walletId).then((_) {
-      onSwithType(0);
+      final isEdit = recordForEdit != null;
+      if (isEdit) {
+        setUpRecordForEdit(recordForEdit);
+      } else {
+        onSwithType(0);
+      }
     });
   }
 
-  void onSwithType(int type) {
-    final list = type == 0
+  void onSwithType(int index) {
+    segmentIndex = index;
+    final list = segmentIndex == 0
         ? _walletManager.listTypeRecordOutcom
         : _walletManager.listTypeRecordIncome;
     if (list.isNotEmpty) {
@@ -66,14 +84,51 @@ class RecordCreateViewModel with ChangeNotifier {
     return result;
   }
 
-  Future<Record> onCreateRecord(Record record) async {
-    record.typeRecordId = typeRecord.id;
-    final result = await _walletManager.onCreateRecord(record);
-    return result;
+  Future<Record> onSaveRecord() async {
+    Record result;
+    final bool isEdit = recordForEdit != null;
+    if (isEdit) {
+      recordForEdit
+        ..createDate = Timestamp.fromDate(date)
+        ..amount = amount
+        ..title = typeRecord.name
+        ..typeRecordId = typeRecord.id
+        ..note = note;
+
+      await _walletManager.onUpdateRecord(recordForEdit);
+      return recordForEdit;
+    } else {
+      final Record record = Record(
+        createDate: Timestamp.fromDate(date),
+        amount: amount,
+        title: typeRecord.name,
+        isAdd: segmentIndex == 1,
+        walletId: wallet.id,
+        typeRecordId: typeRecord.id,
+        note: note,
+      );
+      await _walletManager.onCreateRecord(record);
+      return result;
+    }
   }
 
   Future<void> onReorderTypeRecords({List<TypeRecord> listTypeRecord}) async {
     await _walletManager.onReorderTypeRecord(listTypeRecord);
+    notifyListeners();
+  }
+
+  void setUpRecordForEdit(Record record) {
+    segmentIndex = record.isAdd ? 1 : 0;
+    date = record.createDate.toDate();
+    amount = record.amount;
+    final typeRecord = [
+      ..._walletManager.listTypeRecordIncome,
+      ..._walletManager.listTypeRecordOutcom
+    ].firstWhere((element) => element.id == record.typeRecordId,
+        orElse: () => null);
+    title = typeRecord.name;
+    onPickTypeRecord(typeRecord);
+    note = record.note;
     notifyListeners();
   }
 }

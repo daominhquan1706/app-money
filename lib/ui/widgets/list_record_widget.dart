@@ -6,11 +6,11 @@ import 'package:money_app/ui/widgets/record_item_view.dart';
 
 import 'headerview.dart';
 
-class MyList extends StatelessWidget {
+class ListRecordWidget extends StatelessWidget {
   final List<Record> listRecord;
   final pageController = PageController();
 
-  MyList({Key key, @required this.listRecord}) : super(key: key);
+  ListRecordWidget({Key key, @required this.listRecord}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final listDate = listRecord

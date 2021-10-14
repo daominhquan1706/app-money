@@ -10,7 +10,7 @@ class ListWalletViewModel with ChangeNotifier {
   }
 
   Future<Wallet> onCreateWallet(Wallet wallet) async {
-    final result = _walletManager.onCreateWallet(wallet);
+    final result = await _walletManager.onCreateWallet(wallet);
     notifyListeners();
     return result;
   }

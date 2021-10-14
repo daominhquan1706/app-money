@@ -6,9 +6,9 @@ class Record {
   String note;
   double amount;
   bool isAdd;
-  Timestamp date;
+  // Timestamp date;
   Timestamp createDate;
-  Timestamp modifiedDate;
+  // Timestamp modifiedDate;
   String walletId;
   String typeRecordId;
   String uid;
@@ -19,9 +19,7 @@ class Record {
     this.note,
     this.amount,
     this.isAdd,
-    this.date,
     this.createDate,
-    this.modifiedDate,
     this.walletId,
     this.typeRecordId,
   });

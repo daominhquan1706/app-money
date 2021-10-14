@@ -102,8 +102,12 @@ class ReportBody extends StatelessWidget {
 
   Widget _buildChart() {
     final double sumAmount = inputAmount - outputAmount;
-    final double inputPercent =
-        ((inputAmount / sumAmount) * 100).round().toDouble();
+    double inputPercent = 0;
+    if (sumAmount == 0) {
+      inputPercent = 100;
+    } else {
+      inputPercent = ((inputAmount / sumAmount) * 100).round().toDouble();
+    }
     final double outputPercent = 100 - inputPercent;
     return Card(
       child: PieChartSample3(
