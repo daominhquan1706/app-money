@@ -70,7 +70,7 @@ class _AddEditRecordState extends State<AddEditRecord> {
                           'Tiền Chi',
                           style: TextStyle(
                             color: _viewModel.segmentIndex == 1
-                                ? Colors.white
+                                ? Colors.white54
                                 : Colors.blue,
                           ),
                         ),
@@ -78,7 +78,7 @@ class _AddEditRecordState extends State<AddEditRecord> {
                           'Tiền Thu',
                           style: TextStyle(
                             color: _viewModel.segmentIndex == 0
-                                ? Colors.white
+                                ? Colors.white54
                                 : Colors.blue,
                           ),
                         )
@@ -313,14 +313,15 @@ class _AddEditRecordState extends State<AddEditRecord> {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  IconButton(
-                    onPressed: onDeleteRecord,
-                    icon: const FaIcon(
-                      FontAwesomeIcons.trash,
-                      color: Colors.red,
+                  if (widget.record != null)
+                    IconButton(
+                      onPressed: onDeleteRecord,
+                      icon: const FaIcon(
+                        FontAwesomeIcons.trash,
+                        color: Colors.red,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
+                  if (widget.record != null) const SizedBox(width: 8),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: onSaveRecord,
