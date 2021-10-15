@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:money_app/helper/dialog_helper.dart';
 import 'package:money_app/model/record_model.dart';
@@ -310,10 +311,24 @@ class _AddEditRecordState extends State<AddEditRecord> {
             color: Colors.white,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                onPressed: onSaveRecord,
-                child: Text(
-                    "${widget.isEdit ? "Chỉnh sửa" : "Nhập"} ${_viewModel.segmentIndex == 0 ? "khoản chi" : "khoản thu"}"),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: onDeleteRecord,
+                    icon: const FaIcon(
+                      FontAwesomeIcons.trash,
+                      color: Colors.red,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: onSaveRecord,
+                      child: Text(
+                          "${widget.isEdit ? "Chỉnh sửa" : "Nhập"} ${_viewModel.segmentIndex == 0 ? "khoản chi" : "khoản thu"}"),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -340,5 +355,44 @@ class _AddEditRecordState extends State<AddEditRecord> {
 
   void setUpEditState(Record record) {
     _viewModel.setUpRecordForEdit(record);
+  }
+
+  Future<void> onDeleteRecord() async {
+    final dynamic isAccept = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Do you want to Delete this Record ?"),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text(
+                "Cancel",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              //color: Colors.redAccent,
+              child: const Text("Delete"),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (isAccept is bool && isAccept) {
+      DialogHelper.showLoading();
+      _viewModel.onDeleteRecord().then((value) {
+        DialogHelper.dismissLoading();
+        Navigator.pop(context);
+      }).catchError((e) {
+        DialogHelper.dismissLoading();
+      });
+    }
   }
 }

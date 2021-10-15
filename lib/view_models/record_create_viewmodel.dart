@@ -107,13 +107,18 @@ class RecordCreateViewModel with ChangeNotifier {
         typeRecordId: typeRecord.id,
         note: note,
       );
-      await _walletManager.onCreateRecord(record);
-      return result;
+      final createdRecord = await _walletManager.onCreateRecord(record);
+      return createdRecord;
     }
   }
 
   Future<void> onReorderTypeRecords({List<TypeRecord> listTypeRecord}) async {
     await _walletManager.onReorderTypeRecord(listTypeRecord);
+    notifyListeners();
+  }
+
+  Future<void> onDeleteRecord() async{
+    await _walletManager.onDeleteRecord(recordForEdit);
     notifyListeners();
   }
 

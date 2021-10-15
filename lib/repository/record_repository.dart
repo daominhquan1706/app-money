@@ -34,7 +34,12 @@ class RecordRepository {
     await _recordRef.doc(record.id).update(record.toJson());
   }
 
-  Future<void> deleteRecord(Record record) async {
-    await _recordRef.doc(record.id).delete();
+  Future<bool> onDeleteRecord(String id) async {
+    try {
+      await _recordRef.doc(id).delete();
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

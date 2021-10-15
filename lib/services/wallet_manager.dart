@@ -93,8 +93,10 @@ class WalletManager {
   }
 
   Future<void> onDeleteRecord(Record record) async {
-    // await _recordRepository.deleteRecord(record);
-    _listRecord.removeWhere((element) => element.id == record.id);
+    final isSuccess = await _recordRepository.onDeleteRecord(record.id);
+    if (isSuccess) {
+      _listRecord.removeWhere((element) => element.id == record.id);
+    }
   }
 
   Future getListTypeRecord(String walletId) async {
