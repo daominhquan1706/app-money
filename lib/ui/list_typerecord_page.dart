@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:money_app/helper/dialog_helper.dart';
 import 'package:money_app/model/type_record_model.dart';
+import 'package:money_app/ui/type_record_create.dart';
 import 'package:money_app/view_models/record_create_viewmodel.dart';
 
 enum ListTypeRecordState {
@@ -38,6 +39,12 @@ class _ListTypeRecordPageState extends State<ListTypeRecordPage> {
     return segmentedControlGroupValue == 0
         ? listTypeRecordOutcome
         : listTypeRecordIncome;
+  }
+
+  TypeRecordType get _currentType {
+    return segmentedControlGroupValue == 0
+        ? TypeRecordType.outcome
+        : TypeRecordType.income;
   }
 
   @override
@@ -89,22 +96,24 @@ class _ListTypeRecordPageState extends State<ListTypeRecordPage> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CupertinoSlidingSegmentedControl(
-                  groupValue: segmentedControlGroupValue,
-                  children: const <int, Widget>{
-                    0: Text('Tiền Chi'),
-                    1: Text('Tiền Thu')
-                  },
-                  onValueChanged: (int i) {
-                    if (state == ListTypeRecordState.showlist) {
-                      setState(() {
-                        segmentedControlGroupValue = i;
-                      });
-                    }
-                  }),
-            ),
+            if (state == ListTypeRecordState.showlist)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CupertinoSlidingSegmentedControl(
+                    groupValue: segmentedControlGroupValue,
+                    children: const <int, Widget>{
+                      0: Text('Tiền Chi'),
+                      1: Text('Tiền Thu')
+                    },
+                    onValueChanged: (int i) {
+                      if (state == ListTypeRecordState.showlist) {
+                        setState(() {
+                          segmentedControlGroupValue = i;
+                        });
+                      }
+                    }),
+              ),
+            _buildAddTypeRecord(),
             Expanded(
               child: ReorderableListView(
                 buildDefaultDragHandles:
@@ -124,8 +133,8 @@ class _ListTypeRecordPageState extends State<ListTypeRecordPage> {
                   });
                 },
                 children: [
-                  for (final item in _listTypeRecord.where(
-                      (element) => element.type == segmentedControlGroupValue))
+                  for (final item in _listTypeRecord
+                      .where((element) => element.type == _currentType))
                     Container(
                       key: ValueKey(item.id),
                       child: _buildTypeRecord(item),
@@ -143,19 +152,67 @@ class _ListTypeRecordPageState extends State<ListTypeRecordPage> {
     return Column(
       children: [
         ListTile(
+          onTap: () async {
+            await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => TypeRecordCreatePage(
+                  recordCreateViewModel: widget.recordCreateViewModel,
+                  type: _currentType,
+                  typeRecord: item,
+                ),
+              ),
+            );
+            setState(() {});
+          },
+          leading: state == ListTypeRecordState.reordering
+              ? IconButton(
+                  onPressed: () {
+                    onDeleteTypeRecord(item);
+                  },
+                  icon: const FaIcon(
+                    FontAwesomeIcons.trash,
+                    color: Colors.red,
+                  ),
+                )
+              : null,
           title: Text(item.name ?? ""),
           trailing: state == ListTypeRecordState.reordering
               ? const FaIcon(
                   FontAwesomeIcons.bars,
                 )
-              : const SizedBox(
-                  height: 0,
-                  width: 0,
+              : const FaIcon(
+                  FontAwesomeIcons.chevronRight,
                 ),
         ),
         const Divider(
           height: 1,
         ),
+      ],
+    );
+  }
+
+  Widget _buildAddTypeRecord() {
+    return Column(
+      children: [
+        ListTile(
+            title: const Text("Thêm danh mục"),
+            onTap: () async {
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => TypeRecordCreatePage(
+                    recordCreateViewModel: widget.recordCreateViewModel,
+                    type: _currentType,
+                  ),
+                ),
+              );
+              setState(() {});
+            },
+            trailing: state == ListTypeRecordState.reordering
+                ? null
+                : const FaIcon(
+                    FontAwesomeIcons.chevronRight,
+                  )),
+        const Divider(height: 1),
       ],
     );
   }
@@ -172,5 +229,45 @@ class _ListTypeRecordPageState extends State<ListTypeRecordPage> {
       newList.insert(newIndex, item);
     }
     return newList;
+  }
+
+  Future<void> onDeleteTypeRecord(TypeRecord typeRecord) async {
+    final dynamic isAccept = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Bạn có muốn xoá danh mục [${typeRecord.name}] ?"),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text(
+                "Cancel",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              //color: Colors.redAccent,
+              child: const Text("Delete"),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (isAccept is bool && isAccept) {
+      DialogHelper.showLoading();
+      widget.recordCreateViewModel.onDeleteTypeRecord(typeRecord).then((value) {
+        setState(() {});
+        DialogHelper.dismissLoading();
+      }).catchError((e) {
+        setState(() {});
+        DialogHelper.dismissLoading();
+      });
+    }
   }
 }

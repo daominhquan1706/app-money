@@ -20,7 +20,7 @@ class RecordCreateViewModel with ChangeNotifier {
   final WalletManager _walletManager = WalletManager.instance;
 
   List<TypeRecord> get listTypeRecordOutCome =>
-      _walletManager.listTypeRecordOutcom;
+      _walletManager.listTypeRecordOutcome;
   List<TypeRecord> get listTypeRecordInCome =>
       _walletManager.listTypeRecordIncome;
   List<Wallet> get listWallet => _walletManager.listWallet;
@@ -28,7 +28,7 @@ class RecordCreateViewModel with ChangeNotifier {
 
   List<TypeRecord> get listTypeRecord {
     if (segmentIndex == 0) {
-      return _walletManager.listTypeRecordOutcom;
+      return _walletManager.listTypeRecordOutcome;
     } else {
       return _walletManager.listTypeRecordIncome;
     }
@@ -37,19 +37,19 @@ class RecordCreateViewModel with ChangeNotifier {
   Future initialize({Record record}) async {
     recordForEdit = record;
     if (_walletManager.currentWallet != null) {
-      await getListTypeRecord(_walletManager.currentWallet.id);
+      await getListTypeRecord();
     }
   }
 
   Future onPickWallet(Wallet wallet) async {
     _walletManager.onPickWallet(wallet);
     typeRecord = null;
-    await getListTypeRecord(wallet.id);
+    await getListTypeRecord();
     notifyListeners();
   }
 
-  Future getListTypeRecord(String walletId) async {
-    _walletManager.getListTypeRecord(walletId).then((_) {
+  Future getListTypeRecord() async {
+    _walletManager.getListTypeRecord().then((_) {
       final isEdit = recordForEdit != null;
       if (isEdit) {
         setUpRecordForEdit(recordForEdit);
@@ -62,7 +62,7 @@ class RecordCreateViewModel with ChangeNotifier {
   void onSwithType(int index) {
     segmentIndex = index;
     final list = segmentIndex == 0
-        ? _walletManager.listTypeRecordOutcom
+        ? _walletManager.listTypeRecordOutcome
         : _walletManager.listTypeRecordIncome;
     if (list.isNotEmpty) {
       onPickTypeRecord(list.first);
@@ -112,13 +112,13 @@ class RecordCreateViewModel with ChangeNotifier {
     }
   }
 
-  Future<void> onReorderTypeRecords({List<TypeRecord> listTypeRecord}) async {
-    await _walletManager.onReorderTypeRecord(listTypeRecord);
+  Future<void> onDeleteRecord() async {
+    await _walletManager.onDeleteRecord(recordForEdit);
     notifyListeners();
   }
 
-  Future<void> onDeleteRecord() async{
-    await _walletManager.onDeleteRecord(recordForEdit);
+  Future<void> onReorderTypeRecords({List<TypeRecord> listTypeRecord}) async {
+    await _walletManager.onReorderTypeRecord(listTypeRecord);
     notifyListeners();
   }
 
@@ -128,12 +128,22 @@ class RecordCreateViewModel with ChangeNotifier {
     amount = record.amount;
     final typeRecord = [
       ..._walletManager.listTypeRecordIncome,
-      ..._walletManager.listTypeRecordOutcom
+      ..._walletManager.listTypeRecordOutcome
     ].firstWhere((element) => element.id == record.typeRecordId,
         orElse: () => null);
-    title = typeRecord.name;
+    title = typeRecord?.name;
     onPickTypeRecord(typeRecord);
     note = record.note;
+    notifyListeners();
+  }
+
+  Future<void> onDeleteTypeRecord(TypeRecord typeRecord) async {
+    await _walletManager.onDeleteTypeRecord(typeRecord);
+    notifyListeners();
+  }
+
+  Future<void> onUpdateTypeRecord(TypeRecord typeRecord) async {
+    await _walletManager.onUpdateTypeRecord(typeRecord);
     notifyListeners();
   }
 }

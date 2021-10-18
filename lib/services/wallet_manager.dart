@@ -9,12 +9,13 @@ import 'package:money_app/repository/wallet_repository.dart';
 import 'package:money_app/services/shared_preference_service.dart';
 
 import 'locator_service.dart';
+import 'dart:math';
 
 class WalletManager {
   static WalletManager get instance => locator<WalletManager>();
   List<Wallet> listWallet = [];
   List<Record> _listRecord = [];
-  List<TypeRecord> listTypeRecordOutcom = [];
+  List<TypeRecord> listTypeRecordOutcome = [];
   List<TypeRecord> listTypeRecordIncome = [];
 
   List<Record> get listRecordDisplay {
@@ -33,7 +34,7 @@ class WalletManager {
       FirebaseFirestore.instance.collection(CollectionName.wallet);
   final RecordRepository _recordRepository = RecordRepository.instance;
   final WalletRepository _walletRepository = WalletRepository.instance;
-  final TypeRecordRepository typeRecordRepository =
+  final TypeRecordRepository _typeRecordRepository =
       TypeRecordRepository.instance;
   Future fetchHomeData() async {
     await fetchWallets();
@@ -99,13 +100,46 @@ class WalletManager {
     }
   }
 
-  Future getListTypeRecord(String walletId) async {
-    final result = await typeRecordRepository.getTypeRecords(walletId);
-    result.sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
-    listTypeRecordOutcom =
-        result.where((element) => element.type == 0).toList() ?? [];
-    listTypeRecordIncome =
-        result.where((element) => element.type == 1).toList() ?? [];
+  Future<void> onDeleteTypeRecord(TypeRecord typeRecord) async {
+    final isSuccess =
+        await _typeRecordRepository.onDeleteTypeRecord(typeRecord.id);
+    if (isSuccess) {
+      if (typeRecord.type == TypeRecordType.outcome) {
+        listTypeRecordOutcome
+            .removeWhere((element) => element.id == typeRecord.id);
+      } else {
+        listTypeRecordIncome
+            .removeWhere((element) => element.id == typeRecord.id);
+      }
+    }
+  }
+
+  Future<TypeRecord> onUpdateTypeRecord(TypeRecord typeRecord) async {
+    await _typeRecordRepository.updateTypeRecord(typeRecord);
+    if (typeRecord.type == TypeRecordType.outcome) {
+      listTypeRecordOutcome.forEach((element) {
+        if (element.id == typeRecord.id) {
+          element = typeRecord;
+        }
+      });
+    }
+    return typeRecord;
+  }
+
+  Future getListTypeRecord() async {
+    if (currentWallet != null) {
+      final result =
+          await _typeRecordRepository.getTypeRecords(currentWallet.id);
+      result.sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
+      listTypeRecordOutcome = result
+              .where((element) => element.type == TypeRecordType.outcome)
+              .toList() ??
+          [];
+      listTypeRecordIncome = result
+              .where((element) => element.type == TypeRecordType.income)
+              .toList() ??
+          [];
+    }
   }
 
   Future<TypeRecord> onCreateTypeRecord(TypeRecord typeRecord) async {
@@ -115,9 +149,16 @@ class WalletManager {
     typeRecord.walletId = currentWallet.id;
     final user = await _sharedPreferenceService.getUser();
     typeRecord.uid = user.id;
-    final result = await typeRecordRepository.createTypeRecord(typeRecord);
+    typeRecord.orderIndex = 0;
+    final result = await _typeRecordRepository.createTypeRecord(typeRecord);
     if (result != null) {
-      // listTypeRecord.add(result);
+      if (typeRecord.type == TypeRecordType.outcome) {
+        listTypeRecordOutcome.insert(0, result);
+        await onReorderTypeRecord(listTypeRecordOutcome);
+      } else {
+        listTypeRecordIncome.insert(0, result);
+        await onReorderTypeRecord(listTypeRecordIncome);
+      }
       return result;
     } else {
       return null;
@@ -127,8 +168,8 @@ class WalletManager {
   Future<void> onReorderTypeRecord(List<TypeRecord> listTypeRecord) async {
     await Future.wait(listTypeRecord
         .where((e) => e.orderIndex != listTypeRecord.indexOf(e))
-        .map((e) => typeRecordRepository.updateOrderIndex(
+        .map((e) => _typeRecordRepository.updateOrderIndex(
             e, listTypeRecord.indexOf(e))));
-    await getListTypeRecord(currentWallet.id);
+    await getListTypeRecord();
   }
 }

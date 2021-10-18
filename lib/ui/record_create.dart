@@ -33,6 +33,7 @@ class _AddEditRecordState extends State<AddEditRecord> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final RecordCreateViewModel _viewModel = RecordCreateViewModel();
   final TextEditingController _dateTextController = TextEditingController();
+  final TextEditingController _noteTextController = TextEditingController();
   final TextEditingController _amountTextController = TextEditingController();
 
   @override
@@ -47,6 +48,7 @@ class _AddEditRecordState extends State<AddEditRecord> {
         _dateTextController.text =
             DateFormat.yMMMd().format(widget.record.createDate.toDate());
         _amountTextController.text = widget.record.amount.toString();
+        _noteTextController.text = widget.record.note;
       }
     });
   }
@@ -156,6 +158,7 @@ class _AddEditRecordState extends State<AddEditRecord> {
 
   Widget _buildNote() {
     return CustomInputField(
+      controller: _noteTextController,
       inputType: InputType.note,
       isRequire: false,
       validator: (String value) {
@@ -302,40 +305,47 @@ class _AddEditRecordState extends State<AddEditRecord> {
   }
 
   Widget _bottomBar() {
-    return Column(
-      children: [
-        const Divider(height: 1),
-        SizedBox(
-          width: double.infinity,
-          child: Container(
-            color: Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  if (widget.record != null)
-                    IconButton(
-                      onPressed: onDeleteRecord,
-                      icon: const FaIcon(
-                        FontAwesomeIcons.trash,
-                        color: Colors.red,
+    return Consumer<RecordCreateViewModel>(
+        builder: (context, viewModel, child) {
+      final enableButton = viewModel.typeRecord != null &&
+          _amountTextController.text.isNotEmpty &&
+          _dateTextController.text.isNotEmpty;
+
+      return Column(
+        children: [
+          const Divider(height: 1),
+          SizedBox(
+            width: double.infinity,
+            child: Container(
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    if (widget.record != null)
+                      IconButton(
+                        onPressed: onDeleteRecord,
+                        icon: const FaIcon(
+                          FontAwesomeIcons.trash,
+                          color: Colors.red,
+                        ),
+                      ),
+                    if (widget.record != null) const SizedBox(width: 8),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: enableButton ? onSaveRecord : null,
+                        child: Text(
+                            "${widget.isEdit ? "Chỉnh sửa" : "Nhập"} ${_viewModel.segmentIndex == 0 ? "khoản chi" : "khoản thu"}"),
                       ),
                     ),
-                  if (widget.record != null) const SizedBox(width: 8),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: onSaveRecord,
-                      child: Text(
-                          "${widget.isEdit ? "Chỉnh sửa" : "Nhập"} ${_viewModel.segmentIndex == 0 ? "khoản chi" : "khoản thu"}"),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 
   Future<void> onSaveRecord() async {

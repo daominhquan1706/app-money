@@ -9,11 +9,11 @@ class TypeRecordRepository {
   static final TypeRecordRepository instance =
       TypeRecordRepository._privateConstructor();
   final apiService = ApiService().instance;
-  CollectionReference typeRecordRef =
+  final CollectionReference _typeRecordRef =
       FirebaseFirestore.instance.collection(CollectionName.typeRecord);
 
   Future<List<TypeRecord>> getTypeRecords(String walletId) async {
-    final snapshot = await typeRecordRef
+    final snapshot = await _typeRecordRef
         .where('uid', isEqualTo: LoginManager.instance.user.uid)
         .where('wallet_id', isEqualTo: walletId)
         .get();
@@ -25,14 +25,28 @@ class TypeRecordRepository {
   }
 
   Future<TypeRecord> createTypeRecord(TypeRecord typeRecord) async {
-    final value = await typeRecordRef.add(typeRecord.toJson());
+    final value = await _typeRecordRef.add(typeRecord.toJson());
     typeRecord.id = value.id;
     return typeRecord;
   }
 
   Future updateOrderIndex(TypeRecord typeRecord, int newIndex) async {
-    final value = await typeRecordRef
+    final value = await _typeRecordRef
         .doc(typeRecord.id)
         .update({"order_index": newIndex});
+  }
+
+  Future<bool> onDeleteTypeRecord(String id) async {
+    try {
+      await _typeRecordRef.doc(id).delete();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<TypeRecord> updateTypeRecord(TypeRecord typeRecord) async {
+    await _typeRecordRef.doc(typeRecord.id).update(typeRecord.toJson());
+    return typeRecord;
   }
 }
