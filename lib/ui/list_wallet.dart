@@ -26,7 +26,7 @@ class _ListWalletPageState extends State<ListWalletPage> {
         builder: (context, value, child) => Scaffold(
           backgroundColor: Colors.grey.shade50,
           appBar: AppBar(
-            title: const Text("List Wallet"),
+            title: const Text("Danh sách ví"),
           ),
           body: ListView(
             children: [

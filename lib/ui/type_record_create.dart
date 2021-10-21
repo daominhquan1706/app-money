@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:money_app/helper/dialog_helper.dart';
 import 'package:money_app/model/type_record_model.dart';
 import 'package:money_app/view_models/record_create_viewmodel.dart';
 
@@ -62,8 +63,9 @@ class _TypeRecordCreatePageState extends State<TypeRecordCreatePage> {
 
   Widget _buildTitle() {
     return TextFormField(
+      autofocus: true,
       controller: _nameController,
-      decoration: const InputDecoration(labelText: "Title"),
+      decoration: const InputDecoration(labelText: "Tên danh mục"),
       inputFormatters: <TextInputFormatter>[
         FilteringTextInputFormatter.singleLineFormatter
       ],
@@ -82,10 +84,12 @@ class _TypeRecordCreatePageState extends State<TypeRecordCreatePage> {
   Future<void> _onSave() async {
     if (_formState.validate()) {
       _formState.save();
+      DialogHelper.showLoading();
       if (isEdit) {
         await widget.recordCreateViewModel
             .onUpdateTypeRecord(widget.typeRecord..name = _title);
         Navigator.of(context).pop();
+        DialogHelper.dismissLoading();
       } else {
         final TypeRecord typeRecord = TypeRecord(
           name: _title,
@@ -93,6 +97,7 @@ class _TypeRecordCreatePageState extends State<TypeRecordCreatePage> {
         );
         await widget.recordCreateViewModel.onCreateTypeRecord(typeRecord);
         Navigator.of(context).pop();
+        DialogHelper.dismissLoading();
       }
     }
   }

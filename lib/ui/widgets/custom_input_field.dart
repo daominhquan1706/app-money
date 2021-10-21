@@ -10,6 +10,7 @@ class CustomInputField extends StatefulWidget {
   IconData trailingIcon;
   String placeHolder;
   bool isRequire;
+  bool autofocus;
   CustomInputField(
       {Key key,
       this.onSaved,
@@ -19,7 +20,8 @@ class CustomInputField extends StatefulWidget {
       this.onTap,
       this.trailingIcon,
       this.placeHolder,
-      this.isRequire = true})
+      this.isRequire = true,
+      this.autofocus = false})
       : super(key: key);
 
   @override
@@ -47,6 +49,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
             child: SizedBox(
               height: 30,
               child: TextFormField(
+                autofocus: widget.autofocus,
                 onTap: widget.onTap,
                 focusNode:
                     widget.onTap != null ? AlwaysDisabledFocusNode() : null,

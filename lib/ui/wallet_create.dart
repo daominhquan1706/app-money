@@ -32,7 +32,7 @@ class _WalletCreatePageState extends State<WalletCreatePage> {
         appBar: AppBar(
           automaticallyImplyLeading: !widget.isPrenventBack,
           centerTitle: false,
-          title: const Text("Create Wallet"),
+          title: const Text("Tạo ví mới"),
         ),
         body: SafeArea(
           child: Column(
@@ -55,6 +55,7 @@ class _WalletCreatePageState extends State<WalletCreatePage> {
 
   Widget _buildTitle() {
     return TextFormField(
+      autofocus: true,
       decoration: const InputDecoration(labelText: "Title"),
       inputFormatters: <TextInputFormatter>[
         FilteringTextInputFormatter.singleLineFormatter

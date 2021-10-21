@@ -91,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               ),
               title: ListTile(
                 title: const Text(
-                  "Total",
+                  "Tổng",
                   style: TextStyle(color: Colors.white54),
                 ),
                 subtitle:

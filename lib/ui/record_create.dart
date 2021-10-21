@@ -137,6 +137,7 @@ class _AddEditRecordState extends State<AddEditRecord> {
 
   Widget _buildAmount() {
     return CustomInputField(
+      autofocus: true,
       controller: _amountTextController,
       inputType: InputType.amount,
       validator: (String value) {

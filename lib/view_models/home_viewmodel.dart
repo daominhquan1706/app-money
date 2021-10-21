@@ -17,7 +17,7 @@ class HomeViewModel with ChangeNotifier {
       _walletManager.onPickWallet(_walletManager.listWallet.first);
     } else if (_walletManager.listWallet.isEmpty) {
       final Wallet wallet = Wallet(
-        name: "Wallet Default",
+        name: "Ví mặc định",
         createdDate: DateTime.now(),
       );
       final createdWallet = await _walletManager.onCreateWallet(wallet);

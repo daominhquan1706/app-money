@@ -50,32 +50,32 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
             AccountPage(),
           ],
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Transaction',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.business),
-              label: 'Report',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle_sharp),
-              label: 'Account',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          unselectedItemColor: Colors.grey,
-          unselectedLabelStyle: const TextStyle(color: Colors.grey),
-          //showUnselectedLabels: true,
-          onTap: (index) {
-            setState(() {
-              _selectedIndex = index;
-              _tabController.index = index;
-            });
-          },
-        ),
+        // bottomNavigationBar: BottomNavigationBar(
+        //   items: const <BottomNavigationBarItem>[
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.home),
+        //       label: 'Lịch sử',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.business),
+        //       label: 'Report',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.account_circle_sharp),
+        //       label: 'Account',
+        //     ),
+        //   ],
+        //   currentIndex: _selectedIndex,
+        //   unselectedItemColor: Colors.grey,
+        //   unselectedLabelStyle: const TextStyle(color: Colors.grey),
+        //   //showUnselectedLabels: true,
+        //   onTap: (index) {
+        //     setState(() {
+        //       _selectedIndex = index;
+        //       _tabController.index = index;
+        //     });
+        //   },
+        // ),
       ),
     );
   }
