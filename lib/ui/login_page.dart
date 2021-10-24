@@ -126,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
       viewModel
           .register(username: _userNameTEC.text, password: _passwordTEC.text)
           .then(
-            (message) => DialogHelper.showSnackBar(context, message: message),
+            (message) => DialogHelper.showSnackBar(message),
           );
     }
   }
@@ -138,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
       viewModel
           .login(username: _userNameTEC.text, password: _passwordTEC.text)
           .then(
-            (message) => DialogHelper.showSnackBar(context, message: message),
+            (message) => DialogHelper.showSnackBar(message),
           );
     }
   }
