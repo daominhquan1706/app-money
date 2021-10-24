@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class CustomInputField extends StatefulWidget {
   FormFieldSetter<String> onSaved;
@@ -11,24 +12,30 @@ class CustomInputField extends StatefulWidget {
   String placeHolder;
   bool isRequire;
   bool autofocus;
-  CustomInputField(
-      {Key key,
-      this.onSaved,
-      this.validator,
-      this.inputType,
-      this.controller,
-      this.onTap,
-      this.trailingIcon,
-      this.placeHolder,
-      this.isRequire = true,
-      this.autofocus = false})
-      : super(key: key);
+  ValueChanged<String> onChanged;
+  CustomInputField({
+    Key key,
+    this.onSaved,
+    this.validator,
+    this.inputType,
+    this.controller,
+    this.onTap,
+    this.trailingIcon,
+    this.placeHolder,
+    this.isRequire = true,
+    this.autofocus = false,
+    this.onChanged,
+  }) : super(key: key);
 
   @override
   _CustomInputFieldState createState() => _CustomInputFieldState();
 }
 
 class _CustomInputFieldState extends State<CustomInputField> {
+  static const _locale = 'en';
+  String get _currency =>
+      NumberFormat.compactSimpleCurrency(locale: _locale).currencySymbol;
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -65,11 +72,14 @@ class _CustomInputFieldState extends State<CustomInputField> {
                   hintStyle: TextStyle(color: Colors.grey.shade300),
                   isDense: true,
                   contentPadding: const EdgeInsets.all(10),
+                  prefixText:
+                      widget.inputType == InputType.amount ? _currency : null,
                 ),
                 inputFormatters: widget.inputType.inputFormatters,
                 keyboardType: widget.inputType.keyboardType,
                 validator: widget.validator,
                 onSaved: widget.onSaved,
+                onChanged: widget.onChanged,
               ),
             ),
           ),

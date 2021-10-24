@@ -20,8 +20,8 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             Text(
               viewModel.pageType == AuthPageType.login
-                  ? "Login Page"
-                  : "Register Page",
+                  ? "Đăng nhập"
+                  : "Đăng ký",
             ),
             Padding(
               padding:
@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
                 controller: _userNameTEC,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: "Username",
+                  labelText: "Email",
                 ),
               ),
             ),
@@ -44,21 +44,21 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: true,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: "Password",
+                  labelText: "Mật khẩu",
                 ),
               ),
             ),
             if (viewModel.pageType == AuthPageType.login) ...[
               expandButton(
                 key: const ValueKey("login"),
-                text: "Login",
+                text: "Đăng nhập",
                 onPressed: () {
                   onLogin();
                 },
               ),
               flatButton(
                 key: const ValueKey("register"),
-                text: "Register",
+                text: "Chưa có tài khoản? Đăng ký",
                 onPressed: () {
                   onRegister();
                 },
@@ -66,14 +66,14 @@ class _LoginPageState extends State<LoginPage> {
             ] else ...[
               expandButton(
                 key: const ValueKey("register"),
-                text: "Register",
+                text: "Đăng ký",
                 onPressed: () {
                   onRegister();
                 },
               ),
               flatButton(
                 key: const ValueKey("login"),
-                text: "Login",
+                text: "Đã có tài khoản? Đăng nhập",
                 onPressed: () {
                   onLogin();
                 },
@@ -106,6 +106,7 @@ class _LoginPageState extends State<LoginPage> {
         borderRadius: BorderRadius.all(Radius.circular(2.0)),
       ),
       backgroundColor: Colors.transparent,
+      alignment: Alignment.centerRight,
     );
     return Container(
       width: double.infinity,
@@ -123,11 +124,15 @@ class _LoginPageState extends State<LoginPage> {
     if (viewModel.pageType == AuthPageType.login) {
       viewModel.pageType = AuthPageType.register;
     } else {
+      DialogHelper.showLoading();
       viewModel
           .register(username: _userNameTEC.text, password: _passwordTEC.text)
           .then(
-            (message) => DialogHelper.showSnackBar(message),
-          );
+        (message) {
+          DialogHelper.dismissLoading();
+          DialogHelper.showSnackBar(message);
+        },
+      );
     }
   }
 
@@ -135,11 +140,15 @@ class _LoginPageState extends State<LoginPage> {
     if (viewModel.pageType == AuthPageType.register) {
       viewModel.pageType = AuthPageType.login;
     } else {
+      DialogHelper.showLoading();
       viewModel
           .login(username: _userNameTEC.text, password: _passwordTEC.text)
           .then(
-            (message) => DialogHelper.showSnackBar(message),
-          );
+        (message) {
+          DialogHelper.dismissLoading();
+          DialogHelper.showSnackBar(message);
+        },
+      );
     }
   }
 }

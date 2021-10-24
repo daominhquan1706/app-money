@@ -43,11 +43,19 @@ class _AddEditRecordState extends State<AddEditRecord> {
     _viewModel.initialize(record: widget.record).then((value) {
       if (widget.record == null) {
         _dateTextController.text = DateFormat.yMMMd().format(DateTime.now());
-        _amountTextController.text = "0";
+        _amountTextController.value = const TextEditingValue(
+          text: "0",
+          selection: TextSelection.collapsed(offset: 1),
+        );
       } else {
         _dateTextController.text =
             DateFormat.yMMMd().format(widget.record.createDate.toDate());
-        _amountTextController.text = widget.record.amount.toString();
+        final amountText =
+            _formatNumber(widget.record.amount.toInt().toString());
+        _amountTextController.value = TextEditingValue(
+          text: amountText,
+          selection: TextSelection.collapsed(offset: amountText.length),
+        );
         _noteTextController.text = widget.record.note;
       }
     });
@@ -135,6 +143,10 @@ class _AddEditRecordState extends State<AddEditRecord> {
     );
   }
 
+  static const _locale = 'en';
+  String _formatNumber(String s) =>
+      NumberFormat.decimalPattern(_locale).format(int.parse(s));
+
   Widget _buildAmount() {
     return CustomInputField(
       autofocus: true,
@@ -145,14 +157,28 @@ class _AddEditRecordState extends State<AddEditRecord> {
           return 'Amount isRequired';
         }
         try {
-          double.parse(value);
+          double.parse(value.replaceAll(",", ""));
         } catch (_) {
           return 'invalid format';
         }
         return null;
       },
       onSaved: (String value) {
-        _viewModel.amount = double.parse(value);
+        _viewModel.amount = double.parse(value.replaceAll(",", ""));
+      },
+      onChanged: (string) {
+        if (string == "") {
+          _amountTextController.value = const TextEditingValue(
+            text: "0",
+            selection: TextSelection.collapsed(offset: 1),
+          );
+          return;
+        }
+        string = _formatNumber(string.replaceAll(',', ''));
+        _amountTextController.value = TextEditingValue(
+          text: string,
+          selection: TextSelection.collapsed(offset: string.length),
+        );
       },
     );
   }

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:money_app/helper/dialog_helper.dart';
 import 'package:money_app/model/user_model.dart';
 import 'package:money_app/services/shared_preference_service.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -59,9 +60,11 @@ class LoginManager {
 
   Future<void> logout() async {
     user = null;
+    DialogHelper.showLoading();
     prefsService.saveUserId(null);
     prefsService.setWalletId(null);
     await FirebaseAuth.instance.signOut();
+    DialogHelper.dismissLoading();
   }
 
   Future<void> setUser(User user) async {

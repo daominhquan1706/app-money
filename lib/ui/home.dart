@@ -5,7 +5,6 @@ import 'package:money_app/constants/constant.dart';
 import 'package:money_app/helper/dialog_helper.dart';
 import 'package:money_app/helper/string_helper.dart';
 import 'package:money_app/model/record_model.dart';
-import 'package:money_app/model/wallet_model.dart';
 import 'package:money_app/services/login_manager.dart';
 import 'package:money_app/ui/list_wallet.dart';
 import 'package:money_app/ui/record_create.dart';
@@ -65,23 +64,23 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             ),
             appBar: AppBar(
               titleSpacing: 0,
-              leading: IconButton(
-                icon: const CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: FaIcon(FontAwesomeIcons.wallet),
-                ),
-                onPressed: () async {
-                  final Wallet wallet =
-                      await Navigator.of(context).push<Wallet>(
-                    MaterialPageRoute(
-                      builder: (context) => const ListWalletPage(),
-                    ),
-                  );
-                  if (wallet != null) {
-                    _homeViewModel.onPickWallet(wallet);
-                  }
-                },
-              ),
+              // leading: IconButton(
+              //   icon: const CircleAvatar(
+              //     backgroundColor: Colors.white,
+              //     child: FaIcon(FontAwesomeIcons.wallet),
+              //   ),
+              //   onPressed: () async {
+              //     final Wallet wallet =
+              //         await Navigator.of(context).push<Wallet>(
+              //       MaterialPageRoute(
+              //         builder: (context) => const ListWalletPage(),
+              //       ),
+              //     );
+              //     if (wallet != null) {
+              //       _homeViewModel.onPickWallet(wallet);
+              //     }
+              //   },
+              // ),
               bottom: TabBar(
                 controller: _tabController,
                 isScrollable: true,
@@ -118,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   },
                   onSelected: (text) {
                     switch (text) {
-                      case "Sign Out":
+                      case "Đăng xuất":
                         LoginManager.instance.logout();
                         break;
                       default:

@@ -38,6 +38,7 @@ class ListRecordWidget extends StatelessWidget {
           children: [
             _buildReportView(),
             ...sections.map((e) => RecordView(section: e)).toList(),
+            const SizedBox(height: 125)
           ],
         ),
       ),
@@ -66,7 +67,7 @@ class ListRecordWidget extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(children: [
-                const Text("Money input"),
+                const Text("Tiền vào"),
                 const Spacer(),
                 Text(
                   StringHelper.instance.getMoneyText(inputAmount),
@@ -77,7 +78,7 @@ class ListRecordWidget extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(children: [
-                const Text("Money output"),
+                const Text("Tiền ra"),
                 const Spacer(),
                 Text(
                   StringHelper.instance.getMoneyText(outputAmount),
