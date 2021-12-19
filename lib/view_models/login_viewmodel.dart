@@ -32,12 +32,21 @@ class LoginViewModel with ChangeNotifier {
     authState = AuthState.loading;
     FirebaseAuth.instance.authStateChanges().listen((User user) {
       authState = user == null ? AuthState.notLogin : AuthState.loggedIn;
+      if (authState == AuthState.notLogin) {
+        loginAnonymous();
+      }
       if (user == null) {
         return;
       }
       _loginManager.setUser(user);
       notifyListeners();
     });
+  }
+
+  Future<String> loginAnonymous() async {
+    final message = await _loginManager.loginAnonymous();
+    notifyListeners();
+    return message;
   }
 
   Future<String> login(

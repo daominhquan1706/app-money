@@ -12,6 +12,23 @@ class LoginManager {
   SharedPreferenceService prefsService = locator<SharedPreferenceService>();
   User user;
 
+  Future<String> loginAnonymous() async {
+    try {
+      final UserCredential _ = await FirebaseAuth.instance.signInAnonymously();
+      return "Login Success !";
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = "Login Fail, please try again";
+      if (e.code == 'user-not-found') {
+        errorMessage = 'No user found for that email.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Wrong password provided for that user.';
+      }
+      return errorMessage;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
   Future<String> login(
       {@required String username, @required String password}) async {
     try {
