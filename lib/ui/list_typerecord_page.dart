@@ -192,28 +192,33 @@ class _ListTypeRecordPageState extends State<ListTypeRecordPage> {
   }
 
   Widget _buildAddTypeRecord() {
-    return Column(
-      children: [
-        ListTile(
-            title: const Text("Thêm danh mục"),
-            onTap: () async {
-              await Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => TypeRecordCreatePage(
-                    recordCreateViewModel: widget.recordCreateViewModel,
-                    type: _currentType,
-                  ),
-                ),
-              );
-              setState(() {});
-            },
-            trailing: state == ListTypeRecordState.reordering
-                ? null
-                : const FaIcon(
-                    FontAwesomeIcons.chevronRight,
-                  )),
-        const Divider(height: 1),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ElevatedButton(
+        style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.green)),
+        onPressed: () async {
+          await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => TypeRecordCreatePage(
+                recordCreateViewModel: widget.recordCreateViewModel,
+                type: _currentType,
+              ),
+            ),
+          );
+          setState(() {});
+        },
+        child: Row(
+          children: const [
+            Icon(
+              Icons.add,
+            ),
+            Text(
+              "Thêm danh mục",
+            ),
+          ],
+        ),
+      ),
     );
   }
 

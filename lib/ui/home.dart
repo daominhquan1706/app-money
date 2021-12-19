@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:money_app/constants/constant.dart';
 import 'package:money_app/helper/dialog_helper.dart';
 import 'package:money_app/helper/string_helper.dart';
 import 'package:money_app/model/record_model.dart';
 import 'package:money_app/services/login_manager.dart';
-import 'package:money_app/ui/list_wallet.dart';
 import 'package:money_app/ui/record_create.dart';
 import 'package:money_app/ui/widgets/empty_page.dart';
 import 'package:money_app/ui/widgets/list_record_widget.dart';

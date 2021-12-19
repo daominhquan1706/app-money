@@ -7,9 +7,7 @@ import 'package:money_app/repository/record_repository.dart';
 import 'package:money_app/repository/type_record_repository.dart';
 import 'package:money_app/repository/wallet_repository.dart';
 import 'package:money_app/services/shared_preference_service.dart';
-
 import 'locator_service.dart';
-import 'dart:math';
 
 class WalletManager {
   static WalletManager get instance => locator<WalletManager>();
