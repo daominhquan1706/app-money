@@ -26,26 +26,27 @@ class PieChartSample3State extends State<PieChartSample3> {
       height: 300,
       child: AspectRatio(
         aspectRatio: 1,
-        child: PieChart(
-          PieChartData(
-            pieTouchData: PieTouchData(touchCallback: (pieTouchResponse) {
-              setState(() {
-                if (pieTouchResponse.touchInput is FlLongPressEnd ||
-                    pieTouchResponse.touchInput is FlPanEnd) {
-                  touchedIndex = -1;
-                } else {
-                  touchedIndex = pieTouchResponse.touchedSectionIndex;
-                }
-              });
-            }),
-            borderData: FlBorderData(
-              show: false,
-            ),
-            sectionsSpace: 1,
-            centerSpaceRadius: 0,
-            sections: showingSections(),
-          ),
-        ),
+        child: Container(),
+        // child: PieChart(
+        //   PieChartData(
+        //     pieTouchData: PieTouchData(touchCallback: (pieTouchResponse) {
+        //       setState(() {
+        //         if (pieTouchResponse.touchInput is FlLongPressEnd ||
+        //             pieTouchResponse.touchInput is FlPanEnd) {
+        //           touchedIndex = -1;
+        //         } else {
+        //           touchedIndex = pieTouchResponse.touchedSectionIndex;
+        //         }
+        //       });
+        //     }),
+        //     borderData: FlBorderData(
+        //       show: false,
+        //     ),
+        //     sectionsSpace: 1,
+        //     centerSpaceRadius: 0,
+        //     sections: showingSections(),
+        //   ),
+        // ),
       ),
     );
   }
@@ -56,8 +57,8 @@ class PieChartSample3State extends State<PieChartSample3> {
       final double fontSize = isTouched ? 20 : 16;
       final double radius = isTouched ? 110 : 100;
       final double widgetSize = isTouched ? 55 : 40;
-      final Color inputColor = Colors.green;
-      final Color outputColor = Colors.redAccent;
+      const Color inputColor = Colors.green;
+      const Color outputColor = Colors.redAccent;
       switch (i) {
         case 0:
           return PieChartSectionData(

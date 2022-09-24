@@ -2,38 +2,83 @@ name: money_app
 description: A new Flutter application.
 publish_to: "none"
 version: 1.0.0+1
+
 environment:
   sdk: ">=2.7.0 <3.0.0"
+
 dependencies:
   cloud_firestore: ^3.1.5
   cupertino_icons: ^1.0.0
   firebase_auth: ^3.3.4
   firebase_core: ^1.10.6
-  fl_chart: ^0.12.3
+  fl_chart: ^0.55.2
   flutter:
     sdk: flutter
   flutter_easyloading: ^3.0.0
-  font_awesome_flutter: ^9.1.0
+  flutter_intl: ^0.0.1
+  font_awesome_flutter: ^10.2.1
   get_it: ^7.2.0
   http: ^0.13.3
   intl: ^0.17.0
-  provider: ^4.3.3
+  provider: ^6.0.3
   shared_preferences: ^2.0.7
-  stacked_services: ^0.8.13
+  stacked_services: ^0.9.5
   table_calendar: ^3.0.3
+
 dev_dependencies:
-  flutter_launcher_icons: ^0.9.2
+  flutter_flavorizr: ^2.1.4
+  flutter_launcher_icons: ^0.10.0
   flutter_test:
     sdk: flutter
-  integration_test:
-    sdk: flutter
-  lint: ^1.0.0
+
+
 flutter:
   uses-material-design: true
   assets:
     - assets/
+
 flutter_icons:
   image_path_android: "assets/images/icon-1024x1024.png"
   image_path_ios: "assets/images/icon-1024x1024.png"
   android: true # can specify file name here e.g. "ic_launcher"
   ios: true # can specify file name here e.g. "My-Launcher-Icon"
+
+# terminal: flutter pub run flutter_flavorizr
+flavorizr:
+  app:
+    android:
+      flavorDimensions: "app"
+    ios:
+
+  flavors:
+    production:
+      app:
+        name: "Money Lover"
+
+      android:
+        applicationId: "com.moneylover.mobile"
+        icon: "assets/images/app_icon.png"
+        firebase:
+          config: ".firebase/production/google-services.json"
+
+      ios:
+        bundleId: "com.moneylover.mobile"
+        icon: "assets/images/app_icon.png"
+        firebase:
+          config: ".firebase/production/GoogleService-Info.plist"
+
+    staging:
+      app:
+        name: "STG Money Lover"
+
+      android:
+        applicationId: "com.moneylover.mobile.staging"
+        icon: "assets/images/app_icon.png"
+        firebase:
+          config: ".firebase/staging/google-services.json"
+
+      ios:
+        bundleId: "com.moneylover.mobile.staging"
+        icon: "assets/images/app_icon.png"
+        firebase:
+          config: ".firebase/staging/GoogleService-Info.plist"

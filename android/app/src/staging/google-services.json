@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "721666833230",
+    "project_id": "appmoney-stg",
+    "storage_bucket": "appmoney-stg.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:721666833230:android:df6b1072785ae5a6e0bc1f",
+        "android_client_info": {
+          "package_name": "com.moneylover.mobile.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "721666833230-7roh4cp7sks52ne9784eh5s6gdtjtfl5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWf1YYI2lOB5qQoI4mZ6uIOsiQOAzgbvY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "721666833230-7roh4cp7sks52ne9784eh5s6gdtjtfl5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

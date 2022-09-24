@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_file.dart';
 import 'package:intl/intl.dart';
 import 'package:money_app/constants/constant.dart';
 import 'package:money_app/helper/dialog_helper.dart';
@@ -83,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 controller: _tabController,
                 isScrollable: true,
                 tabs: listMonth
-                    .map((e) => Tab(text: DateFormat('MMMM yyyy').format(e)))
+                    .map((e) => Tab(text: DateFormat.MMMM().format(e)))
                     .toList(),
               ),
               title: ListTile(

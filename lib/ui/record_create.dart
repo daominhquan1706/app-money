@@ -77,20 +77,19 @@ class _AddEditRecordState extends State<AddEditRecord> {
                       groupValue: _viewModel.segmentIndex,
                       children: <int, Widget>{
                         0: Text(
-                          'Tiền Chi',
+                          'Tiền ra',
                           style: TextStyle(
                             color: _viewModel.segmentIndex == 1
                                 ? Colors.white54
-                                : Colors.blue,
+                                : Colors.red,
                           ),
                         ),
                         1: Text(
-                          'Tiền Thu',
+                          'Tiền vào',
                           style: TextStyle(
-                            color: _viewModel.segmentIndex == 0
-                                ? Colors.white54
-                                : Colors.blue,
-                          ),
+                              color: _viewModel.segmentIndex == 0
+                                  ? Colors.white54
+                                  : Colors.green),
                         )
                       },
                       onValueChanged: (int i) {
@@ -231,12 +230,15 @@ class _AddEditRecordState extends State<AddEditRecord> {
               children: [
                 CupertinoButton(
                   onPressed: () => Navigator.of(context).pop(null),
-                  child: const Text('Cancel'),
+                  child: const Text(
+                    'Hủy',
+                    style: TextStyle(color: Colors.red),
+                  ),
                 ),
                 const Spacer(),
                 CupertinoButton(
                   onPressed: () => Navigator.of(context).pop(pickedDate),
-                  child: const Text('OK'),
+                  child: const Text('Chọn'),
                 ),
               ],
             ),

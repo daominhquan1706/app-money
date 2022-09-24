@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:money_app/services/dialog_service.dart';
 import 'package:money_app/services/locator_service.dart';
 import 'package:money_app/ui/loading_screen.dart';
@@ -19,6 +21,8 @@ void main() {
   setupGetIt();
   configLoading();
   setupDialogUi();
+  Intl.defaultLocale = 'vi';
+  initializeDateFormatting('vi', null);
   runApp(const App());
 }
 

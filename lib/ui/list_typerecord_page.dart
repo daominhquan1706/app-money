@@ -102,8 +102,8 @@ class _ListTypeRecordPageState extends State<ListTypeRecordPage> {
                 child: CupertinoSlidingSegmentedControl(
                     groupValue: segmentedControlGroupValue,
                     children: const <int, Widget>{
-                      0: Text('Tiền Chi'),
-                      1: Text('Tiền Thu')
+                      0: Text('Tiền Ra'),
+                      1: Text('Tiền Vào')
                     },
                     onValueChanged: (int i) {
                       if (state == ListTypeRecordState.showlist) {
