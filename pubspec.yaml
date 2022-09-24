@@ -56,11 +56,13 @@ flavorizr:
 
       android:
         applicationId: "com.moneylover.mobile"
+        icon: "assets/images/app_icon.png"
         firebase:
           config: ".firebase/production/google-services.json"
 
       ios:
         bundleId: "com.moneylover.mobile"
+        icon: "assets/images/app_icon.png"
         firebase:
           config: ".firebase/production/GoogleService-Info.plist"
 
@@ -70,10 +72,12 @@ flavorizr:
 
       android:
         applicationId: "com.moneylover.mobile.staging"
+        icon: "assets/images/app_icon.png"
         firebase:
           config: ".firebase/staging/google-services.json"
 
       ios:
         bundleId: "com.moneylover.mobile.staging"
+        icon: "assets/images/app_icon.png"
         firebase:
           config: ".firebase/staging/GoogleService-Info.plist"

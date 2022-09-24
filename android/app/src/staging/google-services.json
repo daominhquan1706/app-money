@@ -1,77 +1,34 @@
 {
   "project_info": {
-    "project_number": "648665398180",
-    "project_id": "moneylover-mobile",
-    "storage_bucket": "moneylover-mobile.appspot.com"
+    "project_number": "721666833230",
+    "project_id": "appmoney-stg",
+    "storage_bucket": "appmoney-stg.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:648665398180:android:17ee7402ec864c2cf05f31",
-        "android_client_info": {
-          "package_name": "com.moneylover.mobile"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "648665398180-3qtlki6vp21fj8e9kfmnvhu1n535nfij.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAkowLmQuseeSiHJJS8PBYe5MPP2Ck_BxQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "648665398180-3qtlki6vp21fj8e9kfmnvhu1n535nfij.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "648665398180-95bvb0rh7jcjrso04qqi19v6qsrgou60.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.moneylover.mobile"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:648665398180:android:d26ec2d094f7b5f2f05f31",
+        "mobilesdk_app_id": "1:721666833230:android:df6b1072785ae5a6e0bc1f",
         "android_client_info": {
           "package_name": "com.moneylover.mobile.staging"
         }
       },
       "oauth_client": [
         {
-          "client_id": "648665398180-3qtlki6vp21fj8e9kfmnvhu1n535nfij.apps.googleusercontent.com",
+          "client_id": "721666833230-7roh4cp7sks52ne9784eh5s6gdtjtfl5.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAkowLmQuseeSiHJJS8PBYe5MPP2Ck_BxQ"
+          "current_key": "AIzaSyAWf1YYI2lOB5qQoI4mZ6uIOsiQOAzgbvY"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "648665398180-3qtlki6vp21fj8e9kfmnvhu1n535nfij.apps.googleusercontent.com",
+              "client_id": "721666833230-7roh4cp7sks52ne9784eh5s6gdtjtfl5.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "648665398180-95bvb0rh7jcjrso04qqi19v6qsrgou60.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.moneylover.mobile"
-              }
             }
           ]
         }

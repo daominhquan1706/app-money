@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "648665398180",
-    "project_id": "moneylover-mobile",
-    "storage_bucket": "moneylover-mobile.appspot.com"
+    "project_number": "344330998563",
+    "project_id": "appmoney-d9d17",
+    "storage_bucket": "appmoney-d9d17.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:648665398180:android:17ee7402ec864c2cf05f31",
+        "mobilesdk_app_id": "1:344330998563:android:2a38b325abe293afd33296",
         "android_client_info": {
           "package_name": "com.moneylover.mobile"
         }
       },
       "oauth_client": [
         {
-          "client_id": "648665398180-3qtlki6vp21fj8e9kfmnvhu1n535nfij.apps.googleusercontent.com",
+          "client_id": "344330998563-39gqikg8njo389n6qn30qvqgmr9tm6rc.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAkowLmQuseeSiHJJS8PBYe5MPP2Ck_BxQ"
+          "current_key": "AIzaSyCEjkcAeyE8GzhTdJqYN3EkOERhvcJN6OA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "648665398180-3qtlki6vp21fj8e9kfmnvhu1n535nfij.apps.googleusercontent.com",
+              "client_id": "344330998563-39gqikg8njo389n6qn30qvqgmr9tm6rc.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
