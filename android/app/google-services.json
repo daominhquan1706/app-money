@@ -1,41 +1,34 @@
 {
   "project_info": {
-    "project_number": "151311535175",
-    "project_id": "app-money-36e14",
-    "storage_bucket": "app-money-36e14.appspot.com"
+    "project_number": "755212808703",
+    "project_id": "moneylover-1d57b",
+    "storage_bucket": "moneylover-1d57b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:151311535175:android:605393e467eb627d693562",
+        "mobilesdk_app_id": "1:755212808703:android:9e74593985cd4eef4e37ca",
         "android_client_info": {
-          "package_name": "com.daominhquan.money_app"
+          "package_name": "com.moneylover.untitled"
         }
       },
       "oauth_client": [
         {
-          "client_id": "151311535175-qq41khk6j56eshhp12q5mi9i47vb9vfv.apps.googleusercontent.com",
+          "client_id": "755212808703-35ocbc8vq3r8uiv6ppadrukbstue1qqa.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCWxaNrzIF507oFS4NmJujAigMz52SKPug"
+          "current_key": "AIzaSyCM2FafCcey2WeCVMQvalvY_jaShAKejWc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "151311535175-qq41khk6j56eshhp12q5mi9i47vb9vfv.apps.googleusercontent.com",
+              "client_id": "755212808703-35ocbc8vq3r8uiv6ppadrukbstue1qqa.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "151311535175-0at6dlt2ltohadepb7p2ga4k9tmjs9vr.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.daominhquan.moneyApp"
-              }
             }
           ]
         }

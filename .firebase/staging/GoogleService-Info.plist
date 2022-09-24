@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>721666833230-651egt4m9roqvnidqdimh5meno0fc7k3.apps.googleusercontent.com</string>
+	<string>648665398180-hjljv7t9rh5qku6fvafn4sutmur87oso.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.721666833230-651egt4m9roqvnidqdimh5meno0fc7k3</string>
+	<string>com.googleusercontent.apps.648665398180-hjljv7t9rh5qku6fvafn4sutmur87oso</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDZkEjk64vY-aHRYNOeAUlNCAkzHydxTkU</string>
+	<string>AIzaSyCY7XuYaDtIWZJfYKZyGYnpqmKPJ1iImEs</string>
 	<key>GCM_SENDER_ID</key>
-	<string>721666833230</string>
+	<string>648665398180</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.moneylover.mobile.staging</string>
 	<key>PROJECT_ID</key>
-	<string>appmoney-stg</string>
+	<string>moneylover-mobile</string>
 	<key>STORAGE_BUCKET</key>
-	<string>appmoney-stg.appspot.com</string>
+	<string>moneylover-mobile.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:721666833230:ios:2bd03f87b8e6cea4e0bc1f</string>
+	<string>1:648665398180:ios:315ecb419309027df05f31</string>
 </dict>
 </plist>
